@@ -90,6 +90,11 @@ extern const int16_t _png_10n_width;
 extern const int16_t _png_10n_height;
 extern const uint16_t _png_10n[];
 
+/* battery.png */
+extern const int16_t _png_battery_width;
+extern const int16_t _png_battery_height;
+extern const uint16_t _png_battery[];
+
 /* 02d.png */
 extern const int16_t _png_02d_width;
 extern const int16_t _png_02d_height;
