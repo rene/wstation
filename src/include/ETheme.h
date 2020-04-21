@@ -48,7 +48,6 @@ typedef uint16_t color_t;
  */
 class ETheme {
 	private:
-		// Initialize colors with default theme
 		color_t background;
 		color_t ip;
 		color_t city;

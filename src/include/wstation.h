@@ -166,7 +166,7 @@ typedef enum _temp_scale {
 	/** Celsius */
 	CELSIUS = 0,
 	/** Fahrenheit */
-	FAHRENHEIT = 1,
+	FAHRENHEIT,
 } temp_scale_t;
 
 #endif /* __WSTATION_H__ */

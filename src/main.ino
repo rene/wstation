@@ -12,12 +12,9 @@
 		out.print(num); \
 	} while(0)
 
-
-//void draw_pixmap(int x, int y, String file);
-//void draw_pixmap_half(int x, int y, String file);
+/** Embedded GUI */
 EInterface *gui;
-
-// Color theme
+/** Color theme */
 ETheme colorTheme;
 
 void setup() {
@@ -42,6 +39,8 @@ void setup() {
 	gui->showAll();
 
 	gui->setCity("Berlin");
+	gui->setIP("192.168.200.120");
+	gui->showWiFi(true);
 	gui->showTemp1(20.1);
 	gui->showTemp2(-2.0);
 #if 0
@@ -57,12 +56,6 @@ void setup() {
 	//tft.print("13:45");
 	tft.setFont(&FreeSansBold12pt7b);
 	//tft.print(" 00");
-
-	tft.setFont(&FreeMono9pt7b);
-	tft.setTextColor(0x8410); // RGB(128,128,128)
-	tft.setCursor(50, 10);
-	tft.print("192.168.100.200");
-	draw_pixmap(216, 0, "/wifi.px");
 
 	tft.setCursor(162, 160);
 	tft.setTextColor(0xF780); // RGB(240,240,0)
@@ -87,7 +80,6 @@ void setup() {
 	tft.setCursor(5, 300);
 	tft.setTextColor(0xF186); // RGB(240, 40, 40)
 	tft.print("18.0 C");
-
 
 	draw_pixmap_half(90, 240, "/10d.px");
 	tft.setFont(&FreeSans9pt7b);
@@ -156,6 +148,7 @@ void loop()
 	}
 	delay(1000);
 
+	gui->showTemp1(20 + (0.1 * random(9)));
 #if 0
 	tft.fillRect(60, 70, 130, 28, ILI9341_BLACK);
 	tft.setFont(&FreeSansBold18pt7b);

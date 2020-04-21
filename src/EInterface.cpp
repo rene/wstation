@@ -54,28 +54,16 @@
  */
 EInterface::EInterface(int8_t cs, int8_t dc, 
 		int8_t led, int backlight, ETheme theme,
-		fs::FS *pfs)
+		fs::FS *pfs) :
+	state(false), tftCS(cs), tftDC(dc), tftLED(led),
+	backlight(backlight),theme(theme), pfs(pfs),
+	tft(NULL), hours(-1), minutes(-1), seconds(-1),
+	temp1(INV_TEMP), temp2(INV_TEMP), tempScale(CELSIUS),
+	city(""), weather(CLEAR_SKY), period(1),
+	radio(false), wifi(false), battery1(false), battery2(false),
+	ip("")
 {
-	this->state     = false;
-	this->tftCS     = cs;
-	this->tftDC     = dc;
-	this->tftLED    = led;
-	this->backlight = backlight; 
-	this->theme     = theme;
-	this->pfs       = pfs;
-	this->tft       = new Adafruit_ILI9341(tftCS, tftDC);
-
-	this->hours   = -1;
-	this->minutes = -1;
-	this->seconds = -1;
-
-	this->temp1     = INV_TEMP;
-	this->temp2     = INV_TEMP;
-	this->tempScale = CELSIUS;
-
-	this->city    = "";
-	this->weather = CLEAR_SKY;
-	this->period  = 1;
+	this->tft = new Adafruit_ILI9341(tftCS, tftDC);
 }
 
 /**
@@ -139,6 +127,16 @@ void EInterface::setCity(const String& city)
 }
 
 /**
+ * \brief Set IP address
+ * \param [in] ip IP address
+ */
+void EInterface::setIP(const String& ip)
+{
+	this->ip = ip;
+	showIP();
+}
+
+/**
  * \brief Show weather icon
  * \param [in] temp Temperature
  * \param [in] Period: 0 = Day, 1 = Night
@@ -159,11 +157,34 @@ void EInterface::showWeather(weather_t weather, char period)
  */
 void EInterface::showCity()
 {
+	int16_t x1, y1;
+	uint16_t w, h;
+
 	tft->setFont(&FreeSansBold12pt7b);
 	tft->setCursor(70,40);
 	tft->setTextColor(theme.getCity());
 	tft->setTextSize(1);
+
+	tft->getTextBounds(city, 70, 40, &x1, &y1, &w, &h);
+	tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
 	tft->print(city);
+}
+
+/**
+ * \brief Show IP address
+ */
+void EInterface::showIP()
+{
+	int16_t x1, y1;
+	uint16_t w, h;
+
+	tft->setFont(&FreeMono9pt7b);
+	tft->setCursor(50, 10);
+	tft->setTextColor(theme.getIP());
+
+	tft->getTextBounds(ip, 50, 10, &x1, &y1, &w, &h);
+	tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
+	tft->print(ip);
 }
 
 /**
@@ -210,10 +231,25 @@ void EInterface::showTemp2(float temp)
  */
 void EInterface::showRadio(bool show)
 {
+	this->radio = show;
 	if (show) {
 		drawPixmap(180, 170, theme.getPixmapFile(ETheme::FIG_RADIO));
 	} else  {
 		tft->fillRect(180, 170, 14, 24, theme.getBackground());
+	}
+}
+
+/**
+ * \brief Show/hide WiFi icon
+ * \param [in] show Show or hide the icon
+ */
+void EInterface::showWiFi(bool show)
+{
+	this->wifi = show;
+	if (show) {
+		drawPixmap(216, 0, theme.getPixmapFile(ETheme::FIG_WIFI));
+	} else  {
+		tft->fillRect(216, 0, 24, 24, theme.getBackground());
 	}
 }
 
@@ -223,6 +259,7 @@ void EInterface::showRadio(bool show)
  */
 void EInterface::showBattery1(bool show)
 {
+	this->battery1 = show;
 	if (show) {
 		drawPixmap(200, 107, theme.getPixmapFile(ETheme::FIG_BATTERY));
 	} else  {
@@ -236,6 +273,7 @@ void EInterface::showBattery1(bool show)
  */
 void EInterface::showBattery2(bool show)
 {
+	this->battery2 = show;
 	if (show) {
 		drawPixmap(200, 172, theme.getPixmapFile(ETheme::FIG_BATTERY));
 	} else  {
@@ -256,9 +294,11 @@ void EInterface::showAll()
 	showTempLabels();
 	showTemp1(temp1);
 	showTemp2(temp2);
-	showRadio(false);
-	showBattery1(false);
-	showBattery2(false);
+	showRadio(radio);
+	showIP();
+	showWiFi(wifi);
+	showBattery1(battery1);
+	showBattery2(battery2);
 }
 
 /* ======================= PRIVATE ======================= */

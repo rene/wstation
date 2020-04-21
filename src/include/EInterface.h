@@ -83,6 +83,17 @@ class EInterface {
 		char period;
 		/** City */
 		String city;
+		/** Show radio icon */
+		bool radio;
+		/** Show WiFi icon */
+		bool wifi;
+		/** Show radio icon */
+		bool battery1;
+		/** Show radio icon */
+		bool battery2;
+		/** IP address */
+		String ip;
+
 
 		/* Print a temperature value with degree symbol */
 		void drawTemp(float temp, int x, int y);
@@ -120,11 +131,17 @@ class EInterface {
 		/* Set city name */
 		void setCity(const String& city);
 
+		/* Set IP address */
+		void setIP(const String& ip);
+
 		/* Show weather icon */
 		void showWeather(weather_t weather, char period);
 
 		/* Show city name */
 		void showCity();
+
+		/* Show IP address */
+		void showIP();
 
 		/* Draw Indoor/Outdoor labels */
 		void showTempLabels();
@@ -137,6 +154,9 @@ class EInterface {
 
 		/* Show/hide antenna icon */
 		void showRadio(bool show);
+
+		/* Show/hide WiFi icon */
+		void showWiFi(bool show);
 
 		/* Show/hide battery 1 icon */
 		void showBattery1(bool show);
