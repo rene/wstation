@@ -42,6 +42,8 @@
 
 /** Invalid temperature */
 #define INV_TEMP -1E6
+/** Invalid humidity */
+#define INV_HUMIDITY -1
 
 /**
  * \brief Constructor
@@ -61,7 +63,7 @@ EInterface::EInterface(int8_t cs, int8_t dc,
 	temp1(INV_TEMP), temp2(INV_TEMP), tempScale(CELSIUS),
 	city(""), weather(CLEAR_SKY), period(1),
 	radio(false), wifi(false), battery1(false), battery2(false),
-	ip("")
+	ip(""), humidity1(INV_HUMIDITY), humidity2(INV_HUMIDITY)
 {
 	this->tft = new Adafruit_ILI9341(tftCS, tftDC);
 }
@@ -124,6 +126,95 @@ void EInterface::setCity(const String& city)
 {
 	this->city = city;
 	showCity();
+}
+
+/**
+ * Set clock: hours
+ * \param [in] hours Hours
+ */
+void EInterface::setHours(int hours)
+{
+	if (this->hours != hours) {
+		this->hours = hours;
+		showClock(CLOCK_HOURS);
+	}
+}
+
+/**
+ * \brief Set clock: minutes
+ * \param [in] minutes Minutes
+ */
+void EInterface::setMinutes(int minutes)
+{
+	if (this->minutes != minutes) {
+		this->minutes = minutes;
+		showClock(CLOCK_MINUTES);
+	}
+}
+
+/**
+ * \brief Set clock: seconds
+ * \param [in] seconds Seconds
+ */
+void EInterface::setSeconds(int seconds)
+{
+	if (this->seconds != seconds) {
+		this->seconds = seconds;
+		showClock(CLOCK_SECONDS);
+	}
+}
+
+/**
+ * \brief Show clock
+ * \param [in] elements Clock elements to show
+ */
+void EInterface::showClock(clock_el_t elements)
+{
+	int16_t x1, y1;
+	uint16_t w, h;
+	char str[4];
+
+	// Hours
+	if (elements == CLOCK_ALL || elements == CLOCK_HOURS) {
+		if (this->hours >= 0 && this->hours <= 23) {
+			tft->setFont(&FreeSansBold18pt7b);
+			tft->setTextColor(theme.getClock());
+			tft->setCursor(60, 95);
+			snprintf(str, sizeof(str), "%02d:", this->hours);
+
+			tft->getTextBounds(str, 60, 95, &x1, &y1, &w, &h);
+			tft->fillRect(x1 - 2, y1 - 2, w + 2, h + 2, theme.getBackground());
+			tft->print(str);
+		}
+	}
+
+	// Minutes
+	if (elements == CLOCK_ALL || elements == CLOCK_MINUTES) {
+		if (this->minutes >= 0 && this->minutes <= 59) {
+			tft->setFont(&FreeSansBold18pt7b);
+			tft->setTextColor(theme.getClock());
+			tft->setCursor(110, 95);
+			snprintf(str, sizeof(str), "%02d", this->minutes);
+
+			tft->getTextBounds(str, 110, 95, &x1, &y1, &w, &h);
+			tft->fillRect(x1 - 2, y1 - 2, w + 8, h + 2, theme.getBackground());
+			tft->print(str);
+		}
+	}
+
+	// Seconds
+	if (elements == CLOCK_ALL || elements == CLOCK_SECONDS) {
+		if (this->seconds >= 0 && this->seconds <= 59) {
+			tft->setFont(&FreeSansBold12pt7b);
+			tft->setTextColor(theme.getClock());
+			tft->setCursor(155, 95);
+			snprintf(str, sizeof(str), "%02d", this->seconds);
+
+			tft->getTextBounds(str, 155, 95, &x1, &y1, &w, &h);
+			tft->fillRect(x1 - 2, y1 - 2, w + 5, h + 2, theme.getBackground());
+			tft->print(str);
+		}
+	}
 }
 
 /**
@@ -226,6 +317,30 @@ void EInterface::showTemp2(float temp)
 }
 
 /**
+ * \brief Show humidity 1
+ * \param [in] humidity Humidity
+ */
+void EInterface::showHumidity1(int humidity)
+{
+	if (humidity != INV_HUMIDITY) {
+		humidity1 = humidity;
+		drawHumidity(humidity1, 162, 160);
+	}
+}
+
+/**
+ * \brief Show humidity 2
+ * \param [in] humidity Humidity
+ */
+void EInterface::showHumidity2(int humidity)
+{
+	if (humidity != INV_HUMIDITY) {
+		humidity2 = humidity;
+		drawHumidity(humidity2, 162, 225);
+	}
+}
+
+/**
  * \brief Show/hide antenna icon
  * \param [in] show Show or hide the icon
  */
@@ -294,11 +409,14 @@ void EInterface::showAll()
 	showTempLabels();
 	showTemp1(temp1);
 	showTemp2(temp2);
+	showHumidity1(humidity1);
+	showHumidity2(humidity2);
 	showRadio(radio);
 	showIP();
 	showWiFi(wifi);
 	showBattery1(battery1);
 	showBattery2(battery2);
+	showClock(CLOCK_ALL);
 }
 
 /* ======================= PRIVATE ======================= */
@@ -340,6 +458,42 @@ void EInterface::drawTemp(float temp, int x, int y)
 	/* Draw value and degree symbol */
 	tft->print(tempVal);
 	tft->drawCircle(dx, dy, 5, theme.getTemperature());
+}
+
+/**
+ * \brief Print humidity value
+ * \param [in] humidity Humidity value (0 to 100)
+ * \param [in] x X position
+ * \param [in] y Y position
+ */
+void EInterface::drawHumidity(int humidity, int x, int y)
+{
+	char humVal[6];
+	int16_t x1, y1;
+	uint16_t w, h;
+
+	if (humidity == INV_HUMIDITY)
+		return;
+
+	snprintf(humVal, sizeof(humVal), "%02d%%", humidity);
+
+	tft->setFont(&FreeSansBold18pt7b);
+	tft->setCursor(x, y);
+
+	if (humidity >= HUMIDITY_L2_HIGH) {
+		tft->setTextColor(theme.getHumidity(2));
+	} else if (humidity >= HUMIDITY_L1_IDEAL) {
+		tft->setTextColor(theme.getHumidity(1));
+	} else {
+		tft->setTextColor(theme.getHumidity(0));
+	}
+
+	/* Clear background area */
+	tft->getTextBounds(humVal, x, y, &x1, &y1, &w, &h);
+	tft->fillRect(x, y - h, w + 8, h + 1, theme.getBackground());
+
+	/* Draw value */
+	tft->print(humVal);
 }
 
 /**

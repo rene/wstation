@@ -47,6 +47,13 @@
 /** TFT module led pin */
 #define TFT_BACKLIGHT 19
 
+/** Humidity level: Low (dry) */
+#define HUMIDITY_L0_LOW    0
+/** Humidity level: Comfortable */
+#define HUMIDITY_L1_IDEAL 40
+/** Humidity level: High */
+#define HUMIDITY_L2_HIGH  70
+
 /** Types of pixmaps in the LCD screen */
 typedef enum _weather_id {
 	/** Thunderstorm: Light rain */

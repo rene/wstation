@@ -29,6 +29,7 @@ void setup() {
 		Serial.println("Abort.");
         return;
     }
+	delay(500);
 
 	// Initialize embedded GUI
 	gui = new EInterface(TFT_CS, TFT_DC,
@@ -43,28 +44,12 @@ void setup() {
 	gui->showWiFi(true);
 	gui->showTemp1(20.1);
 	gui->showTemp2(-2.0);
+	gui->showHumidity1(55);
+	gui->showHumidity2(80);
 #if 0
-	draw_pixmap(5, 18, "/01n.px");
-
 	tft.setFont(&FreeSans9pt7b);
 	tft.setCursor(70,55);
 	tft.print("13 de Abril de 2020");
-	
-	tft.setFont(&FreeSansBold18pt7b);
-	tft.setTextColor(0xFA60); // RGB(255, 77, 0)
-	tft.setCursor(60, 95);
-	//tft.print("13:45");
-	tft.setFont(&FreeSansBold12pt7b);
-	//tft.print(" 00");
-
-	tft.setCursor(162, 160);
-	tft.setTextColor(0xF780); // RGB(240,240,0)
-	tft.print("55%");
-
-	// Outdoor
-	tft.setCursor(162, 225);
-	tft.setTextColor(0x0640); // RGB(0,200,0)
-	tft.print("85%");
 
 	// Forecast
 	draw_pixmap_half(5, 240, "/01d.px");
@@ -94,7 +79,6 @@ void setup() {
 	tft.setCursor(90, 300);
 	tft.setTextColor(0xF186); // RGB(240, 40, 40)
 	tft.print("15.0 C");
-
 
 	draw_pixmap_half(168, 240, "/11d.px");
 	tft.setFont(&FreeSans9pt7b);
@@ -149,17 +133,9 @@ void loop()
 	delay(1000);
 
 	gui->showTemp1(20 + (0.1 * random(9)));
-#if 0
-	tft.fillRect(60, 70, 130, 28, ILI9341_BLACK);
-	tft.setFont(&FreeSansBold18pt7b);
-	tft.setCursor(60, 95);
-	tft.setTextColor(0xFA60); // RGB(255, 77, 0)
-	PRINT2DIG(tft, tm.Hour);
-	tft.write(':');
-	PRINT2DIG(tft, tm.Minute);
-	tft.setFont(&FreeSansBold12pt7b);
-	tft.write(' ');
-	PRINT2DIG(tft, tm.Second);
-#endif
+	gui->showHumidity2(random(99));
+	gui->setHours(tm.Hour);
+	gui->setMinutes(tm.Minute);
+	gui->setSeconds(tm.Second);
 }
 

@@ -49,6 +49,13 @@
 
 class EInterface {
 	private:
+		/** Clock elements */
+		typedef enum _clock_el {
+			CLOCK_ALL,
+			CLOCK_HOURS,
+			CLOCK_MINUTES,
+			CLOCK_SECONDS
+		} clock_el_t;
 		/** GUI state */
 		bool state;
 		/** TFT screen: CS pin */
@@ -93,10 +100,17 @@ class EInterface {
 		bool battery2;
 		/** IP address */
 		String ip;
+		/** Humidity 1 */
+		int humidity1;
+		/** Humidity 2 */
+		int humidity2;
 
 
 		/* Print a temperature value with degree symbol */
 		void drawTemp(float temp, int x, int y);
+
+		/* Print humidity value */
+		void drawHumidity(int humidity, int x, int y);
 
 		/* Read 16 bits number from file */
 		uint16_t readInt(File f);
@@ -134,6 +148,18 @@ class EInterface {
 		/* Set IP address */
 		void setIP(const String& ip);
 
+		/* Set clock: hours */
+		void setHours(int hours);
+
+		/* Set clock: minutes */
+		void setMinutes(int minutes);
+
+		/* Set clock: seconds */
+		void setSeconds(int seconds);
+
+		/* Show clock */
+		void showClock(clock_el_t elements);
+
 		/* Show weather icon */
 		void showWeather(weather_t weather, char period);
 
@@ -151,6 +177,12 @@ class EInterface {
 
 		/* Show temperature 2 */
 		void showTemp2(float temp);
+
+		/* Show humidity 1 */
+		void showHumidity1(int humidity);
+
+		/* Show humidity 2 */
+		void showHumidity2(int humidity);
 
 		/* Show/hide antenna icon */
 		void showRadio(bool show);
