@@ -90,6 +90,8 @@ class EInterface {
 		char period;
 		/** City */
 		String city;
+		/** Date */
+		String date;
 		/** Show radio icon */
 		bool radio;
 		/** Show WiFi icon */
@@ -104,6 +106,16 @@ class EInterface {
 		int humidity1;
 		/** Humidity 2 */
 		int humidity2;
+		/** Outdoor sensor's channel */
+		int channel;
+		/** Forecast labels */
+		String forecastLabels[3];
+		/** Forecast Temperature 1 */
+		float forecastTemp1[3];
+		/** Forecast Temperature 2 */
+		float forecastTemp2[3];
+		/** Forecast weather */
+		weather_t forecastWeather[3];
 
 
 		/* Print a temperature value with degree symbol */
@@ -111,6 +123,9 @@ class EInterface {
 
 		/* Print humidity value */
 		void drawHumidity(int humidity, int x, int y);
+
+		/* Print a forecast temperature */
+		void drawForecastTemp(float temp, int x, int y, int16_t color);
 
 		/* Read 16 bits number from file */
 		uint16_t readInt(File f);
@@ -166,8 +181,14 @@ class EInterface {
 		/* Show city name */
 		void showCity();
 
+		/* Set date */
+		void setDate(const String& date);
+
 		/* Show IP address */
 		void showIP();
+
+		/* Show date */
+		void showDate();
 
 		/* Draw Indoor/Outdoor labels */
 		void showTempLabels();
@@ -183,6 +204,21 @@ class EInterface {
 
 		/* Show humidity 2 */
 		void showHumidity2(int humidity);
+
+		/* Show sensor's channel */
+		void showChannel(int channel);
+
+		/* Show forecast weather icon */
+		void showForecastWeather(int i, weather_t weather);
+
+		/* Show forecast label */
+		void showForecastLabel(int i, const String& label);
+
+		/* Show forecast temperature 1 */
+		void showForecastTemp1(int i, float temp);
+
+		/* Show forecast temperature 2 */
+		void showForecastTemp2(int i, float temp);
 
 		/* Show/hide antenna icon */
 		void showRadio(bool show);

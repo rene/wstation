@@ -41,9 +41,15 @@
 #include <Fonts/FreeMono9pt7b.h>
 
 /** Invalid temperature */
-#define INV_TEMP -1E6
+#define INV_TEMP     -1E6
 /** Invalid humidity */
 #define INV_HUMIDITY -1
+/** Invalid channel */
+#define INV_CHANNEL  -1
+/** Default weather */
+#define DEF_WEATHER  CLEAR_SKY
+/** Default temperature scale */
+#define DEF_SCALE    CELSIUS
 
 /**
  * \brief Constructor
@@ -54,16 +60,20 @@
  * \param [in] pfs File system to load pixmap files
  * \param [in] theme Color theme
  */
-EInterface::EInterface(int8_t cs, int8_t dc, 
+EInterface::EInterface(int8_t cs, int8_t dc,
 		int8_t led, int backlight, ETheme theme,
 		fs::FS *pfs) :
 	state(false), tftCS(cs), tftDC(dc), tftLED(led),
 	backlight(backlight),theme(theme), pfs(pfs),
 	tft(NULL), hours(-1), minutes(-1), seconds(-1),
-	temp1(INV_TEMP), temp2(INV_TEMP), tempScale(CELSIUS),
-	city(""), weather(CLEAR_SKY), period(1),
+	temp1(INV_TEMP), temp2(INV_TEMP), tempScale(DEF_SCALE),
+	city(""), date(""), weather(DEF_WEATHER), period(1),
 	radio(false), wifi(false), battery1(false), battery2(false),
-	ip(""), humidity1(INV_HUMIDITY), humidity2(INV_HUMIDITY)
+	ip(""), humidity1(INV_HUMIDITY), humidity2(INV_HUMIDITY),
+	channel(INV_CHANNEL), forecastLabels({"", "", ""}),
+	forecastTemp1({INV_TEMP, INV_TEMP, INV_TEMP}),
+	forecastTemp2({INV_TEMP, INV_TEMP, INV_TEMP}),
+	forecastWeather({DEF_WEATHER, DEF_WEATHER, DEF_WEATHER})
 {
 	this->tft = new Adafruit_ILI9341(tftCS, tftDC);
 }
@@ -126,6 +136,16 @@ void EInterface::setCity(const String& city)
 {
 	this->city = city;
 	showCity();
+}
+
+/**
+ * \brief Set date
+ * \param [in] date Date string representation
+ */
+void EInterface::setDate(const String& date)
+{
+	this->date = date;
+	showDate();
 }
 
 /**
@@ -229,7 +249,7 @@ void EInterface::setIP(const String& ip)
 
 /**
  * \brief Show weather icon
- * \param [in] temp Temperature
+ * \param [in] weather Weather
  * \param [in] Period: 0 = Day, 1 = Night
  */
 void EInterface::showWeather(weather_t weather, char period)
@@ -279,6 +299,23 @@ void EInterface::showIP()
 }
 
 /**
+ * \brief Show date
+ */
+void EInterface::showDate()
+{
+	int16_t x1, y1;
+	uint16_t w, h;
+
+	tft->setFont(&FreeSans9pt7b);
+	tft->setCursor(70,55);
+	tft->setTextColor(theme.getDate());
+
+	tft->getTextBounds("Ap", 70, 55, &x1, &y1, &w, &h);
+	tft->fillRect(x1, y1, (320 - x1), h + 1, theme.getBackground());
+	tft->print(date);
+}
+
+/**
  * \brief Draw Indoor/Outdoor labels
  */
 void EInterface::showTempLabels()
@@ -324,7 +361,7 @@ void EInterface::showHumidity1(int humidity)
 {
 	if (humidity != INV_HUMIDITY) {
 		humidity1 = humidity;
-		drawHumidity(humidity1, 162, 160);
+		drawHumidity(humidity1, 150, 160);
 	}
 }
 
@@ -336,8 +373,164 @@ void EInterface::showHumidity2(int humidity)
 {
 	if (humidity != INV_HUMIDITY) {
 		humidity2 = humidity;
-		drawHumidity(humidity2, 162, 225);
+		drawHumidity(humidity2, 150, 225);
 	}
+}
+
+/**
+ * \brief Show sensor's channel
+ * \param [in] channel Channel number
+ */
+void EInterface::showChannel(int channel)
+{
+	int16_t x1, y1;
+	uint16_t w, h;
+	char str[4];
+
+	if (channel != INV_CHANNEL) {
+		this->channel = channel;
+
+		tft->setFont(&FreeSans9pt7b);
+		tft->setTextColor(theme.getTempLabel());
+		tft->setCursor(80, 185);
+
+		snprintf(str, sizeof(str), "%3d", channel);
+		tft->getTextBounds("000", 80, 185, &x1, &y1, &w, &h);
+		tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
+		tft->print(str);
+	}
+}
+
+/**
+ * \brief Show forecast weather icon
+ * \param [in] i Forecast number
+ * \param [in] weather Weather
+ */
+void EInterface::showForecastWeather(int i, weather_t weather)
+{
+	int x, y;
+	ETheme::pixmap_t icon;
+
+	if (i < 0 || i > 3)
+		return;
+
+	y = 240;
+	switch(i) {
+		case 0:
+			x = 5;
+			break;
+
+		case 1:
+			x = 90;
+			break;
+
+		case 2:
+			x = 168;
+			break;
+	}
+
+	this->forecastWeather[i] = weather;
+	icon = getWeatherIcon(weather, period);
+
+	tft->fillRect(x, y, 30, 30, theme.getBackground());
+	drawPixmapHalf(x, y, theme.getPixmapFile(icon));
+}
+
+/**
+ * \brief Show forecast label
+ * \param [in] i Forecast number
+ * \param [in] label Label
+ */
+void EInterface::showForecastLabel(int i, const String& label)
+{
+	int16_t x1, y1;
+	uint16_t w, h;
+	int x, y;
+
+	if (i < 0 || i > 3)
+		return;
+
+	y = 260;
+	switch(i) {
+		case 0:
+			x = 40;
+			break;
+
+		case 1:
+			x = 125;
+			break;
+
+		case 2:
+			x = 203;
+			break;
+	}
+
+	forecastLabels[i] = label;
+	tft->setFont(&FreeSans9pt7b);
+	tft->setTextColor(theme.getWeekDay());
+	tft->setCursor(x, y);
+
+	tft->getTextBounds("AAA", x, y, &x1, &y1, &w, &h);
+	tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
+	tft->print(forecastLabels[i]);
+}
+
+/**
+ * \brief Show forecast temperature 1
+ * \param [in] i Forecast number
+ * \param [in] temp Temperature
+ */
+void EInterface::showForecastTemp1(int i, float temp)
+{
+	int x, y;
+
+	if (i < 0 || i > 3)
+		return;
+
+	y = 305;
+	switch(i) {
+		case 0:
+			x = 5;
+			break;
+
+		case 1:
+			x = 90;
+			break;
+
+		case 2:
+			x = 168;
+			break;
+	}
+
+	forecastTemp1[i] = temp;
+	drawForecastTemp(temp, x, y, theme.getWeekTemp1());
+}
+
+/* Show forecast temperature 2 */
+void EInterface::showForecastTemp2(int i, float temp)
+{
+	int x, y;
+
+	if (i < 0 || i > 3)
+		return;
+
+	y = 285;
+	switch(i) {
+		case 0:
+			x = 5;
+			break;
+
+		case 1:
+			x = 90;
+			break;
+
+		case 2:
+			x = 168;
+			break;
+	}
+
+	forecastTemp2[i] = temp;
+	drawForecastTemp(temp, x, y, theme.getWeekTemp2());
 }
 
 /**
@@ -401,6 +594,8 @@ void EInterface::showBattery2(bool show)
  */
 void EInterface::showAll()
 {
+	int i;
+
 	if (!state)
 		return;
 
@@ -409,6 +604,7 @@ void EInterface::showAll()
 	showTempLabels();
 	showTemp1(temp1);
 	showTemp2(temp2);
+	showChannel(channel);
 	showHumidity1(humidity1);
 	showHumidity2(humidity2);
 	showRadio(radio);
@@ -417,6 +613,13 @@ void EInterface::showAll()
 	showBattery1(battery1);
 	showBattery2(battery2);
 	showClock(CLOCK_ALL);
+
+	for (i = 0; i < 3; i++) {
+		showForecastWeather(i, forecastWeather[i]);
+		showForecastLabel(i, forecastLabels[i]);
+		showForecastTemp1(i, forecastTemp1[i]);
+		showForecastTemp2(i, forecastTemp2[i]);
+	}
 }
 
 /* ======================= PRIVATE ======================= */
@@ -449,15 +652,61 @@ void EInterface::drawTemp(float temp, int x, int y)
 	tft->setTextColor(theme.getTemperature());
 	tft->setCursor(x, y);
 
-	/* Clear background area */
-	tft->getTextBounds(tempVal, x, y, &x1, &y1, &w, &h);
+	/* Clear background area (largest string) */
+	tft->getTextBounds("-000.0 C", x, y, &x1, &y1, &w, &h);
 	tft->fillRect(x, y - h, w, h + 1, theme.getBackground());
+
+	/* Get the bounds of the current text */
+	tft->getTextBounds(tempVal, x, y, &x1, &y1, &w, &h);
 	dx = x + w - 30;
 	dy = y - h + 5;
 
 	/* Draw value and degree symbol */
 	tft->print(tempVal);
 	tft->drawCircle(dx, dy, 5, theme.getTemperature());
+}
+
+/**
+ * \brief Print a forecast temperature
+ * \param [in] temp Temperature
+ * \param [in] x X position
+ * \param [in] y Y position
+ * \param [in] color Color
+ */
+void EInterface::drawForecastTemp(float temp, int x, int y, int16_t color)
+{
+	char sc;
+	char tempVal[10];
+	int16_t x1, y1, dx, dy;
+	uint16_t w, h;
+
+	if (temp == INV_TEMP)
+		return;
+
+	if (tempScale == CELSIUS) {
+		sc = 'C';
+	} else {
+		sc = 'F';
+	}
+
+	sprintf(tempVal, "%.1f  %c", temp, sc);
+
+	tft->setFont(&FreeSans9pt7b);
+	tft->setCursor(x, y);
+	tft->setTextColor(color);
+
+	/* Clear background area (largest string) */
+	tft->getTextBounds("-000.0 C", x, y, &x1, &y1, &w, &h);
+	tft->fillRect(x, y - h, w, h + 1, theme.getBackground());
+
+	/* Get the bounds of the current text */
+	tft->getTextBounds(tempVal, x, y, &x1, &y1, &w, &h);
+	dx = x + w - 15;
+	dy = y - h + 5;
+
+	/* Draw value and degree symbol */
+	tft->print(tempVal);
+	tft->drawCircle(dx, dy, 3, color);
 }
 
 /**
@@ -475,7 +724,7 @@ void EInterface::drawHumidity(int humidity, int x, int y)
 	if (humidity == INV_HUMIDITY)
 		return;
 
-	snprintf(humVal, sizeof(humVal), "%02d%%", humidity);
+	snprintf(humVal, sizeof(humVal), "%d%%", humidity);
 
 	tft->setFont(&FreeSansBold18pt7b);
 	tft->setCursor(x, y);
@@ -488,9 +737,9 @@ void EInterface::drawHumidity(int humidity, int x, int y)
 		tft->setTextColor(theme.getHumidity(0));
 	}
 
-	/* Clear background area */
-	tft->getTextBounds(humVal, x, y, &x1, &y1, &w, &h);
-	tft->fillRect(x, y - h, w + 8, h + 1, theme.getBackground());
+	/* Clear background area (consider maximum size) */
+	tft->getTextBounds("000%", x, y, &x1, &y1, &w, &h);
+	tft->fillRect(x, y - h, w + 6, h + 1, theme.getBackground());
 
 	/* Draw value */
 	tft->print(humVal);

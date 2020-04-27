@@ -127,7 +127,7 @@ class ETheme {
 			// Level 2
 			humidity[2] = 0xf780; // RGB(240,240,  0)
 			weekday     = 0x8410; // RGB(128,128,128)
-			weektemp1   = 0x7d1f; // RGB(120,160,255)
+			weektemp1   = 0x63d9; // RGB(100,120,200)
 			weektemp2   = 0xf186; // RGB(240, 40, 40)
 			// Pixmap files
 			icons[FIG_01D] = "/01d.px";

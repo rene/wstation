@@ -40,60 +40,27 @@ void setup() {
 	gui->showAll();
 
 	gui->setCity("Berlin");
+	gui->setDate("April 13, 2020");
 	gui->setIP("192.168.200.120");
 	gui->showWiFi(true);
 	gui->showTemp1(20.1);
 	gui->showTemp2(-2.0);
 	gui->showHumidity1(55);
 	gui->showHumidity2(80);
-#if 0
-	tft.setFont(&FreeSans9pt7b);
-	tft.setCursor(70,55);
-	tft.print("13 de Abril de 2020");
+	gui->showChannel(2);
 
-	// Forecast
-	draw_pixmap_half(5, 240, "/01d.px");
-	tft.setFont(&FreeSans9pt7b);
-	tft.setTextColor(0x8410); // RGB(128,128,128)
-	tft.setCursor(40, 260);
-	tft.print("Seg");
-
-	tft.setCursor(5, 285);
-	tft.setTextColor(0x7D1F); // RGB(120, 160, 255)
-	tft.print("22.3 C");
-
-	tft.setCursor(5, 300);
-	tft.setTextColor(0xF186); // RGB(240, 40, 40)
-	tft.print("18.0 C");
-
-	draw_pixmap_half(90, 240, "/10d.px");
-	tft.setFont(&FreeSans9pt7b);
-	tft.setTextColor(0x8410); // RGB(128,128,128)
-	tft.setCursor(125, 260);
-	tft.print("Ter");
-
-	tft.setCursor(90, 285);
-	tft.setTextColor(0x7D1F); // RGB(120, 160, 255)
-	tft.print("20.3 C");
-
-	tft.setCursor(90, 300);
-	tft.setTextColor(0xF186); // RGB(240, 40, 40)
-	tft.print("15.0 C");
-
-	draw_pixmap_half(168, 240, "/11d.px");
-	tft.setFont(&FreeSans9pt7b);
-	tft.setTextColor(0x8410); // RGB(128,128,128)
-	tft.setCursor(203, 260);
-	tft.print("Qua");
-
-	tft.setCursor(168, 285);
-	tft.setTextColor(0x7D1F); // RGB(120, 160, 255)
-	tft.print("15.1 C");
-
-	tft.setCursor(168, 300);
-	tft.setTextColor(0xF186); // RGB(240, 40, 40)
-	tft.print("9.0 C");
-#endif
+	gui->showForecastWeather(0, CLEAR_SKY);
+	gui->showForecastWeather(1, SNOW_SHOWER);
+	gui->showForecastWeather(2, RAIN_LIGHT);
+	gui->showForecastLabel(0, "Mon");
+	gui->showForecastLabel(1, "Thu");
+	gui->showForecastLabel(2, "Wed");
+	gui->showForecastTemp1(0, 18.0);
+	gui->showForecastTemp2(0, 22.3);
+	gui->showForecastTemp1(1, 20.3);
+	gui->showForecastTemp2(1, 15.0);
+	gui->showForecastTemp1(2, -2.3);
+	gui->showForecastTemp2(2, 9.0);
 }
 
 void loop()
@@ -133,7 +100,7 @@ void loop()
 	delay(1000);
 
 	gui->showTemp1(20 + (0.1 * random(9)));
-	gui->showHumidity2(random(99));
+	gui->showHumidity2(random(110));
 	gui->setHours(tm.Hour);
 	gui->setMinutes(tm.Minute);
 	gui->setSeconds(tm.Second);
