@@ -232,7 +232,28 @@ class EInterface {
 		/* Show/hide battery 2 icon */
 		void showBattery2(bool show);
 
+		/* Show WStation logo */
+		void showLogo(int x, int y);
+
+		/* Show WStation logo at the center */
+		void showLogo();
+
 		/* Draw all graphical elements in the screen */
 		void showAll();
+
+		/* Clear the whole screen */
+		void clearAll();
+
+		/* Print text */
+		void print(const String& text);
+
+		/* Print text */
+		void print(int x, int y, const String& text);
+
+		/* Print text */
+		void print(int16_t color, int16_t bgcolor, const String& text);
+
+		/* Print text */
+		void print(int x, int y, int16_t color, int16_t bgcolor, const String& text);
 };
 #endif /* __EINTERFACE_H__ */

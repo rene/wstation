@@ -59,6 +59,7 @@ class ETheme {
 		color_t weekday;
 		color_t weektemp1;
 		color_t weektemp2;
+		color_t defaultText;
 		String icons[22];
 
 	public:
@@ -106,6 +107,8 @@ class ETheme {
 			FIG_WIFI,
 			/** Battery */
 			FIG_BATTERY,
+			/** Logo */
+			FIG_LOGO,
 		} pixmap_t;
 
 		/**
@@ -129,28 +132,30 @@ class ETheme {
 			weekday     = 0x8410; // RGB(128,128,128)
 			weektemp1   = 0x63d9; // RGB(100,120,200)
 			weektemp2   = 0xf186; // RGB(240, 40, 40)
+			defaultText = 0xffff; // RGB(255,255,255)
 			// Pixmap files
 			icons[FIG_01D] = "/01d.px";
 			icons[FIG_01N] = "/01n.px";
 			icons[FIG_02D] = "/02d.px";
 			icons[FIG_02N] = "/02n.px";
 			icons[FIG_03D] = "/03d.px";
-			icons[FIG_03N] = "/03n.px";
+			icons[FIG_03N] = "/03d.px";
 			icons[FIG_04D] = "/04d.px";
-			icons[FIG_04N] = "/04n.px";
+			icons[FIG_04N] = "/04d.px";
 			icons[FIG_09D] = "/09d.px";
-			icons[FIG_09N] = "/09n.px";
+			icons[FIG_09N] = "/09d.px";
 			icons[FIG_10D] = "/10d.px";
 			icons[FIG_10N] = "/10n.px";
 			icons[FIG_11D] = "/11d.px";
-			icons[FIG_11N] = "/11n.px";
+			icons[FIG_11N] = "/11d.px";
 			icons[FIG_13D] = "/13d.px";
-			icons[FIG_13N] = "/13n.px";
+			icons[FIG_13N] = "/13d.px";
 			icons[FIG_50D] = "/50d.px";
-			icons[FIG_50N] = "/50n.px";
+			icons[FIG_50N] = "/50d.px";
 			icons[FIG_RADIO]   = "/radio.px";
 			icons[FIG_WIFI]    = "/wifi.px";
 			icons[FIG_BATTERY] = "/battery.px";
+			icons[FIG_LOGO]    = "/logo.px";
 		}
 
 		/**
@@ -241,6 +246,13 @@ class ETheme {
 		 */
 		color_t getWeekTemp2() {
 			return this->weektemp2;
+		}
+		/**
+		 * \brief Return color for general text
+		 * \return color_t Color
+		 */
+		color_t getDefaultText() {
+			return this->defaultText;
 		}
 		/**
 		 * \brief Return the file name for a given icon

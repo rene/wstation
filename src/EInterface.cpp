@@ -590,6 +590,32 @@ void EInterface::showBattery2(bool show)
 }
 
 /**
+ * \brief Show WStation logo at the center
+ */
+void EInterface::showLogo()
+{
+	showLogo(-1, -1);
+}
+
+/**
+ * \brief Show WStation logo
+ * \param [in] x X position (-1 for center position)
+ * \param [in] y Y position (-1 for center position)
+ */
+void EInterface::showLogo(int x, int y)
+{
+	int x1 = x;
+	int y1 = y;
+
+	if (x < 0)
+		x1 = 10;
+	if (y < 0)
+		y1 = 124;
+
+	drawPixmap(x1, y1, theme.getPixmapFile(ETheme::FIG_LOGO));
+}
+
+/**
  * \brief Draw all graphical elements in the screen
  */
 void EInterface::showAll()
@@ -621,6 +647,81 @@ void EInterface::showAll()
 		showForecastTemp2(i, forecastTemp2[i]);
 	}
 }
+
+/**
+ * \brief Clear the whole screen
+ */
+void EInterface::clearAll()
+{
+	tft->fillScreen(theme.getBackground());
+}
+
+/**
+ * \brief Print text (at current cursor position, default color)
+ * \param [in] text Text
+ */
+void EInterface::print(const String& text)
+{
+	this->print(-1, -1, -1, (int16_t)theme.getBackground(), text);
+}
+
+/**
+ * \brief Print text
+ * \param [in] x X position
+ * \param [in] y Y position
+ * \param [in] text Text
+ */
+void EInterface::print(int x, int y, const String& text)
+{
+	print(x, y, -1, (int16_t)theme.getBackground(), text);
+}
+
+/**
+ * \brief Print text at current cursor position
+ * \param [in] color Text color
+ * \param [in] bgcolor Text background color (-1 for transparency)
+ * \param [in] text Text
+ */
+void EInterface::print(int16_t color, int16_t bgcolor, const String& text)
+{
+	print(-1, -1, color, bgcolor, text);
+}
+
+/**
+ * \brief Print text
+ * \param [in] x X position
+ * \param [in] y Y position
+ * \param [in] color Text color
+ * \param [in] bgcolor Text background color (-1 for transparency)
+ * \param [in] text Text
+ */
+void EInterface::print(int x, int y, int16_t color, int16_t bgcolor, const String& text)
+{
+	int16_t x1, y1;
+	uint16_t w, h;
+
+	// Default font
+	tft->setFont(&FreeSans9pt7b);
+
+	// Color
+	if (color >= 0)
+		tft->setTextColor(color);
+	else
+		tft->setTextColor(theme.getDefaultText());
+
+	// Cursor position
+	if (x >= 0 && y >= 0)
+		tft->setCursor(x, y);
+
+	/* Clear background area (when needed) */
+	if (bgcolor >= 0) {
+		tft->getTextBounds(text, x, y, &x1, &y1, &w, &h);
+		tft->fillRect(x, y - h, w, h + 1, bgcolor);
+	}
+
+	tft->print(text);
+}
+
 
 /* ======================= PRIVATE ======================= */
 
@@ -777,7 +878,12 @@ void EInterface::drawPixmap(int x, int y, String file)
 	w = readInt(pic);
 	h = readInt(pic);
 	imgsize = w * h;
-	uint16_t buffer[imgsize];
+	uint16_t *buffer = new uint16_t[imgsize];
+
+	if (!buffer) {
+		pic.close();
+		return;
+	}
 
 	pos = 0;
 	while(pic.available() && pos < imgsize) {
@@ -786,6 +892,8 @@ void EInterface::drawPixmap(int x, int y, String file)
 	pic.close();
 
 	tft->drawRGBBitmap(x, y, buffer, w, h);
+
+	delete buffer;
 }
 
 /**

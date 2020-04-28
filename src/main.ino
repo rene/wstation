@@ -37,6 +37,18 @@ void setup() {
 			&SPIFFS);
 
 	gui->initialize();
+	gui->showLogo();
+	delay(1000);
+
+#if 0
+	gui->print(30, 25, "Welcome to WStation!");
+	gui->print(10, 60, "Device needs configuration!");
+	gui->print(0, 210, "Please, connect to:\n\n");
+	gui->print("  ESSID:    WStation\n");
+	gui->print("  Password: wstation1234\n");
+#endif
+#if 1
+	gui->clearAll();
 	gui->showAll();
 
 	gui->setCity("Berlin");
@@ -61,6 +73,7 @@ void setup() {
 	gui->showForecastTemp2(1, 15.0);
 	gui->showForecastTemp1(2, -2.3);
 	gui->showForecastTemp2(2, 9.0);
+#endif
 }
 
 void loop()
@@ -99,10 +112,12 @@ void loop()
 	}
 	delay(1000);
 
+#if 1
 	gui->showTemp1(20 + (0.1 * random(9)));
 	gui->showHumidity2(random(110));
 	gui->setHours(tm.Hour);
 	gui->setMinutes(tm.Minute);
 	gui->setSeconds(tm.Second);
+#endif
 }
 
