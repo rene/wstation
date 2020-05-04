@@ -67,7 +67,7 @@ EInterface::EInterface(int8_t cs, int8_t dc,
 	backlight(backlight),theme(theme), pfs(pfs),
 	tft(NULL), hours(-1), minutes(-1), seconds(-1),
 	temp1(INV_TEMP), temp2(INV_TEMP), tempScale(DEF_SCALE),
-	city(""), date(""), weather(DEF_WEATHER), period(1),
+	city(""), date(""), weather(DEF_WEATHER), period(0),
 	radio(false), wifi(false), battery1(false), battery2(false),
 	ip(""), humidity1(INV_HUMIDITY), humidity2(INV_HUMIDITY),
 	channel(INV_CHANNEL), forecastLabels({"", "", ""}),
@@ -259,8 +259,8 @@ void EInterface::showWeather(weather_t weather, char period)
 	this->weather = weather;
 	this->period  = period;
 	icon = getWeatherIcon(weather, period);
-	tft->fillRect(5, 18, 60, 60, theme.getBackground());
-	drawPixmap(5, 18, theme.getPixmapFile(icon));
+	tft->fillRect(0, 18, 60, 60, theme.getBackground());
+	drawPixmap(0, 18, theme.getPixmapFile(icon));
 }
 
 /**
@@ -295,6 +295,9 @@ void EInterface::showIP()
 
 	tft->getTextBounds(ip, 50, 10, &x1, &y1, &w, &h);
 	tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
+
+	// Right justified
+	tft->setCursor(210 - w, 10);
 	tft->print(ip);
 }
 
@@ -1048,5 +1051,4 @@ ETheme::pixmap_t EInterface::getWeatherIcon(weather_t weather, char period)
 
 	return res;
 }
-
 
