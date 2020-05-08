@@ -16,7 +16,7 @@
 	} while(0)
 
 /** Embedded GUI */
-EInterface *gui;
+EInterface *gui = NULL;
 /** Color theme */
 ETheme colorTheme;
 /** OpenWeather */
@@ -24,13 +24,59 @@ OpenWeather weatherWS;
 /** WiFi */
 WiFiMulti wifiMulti;
 
+/** Mutex for update screen */
+volatile SemaphoreHandle_t t_mutex;
+
 unsigned long lastUpdate;
 
+
+/**
+ * \brief Update graphical elements on the screen
+ */
+void taskUpdateScreen(void *parameter)
+{
+	tmElements_t tm;
+
+	while(1) {
+		// Update clock
+		if (!RTC.read(tm)) {
+			Serial.println("DS1307 read error!");
+			if (RTC.chipPresent()) {
+				tm.Day    = 1;
+				tm.Month  = 1;
+				tm.Year   = CalendarYrToTm(2020);
+				tm.Hour   = 0;
+				tm.Minute = 0;
+				tm.Second = 0;
+				RTC.write(tm);
+				Serial.println("DS1307 was stopped. Time was reset.");
+			}
+		} else {
+			xSemaphoreTake(t_mutex, portMAX_DELAY);
+			if (gui) {
+				gui->setHours(tm.Hour);
+				gui->setMinutes(tm.Minute);
+				gui->setSeconds(tm.Second);
+			}
+			xSemaphoreGive(t_mutex);
+		}
+
+		delay(1000);
+	}
+}
+
+/**
+ * \brief Setup
+ */
 void setup() {
 	// Initialize serial
     Serial.begin(115200);
 	Serial.print("WSTATION: ");
 	Serial.println(WSTATION_VERSION);
+
+	// Initialize general purpose LED
+	pinMode(LED_PIN, OUTPUT);
+	digitalWrite(LED_PIN, LOW);
 
 	// Initialize SPIFFS file system
 	if(!SPIFFS.begin(false)){
@@ -40,6 +86,9 @@ void setup() {
     }
 	delay(500);
 
+	// Initialize semaphore
+	vSemaphoreCreateBinary(t_mutex);
+
 	// Initialize embedded GUI
 	gui = new EInterface(TFT_CS, TFT_DC,
 			TFT_BACKLIGHT, BACKLIGHT_DEFAULT, colorTheme,
@@ -47,7 +96,7 @@ void setup() {
 
 	gui->initialize();
 	gui->showLogo();
-	delay(1000);
+	delay(700);
 
 	lastUpdate = now() - 70;
 
@@ -89,11 +138,6 @@ void setup() {
 
 	gui->setCity("Berlin");
 	gui->setDate("April 13, 2020");
-//	gui->setIP("192.168.200.120");
-//	gui->showWiFi(true);
-//	gui->showTemp1(20.1);
-//	gui->showTemp2(-2.0);
-//	gui->showHumidity1(55);
 	gui->showHumidity2(80);
 	gui->showChannel(1);
 
@@ -109,40 +153,21 @@ void setup() {
 	gui->showForecastTemp2(1, 15.0);
 	gui->showForecastTemp1(2, -2.3);
 	gui->showForecastTemp2(2, 9.0);
+
+	xTaskCreate(taskUpdateScreen, "UpdateScreen", 10000, NULL, 2, NULL);
 #endif
 }
 
+/**
+ * \brief Main loop
+ */
 void loop()
 {
+	xSemaphoreTake(t_mutex, portMAX_DELAY);
 #if 1
-	tmElements_t tm;
-
-	if (!RTC.read(tm)) {
-		//Serial.print(tmYearToCalendar(tm.Year));
-		if (RTC.chipPresent()) {
-			tm.Day    = 1;
-			tm.Month  = 1;
-			tm.Year   = CalendarYrToTm(2020);
-			tm.Hour   = 0;
-			tm.Minute = 0;
-			tm.Second = 0;
-			RTC.write(tm);
-			Serial.println("DS1307 was stopped. Time was reset.");
-		} else {
-			Serial.println("DS1307 read error!  Please check the circuitry.");
-			Serial.println();
-		}
-		delay(9000);
-	}
-
-	gui->showTemp2(20 + (0.1 * random(9)));
-	gui->showHumidity2(random(110));
-	gui->setHours(tm.Hour);
-	gui->setMinutes(tm.Minute);
-	gui->setSeconds(tm.Second);
+	gui->showTemp1(20 + (0.1 * random(9)));
+	gui->showHumidity1(random(110));
 #endif
-	delay(1000);
-
 	if (wifiMulti.run() == WL_CONNECTED) {
 		gui->showWiFi(true);
 		char ip[40]; IPAddress ipAddr = WiFi.localIP();
@@ -157,14 +182,17 @@ void loop()
 			} else {
 				weather_info_t w = weatherWS.getDailyForecast();
 				float t1 = OpenWeather::convKelvinTemp(w.temp, CELSIUS);
-				gui->showTemp1(t1);
+				gui->showTemp2(t1);
 				gui->showWeather(w.weather, 0);
-				gui->showHumidity1(w.humidity);
+				gui->showHumidity2(w.humidity);
 			}
 		}
 	} else {
 		gui->showWiFi(false);
 		gui->setIP("");
 	}
+
+	xSemaphoreGive(t_mutex);
+	delay(1200);
 }
 
