@@ -7,7 +7,7 @@ from datetime import datetime
 def kelvin2celcius(k):
     return k - 273.15
 
-url = "http://api.openweathermap.org/data/2.5/forecast?q=Berlin,DE&appid=0300414e2812dcf9b846060f08ae4882"
+url = "http://api.openweathermap.org/data/2.5/forecast?q=Berlin,DE&appid=0300414e2812dcf9b846060f08ae4882&cnt=24"
 f   = req.urlopen(url)
 #f = open("out1.txt", "r")
 

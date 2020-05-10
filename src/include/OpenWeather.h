@@ -107,6 +107,9 @@ class OpenWeather {
 		/* Get daily forecast */
 		weather_info_t getDailyForecast();
 
+		/* Get weekly forecast */
+		weather_info_t getWeeklyForecast(int i);
+
 		/* Convert Kelvin temperature */
 		static float convKelvinTemp(float k, temp_scale_t scale);
 

@@ -130,7 +130,7 @@ int OpenWeather::updateWeeklyForecast()
 
 	// URL
 	snprintf(url, MAX_URL_SIZE,
-			"%s?q=%s&appid=%s", FC_URL_WEEKLY,
+			"%s?q=%s&appid=%s&cnt=24", FC_URL_WEEKLY,
 			city.c_str(), key.c_str());
 
 	// Retrieve from server
@@ -167,6 +167,20 @@ int OpenWeather::updateForecast()
 weather_info_t OpenWeather::getDailyForecast()
 {
 	return dailyFC;
+}
+
+/**
+ * \brief Get weekly forecast
+ * \param [in] i Day index (from 0 to MAX_FORECAST_DAYS)
+ * \return weather_info_t Weather information
+ */
+weather_info_t OpenWeather::getWeeklyForecast(int i)
+{
+	if (i < MAX_FORECAST_DAYS) {
+		return weeklyFC[i];
+	} else {
+		return weeklyFC[0];
+	}
 }
 
 /**
@@ -229,10 +243,51 @@ int OpenWeather::parseDaily(const String& json)
 	return 0;
 }
 
-/* Parse weekly forecast information */
+/**
+ * \brief Parse weekly forecast information
+ * \param [in] json JSON string
+ * \return int 0 on success, negative number otherwise
+ */
 int OpenWeather::parseWeekly(const String& json)
 {
-	Serial.println(json);
+	int i, j, cnt, lday, cday, id;
+	time_t t;
+	StaticJsonDocument<20480> doc;
+	DeserializationError error = deserializeJson(doc, json);
+
+	if (error) {
+		Serial.print("deserializeJson() failed: ");
+		Serial.println(error.c_str());
+		return -1;
+	}
+
+	cnt  = doc["cnt"];
+	j    = 0;
+	lday = -1;
+	for (i = 0; i < cnt; i++) {
+		t = doc["list"][i]["dt"];
+		cday = day(t);
+
+		if (cday != lday) {
+			lday = cday;
+
+			id = doc["list"][i]["weather"][0]["id"];
+			weeklyFC[j].temp     = doc["list"][i]["main"]["temp"];
+			weeklyFC[j].min      = doc["list"][i]["main"]["temp_min"];
+			weeklyFC[j].max      = doc["list"][i]["main"]["temp_max"];
+			weeklyFC[j].feels    = doc["list"][i]["main"]["feels_like"];
+			weeklyFC[j].pressure = doc["list"][i]["main"]["pressure"];
+			weeklyFC[j].humidity = doc["list"][i]["main"]["humidity"];
+
+			weeklyFC[j].weather  = getWeatherFromID(id);
+			weeklyFC[j].date     = t;
+			j++;
+
+			if (j >= MAX_FORECAST_DAYS)
+				break;
+		}
+	}
+
 	return 0;
 }
 

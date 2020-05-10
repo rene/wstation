@@ -9,12 +9,6 @@
 #include "EInterface.h"
 #include "OpenWeather.h"
 
-#define PRINT2DIG(out, num) do { \
-		if(num >= 0 && num < 10) \
-			out.write('0'); \
-		out.print(num); \
-	} while(0)
-
 /** Embedded GUI */
 EInterface *gui = NULL;
 /** Color theme */
@@ -61,6 +55,49 @@ void taskUpdateScreen(void *parameter)
 			xSemaphoreGive(t_mutex);
 		}
 
+		delay(1000);
+	}
+}
+
+/**
+ * \brief Update forecast information on the screen
+ */
+void taskUpdateWeatherInfo(void *parameter)
+{
+	int i;
+	float t1, tf1, tf2;
+	weather_info_t wfc;
+
+	while (1) {
+		if (wifiMulti.run() == WL_CONNECTED) {
+			if ((now() - lastUpdate) >= 60) {
+				lastUpdate = now();
+
+				if (weatherWS.updateForecast() < 0) {
+					Serial.print("Error");
+				} else {
+					weather_info_t w = weatherWS.getDailyForecast();
+					t1 = OpenWeather::convKelvinTemp(w.temp, CELSIUS);
+
+					xSemaphoreTake(t_mutex, portMAX_DELAY);
+					gui->showTemp2(t1);
+					gui->showWeather(w.weather, 0);
+					gui->showHumidity2(w.humidity);
+
+					for (i = 0; i < 3; i++) {
+						wfc = weatherWS.getWeeklyForecast(i);
+						tf1 = OpenWeather::convKelvinTemp(wfc.feels, CELSIUS);
+						tf2 = OpenWeather::convKelvinTemp(wfc.temp, CELSIUS);
+
+						gui->showForecastLabel(i, dayShortStr(weekday(wfc.date)));
+						gui->showForecastTemp1(i, tf1);
+						gui->showForecastTemp2(i, tf2);
+						gui->showForecastWeather(i, wfc.weather);
+					}
+					xSemaphoreGive(t_mutex);
+				}
+			}
+		}
 		delay(1000);
 	}
 }
@@ -138,24 +175,10 @@ void setup() {
 
 	gui->setCity("Berlin");
 	gui->setDate("April 13, 2020");
-	gui->showHumidity2(80);
 	gui->showChannel(1);
 
-#if 0
-	gui->showForecastWeather(0, CLEAR_SKY);
-	gui->showForecastWeather(1, SNOW_SHOWER);
-	gui->showForecastWeather(2, RAIN_LIGHT);
-	gui->showForecastLabel(0, "Mon");
-	gui->showForecastLabel(1, "Thu");
-	gui->showForecastLabel(2, "Wed");
-	gui->showForecastTemp1(0, 18.0);
-	gui->showForecastTemp2(0, 22.3);
-	gui->showForecastTemp1(1, 20.3);
-	gui->showForecastTemp2(1, 15.0);
-	gui->showForecastTemp1(2, -2.3);
-	gui->showForecastTemp2(2, 9.0);
-#endif
-	xTaskCreate(taskUpdateScreen, "UpdateScreen", 10000, NULL, 2, NULL);
+	xTaskCreate(taskUpdateScreen, "UpdateScreen", 10240, NULL, 2, NULL);
+	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 32768, NULL, 0, NULL);
 #endif
 }
 
@@ -164,36 +187,20 @@ void setup() {
  */
 void loop()
 {
-	xSemaphoreTake(t_mutex, portMAX_DELAY);
-#if 1
-	gui->showTemp1(20 + (0.1 * random(9)));
-	gui->showHumidity1(random(110));
-#endif
 	if (wifiMulti.run() == WL_CONNECTED) {
+		xSemaphoreTake(t_mutex, portMAX_DELAY);
 		gui->showWiFi(true);
 		char ip[40]; IPAddress ipAddr = WiFi.localIP();
 		snprintf(ip, 40, "%d.%d.%d.%d", ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3]);
 		gui->setIP(ip);
-
-		if ((now() - lastUpdate) >= 60) {
-			lastUpdate = now();
-
-			if (weatherWS.updateDailyForecast() < 0) {
-				Serial.print("Error");
-			} else {
-				weather_info_t w = weatherWS.getDailyForecast();
-				float t1 = OpenWeather::convKelvinTemp(w.temp, CELSIUS);
-				gui->showTemp2(t1);
-				gui->showWeather(w.weather, 0);
-				gui->showHumidity2(w.humidity);
-			}
-		}
+		xSemaphoreGive(t_mutex);
 	} else {
+		xSemaphoreTake(t_mutex, portMAX_DELAY);
 		gui->showWiFi(false);
 		gui->setIP("");
+		xSemaphoreGive(t_mutex);
 	}
 
-	xSemaphoreGive(t_mutex);
-	delay(1200);
+	delay(5000);
 }
 
