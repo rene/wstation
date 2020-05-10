@@ -60,7 +60,7 @@ class ETheme {
 		color_t weektemp1;
 		color_t weektemp2;
 		color_t defaultText;
-		String icons[22];
+		String icons[23];
 
 	public:
 		/** Types of pixmaps in the LCD screen */
@@ -109,6 +109,8 @@ class ETheme {
 			FIG_BATTERY,
 			/** Logo */
 			FIG_LOGO,
+			/** Unknown */
+			FIG_UNKNOWN,
 		} pixmap_t;
 
 		/**
@@ -156,6 +158,7 @@ class ETheme {
 			icons[FIG_WIFI]    = "/wifi.px";
 			icons[FIG_BATTERY] = "/battery.px";
 			icons[FIG_LOGO]    = "/logo.px";
+			icons[FIG_UNKNOWN] = "/unknown.px";
 		}
 
 		/**

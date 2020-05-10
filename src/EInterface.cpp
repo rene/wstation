@@ -47,7 +47,7 @@
 /** Invalid channel */
 #define INV_CHANNEL  -1
 /** Default weather */
-#define DEF_WEATHER  CLEAR_SKY
+#define DEF_WEATHER  UNKNOWN_WEATHER
 /** Default temperature scale */
 #define DEF_SCALE    CELSIUS
 
@@ -70,7 +70,7 @@ EInterface::EInterface(int8_t cs, int8_t dc,
 	city(""), date(""), weather(DEF_WEATHER), period(0),
 	radio(false), wifi(false), battery1(false), battery2(false),
 	ip(""), humidity1(INV_HUMIDITY), humidity2(INV_HUMIDITY),
-	channel(INV_CHANNEL), forecastLabels({"", "", ""}),
+	channel(INV_CHANNEL), forecastLabels({"---", "---", "---"}),
 	forecastTemp1({INV_TEMP, INV_TEMP, INV_TEMP}),
 	forecastTemp2({INV_TEMP, INV_TEMP, INV_TEMP}),
 	forecastWeather({DEF_WEATHER, DEF_WEATHER, DEF_WEATHER})
@@ -293,10 +293,12 @@ void EInterface::showIP()
 	tft->setCursor(50, 10);
 	tft->setTextColor(theme.getIP());
 
-	tft->getTextBounds(ip, 50, 10, &x1, &y1, &w, &h);
+	// Clear text area (maximum size)
+	tft->getTextBounds("000.000.000.000", 50, 10, &x1, &y1, &w, &h);
 	tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
 
 	// Right justified
+	tft->getTextBounds(ip, 50, 10, &x1, &y1, &w, &h);
 	tft->setCursor(210 - w, 10);
 	tft->print(ip);
 }
@@ -338,10 +340,8 @@ void EInterface::showTempLabels()
  */
 void EInterface::showTemp1(float temp)
 {
-	if (temp != INV_TEMP) {
-		temp1 = temp;
-		drawTemp(temp1, 5, 160);
-	}
+	temp1 = temp;
+	drawTemp(temp1, 5, 160);
 }
 
 /**
@@ -350,10 +350,8 @@ void EInterface::showTemp1(float temp)
  */
 void EInterface::showTemp2(float temp)
 {
-	if (temp != INV_TEMP) {
-		temp2 = temp;
-		drawTemp(temp2, 5, 225);
-	}
+	temp2 = temp;
+	drawTemp(temp2, 5, 225);
 }
 
 /**
@@ -362,10 +360,8 @@ void EInterface::showTemp2(float temp)
  */
 void EInterface::showHumidity1(int humidity)
 {
-	if (humidity != INV_HUMIDITY) {
-		humidity1 = humidity;
-		drawHumidity(humidity1, 150, 160);
-	}
+	humidity1 = humidity;
+	drawHumidity(humidity1, 150, 160);
 }
 
 /**
@@ -374,10 +370,8 @@ void EInterface::showHumidity1(int humidity)
  */
 void EInterface::showHumidity2(int humidity)
 {
-	if (humidity != INV_HUMIDITY) {
-		humidity2 = humidity;
-		drawHumidity(humidity2, 150, 225);
-	}
+	humidity2 = humidity;
+	drawHumidity(humidity2, 150, 225);
 }
 
 /**
@@ -741,16 +735,17 @@ void EInterface::drawTemp(float temp, int x, int y)
 	int16_t x1, y1, dx, dy;
 	uint16_t w, h;
 
-	if (temp == INV_TEMP)
-		return;
-
 	if (tempScale == CELSIUS) {
 		sc = 'C';
 	} else {
 		sc = 'F';
 	}
 	
-	sprintf(tempVal, "%.1f  %c", temp, sc);
+	if (temp == INV_TEMP) {
+		sprintf(tempVal, "--.-  %c", sc);
+	} else {
+		sprintf(tempVal, "%.1f  %c", temp, sc);
+	}
 
 	tft->setFont(&FreeSansBold18pt7b);
 	tft->setTextColor(theme.getTemperature());
@@ -784,16 +779,17 @@ void EInterface::drawForecastTemp(float temp, int x, int y, int16_t color)
 	int16_t x1, y1, dx, dy;
 	uint16_t w, h;
 
-	if (temp == INV_TEMP)
-		return;
-
 	if (tempScale == CELSIUS) {
 		sc = 'C';
 	} else {
 		sc = 'F';
 	}
 
-	sprintf(tempVal, "%.1f  %c", temp, sc);
+	if (temp == INV_TEMP) {
+		sprintf(tempVal, "--.-  %c", sc);
+	} else {
+		sprintf(tempVal, "%.1f  %c", temp, sc);
+	}
 
 	tft->setFont(&FreeSans9pt7b);
 	tft->setCursor(x, y);
@@ -825,20 +821,21 @@ void EInterface::drawHumidity(int humidity, int x, int y)
 	int16_t x1, y1;
 	uint16_t w, h;
 
-	if (humidity == INV_HUMIDITY)
-		return;
-
-	snprintf(humVal, sizeof(humVal), "%d%%", humidity);
-
 	tft->setFont(&FreeSansBold18pt7b);
 	tft->setCursor(x, y);
 
-	if (humidity >= HUMIDITY_L2_HIGH) {
-		tft->setTextColor(theme.getHumidity(2));
-	} else if (humidity >= HUMIDITY_L1_IDEAL) {
-		tft->setTextColor(theme.getHumidity(1));
+	if (humidity == INV_HUMIDITY) {
+		snprintf(humVal, sizeof(humVal), "--%%");
 	} else {
-		tft->setTextColor(theme.getHumidity(0));
+		snprintf(humVal, sizeof(humVal), "%d%%", humidity);
+
+		if (humidity >= HUMIDITY_L2_HIGH) {
+			tft->setTextColor(theme.getHumidity(2));
+		} else if (humidity >= HUMIDITY_L1_IDEAL) {
+			tft->setTextColor(theme.getHumidity(1));
+		} else {
+			tft->setTextColor(theme.getHumidity(0));
+		}
 	}
 
 	/* Clear background area (consider maximum size) */
@@ -953,6 +950,9 @@ ETheme::pixmap_t EInterface::getWeatherIcon(weather_t weather, char period)
 	ETheme::pixmap_t res;
 
 	switch(weather) {
+		case UNKNOWN_WEATHER:
+			res = ETheme::FIG_UNKNOWN;
+			break;
 		case THUNDERSTORM_LIGHT_RAIN:
 		case THUNDERSTORM_RAIN:
 		case THUNDERSTORM_HEAVY_RAIN:
@@ -1046,7 +1046,7 @@ ETheme::pixmap_t EInterface::getWeatherIcon(weather_t weather, char period)
 				res = ETheme::FIG_04N;
 			break;
 		default:
-			res = ETheme::FIG_01D;
+			res = ETheme::FIG_UNKNOWN;
 	}
 
 	return res;

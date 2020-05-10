@@ -59,6 +59,8 @@
 
 /** Types of pixmaps in the LCD screen */
 typedef enum _weather_id {
+	/** Unknown */
+	UNKNOWN_WEATHER = 0,
 	/** Thunderstorm: Light rain */
 	THUNDERSTORM_LIGHT_RAIN = 200,
 	/** Thunderstorm: Rain */

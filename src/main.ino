@@ -141,6 +141,7 @@ void setup() {
 	gui->showHumidity2(80);
 	gui->showChannel(1);
 
+#if 0
 	gui->showForecastWeather(0, CLEAR_SKY);
 	gui->showForecastWeather(1, SNOW_SHOWER);
 	gui->showForecastWeather(2, RAIN_LIGHT);
@@ -153,7 +154,7 @@ void setup() {
 	gui->showForecastTemp2(1, 15.0);
 	gui->showForecastTemp1(2, -2.3);
 	gui->showForecastTemp2(2, 9.0);
-
+#endif
 	xTaskCreate(taskUpdateScreen, "UpdateScreen", 10000, NULL, 2, NULL);
 #endif
 }
