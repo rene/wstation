@@ -5,6 +5,7 @@
 #include <SPIFFS.h>
 #include <DS1307RTC.h>
 #include "wstation.h"
+#include "nexus.h"
 #include "ETheme.h"
 #include "EInterface.h"
 #include "OpenWeather.h"
@@ -111,6 +112,9 @@ void setup() {
 	Serial.print("WSTATION: ");
 	Serial.println(WSTATION_VERSION);
 
+	// Initialize 433MHz module receiver
+	setupNexus(RF_PIN);
+
 	// Initialize general purpose LED
 	pinMode(LED_PIN, OUTPUT);
 	digitalWrite(LED_PIN, LOW);
@@ -199,6 +203,18 @@ void loop()
 		gui->showWiFi(false);
 		gui->setIP("");
 		xSemaphoreGive(t_mutex);
+	}
+
+	if (nexusDataAvailable) {
+		portENTER_CRITICAL(&mt);
+		nexusDataAvailable = false;
+
+		Serial.println((int)nexusData.id);
+		Serial.print("Flags: "); Serial.println((int)nexusData.flags);
+		Serial.print("Temp:  "); Serial.println((float)nexusData.temperature/10);
+		Serial.print("Hum:   "); Serial.println((float)nexusData.humidity);
+		Serial.println("-----------------------");
+		portEXIT_CRITICAL(&mt);
 	}
 
 	delay(5000);

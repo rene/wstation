@@ -43,6 +43,9 @@
 /** LED pin */
 #define LED_PIN 2
 
+/** 433MHz module receiver Data pin */
+#define RF_PIN  4
+
 /** TFT module DC pin */
 #define TFT_DC 16
 /** TFT module CS pin */
