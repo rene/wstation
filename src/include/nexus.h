@@ -54,7 +54,7 @@ extern volatile nexus_t nexusData;
 /* Data received indicator */
 extern volatile bool nexusDataAvailable;
 /* Mutex to access data */
-extern portMUX_TYPE mt;
+extern portMUX_TYPE nexusMutex;
 
 /* Setup interrupt handler */
 void setupNexus(int pin);

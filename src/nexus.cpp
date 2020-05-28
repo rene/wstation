@@ -55,7 +55,7 @@ static volatile uint64_t frames[FBUFF_SIZE];
 /** Current buffer position */
 static volatile char fpos;
 /** Mutex */
-portMUX_TYPE mt = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE nexusMutex = portMUX_INITIALIZER_UNLOCKED;
 
 /**
  * \brief Retrieve an interval of bits from a frame
@@ -106,13 +106,13 @@ static void IRAM_ATTR parseFrames()
 	info.temperature = info.temperature >> 4;
 	info.humidity    = (uint8_t)getBits(frm,  0, 8);
 
-	portENTER_CRITICAL_ISR(&mt);
+	portENTER_CRITICAL_ISR(&nexusMutex);
 	nexusData.id          = info.id;
 	nexusData.flags       = info.flags;
 	nexusData.temperature = info.temperature;
 	nexusData.humidity    = info.humidity;
 	nexusDataAvailable = true;
-	portEXIT_CRITICAL_ISR(&mt);
+	portEXIT_CRITICAL_ISR(&nexusMutex);
 }
 
 /**
@@ -126,6 +126,25 @@ static void IRAM_ATTR parseFrames()
  * Bit 1 (long pulse):  ~2000us
  *
  * 36 bits/frame x 12 frames
+ *
+ * Frame format:
+ *   Size (bits):  8     4      12      4         8
+ *   Field:      [ID] [Flags] [TEMP] [const] [Humidity]
+ *
+ * ID (8 bits): Sensor ID
+ *
+ * Flags (4 bits): [B] 0 [C] [C]
+ *       B (Battery level): 1 = Good, 0 = Low
+ *       CC (Channel): 00 = CH1, 01 = CH2, 10 = CH3
+ *
+ * TEMP: 12 bits signed integer scaled by 10
+ *
+ * const: Should be always 0x0F (1111)
+ *
+ * Humidity: 8 bits (value is humidity percentage)
+ *
+ * PS: Frame information from RTL_433 project:
+ * https://github.com/merbanan/rtl_433.git
  */
 void IRAM_ATTR nexusHandlePulse()
 {

@@ -206,15 +206,15 @@ void loop()
 	}
 
 	if (nexusDataAvailable) {
-		portENTER_CRITICAL(&mt);
+		portENTER_CRITICAL(&nexusMutex);
 		nexusDataAvailable = false;
 
-		Serial.println((int)nexusData.id);
+		Serial.print("ID:    ");  Serial.println((int)nexusData.id);
 		Serial.print("Flags: "); Serial.println((int)nexusData.flags);
 		Serial.print("Temp:  "); Serial.println((float)nexusData.temperature/10);
 		Serial.print("Hum:   "); Serial.println((float)nexusData.humidity);
 		Serial.println("-----------------------");
-		portEXIT_CRITICAL(&mt);
+		portEXIT_CRITICAL(&nexusMutex);
 	}
 
 	delay(5000);
