@@ -81,9 +81,7 @@ void taskUpdateWeatherInfo(void *parameter)
 					t1 = OpenWeather::convKelvinTemp(w.temp, CELSIUS);
 
 					xSemaphoreTake(t_mutex, portMAX_DELAY);
-					gui->showTemp2(t1);
 					gui->showWeather(w.weather, 0);
-					gui->showHumidity2(w.humidity);
 
 					for (i = 0; i < 3; i++) {
 						wfc = weatherWS.getWeeklyForecast(i);
@@ -104,6 +102,72 @@ void taskUpdateWeatherInfo(void *parameter)
 }
 
 /**
+ * \brief Receive nexus sensor data
+ */
+void taskReceiveSensorData(void *parameter)
+{
+	int i, ch, disp;
+	nexus_t sensors[3];
+	unsigned long lastShow, lastData[3];
+	float t;
+
+	// Invalidate initial data
+	for (i = 0; i < 3; i++) {
+		sensors[i].flags.fields.channel = NEXUS_INVALID_CHANNEL;
+	}
+
+	i        = 0;
+	disp     = 0;
+	lastShow = now();
+	while (1) {
+		// Check if we have received data
+		if (nexusDataAvailable) {
+			portENTER_CRITICAL(&nexusMutex);
+			nexusDataAvailable = false;
+
+			// Read channel
+			ch = nexusData.flags.fields.channel;
+			if (ch >= NEXUS_CHANNEL_1 && ch <= NEXUS_CHANNEL_3) {
+				i = ch;
+			} else {
+				// Invalid channel
+				portEXIT_CRITICAL(&nexusMutex);
+				continue;
+			}
+
+			// Copy data
+			sensors[i].id          = nexusData.id;
+			sensors[i].flags.raw   = nexusData.flags.raw;
+			sensors[i].temperature = nexusData.temperature;
+			sensors[i].humidity    = nexusData.humidity;
+			lastData[i]            = now();
+
+			portEXIT_CRITICAL(&nexusMutex);
+		}
+
+		// Show data on the screen
+		if ((now() - lastShow) >= SENSOR_DISPLAY_INTERVAL) {
+			if (sensors[disp].flags.fields.channel != NEXUS_INVALID_CHANNEL) {
+				t = (float)sensors[disp].temperature / 10;
+				xSemaphoreTake(t_mutex, portMAX_DELAY);
+				gui->showChannel(sensors[disp].flags.fields.channel + 1);
+				gui->showTemp2(t);
+				gui->showHumidity2(sensors[disp].humidity);
+				xSemaphoreGive(t_mutex);
+				lastShow = now();
+			}
+
+			disp++;
+			if (disp >= 3) {
+				disp = 0;
+			}
+		}
+
+		delay(1000);
+	}
+}
+
+/**
  * \brief Setup
  */
 void setup() {
@@ -111,9 +175,6 @@ void setup() {
     Serial.begin(115200);
 	Serial.print("WSTATION: ");
 	Serial.println(WSTATION_VERSION);
-
-	// Initialize 433MHz module receiver
-	setupNexus(RF_PIN);
 
 	// Initialize general purpose LED
 	pinMode(LED_PIN, OUTPUT);
@@ -139,6 +200,11 @@ void setup() {
 	gui->showLogo();
 	delay(700);
 
+	// Initialize 433MHz module receiver
+	setupNexus(RF_PIN);
+
+
+	// DEMO
 	lastUpdate = now() - 70;
 
 	wifiMulti.addAP("VIZSLANET", "teodoro+2015");
@@ -179,9 +245,9 @@ void setup() {
 
 	gui->setCity("Berlin");
 	gui->setDate("April 13, 2020");
-	gui->showChannel(1);
 
-	xTaskCreate(taskUpdateScreen, "UpdateScreen", 10240, NULL, 2, NULL);
+	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      10240, NULL, 2, NULL);
+	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 10240, NULL, 0, NULL);
 	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 32768, NULL, 0, NULL);
 #endif
 }
@@ -203,18 +269,6 @@ void loop()
 		gui->showWiFi(false);
 		gui->setIP("");
 		xSemaphoreGive(t_mutex);
-	}
-
-	if (nexusDataAvailable) {
-		portENTER_CRITICAL(&nexusMutex);
-		nexusDataAvailable = false;
-
-		Serial.print("ID:    ");  Serial.println((int)nexusData.id);
-		Serial.print("Flags: "); Serial.println((int)nexusData.flags);
-		Serial.print("Temp:  "); Serial.println((float)nexusData.temperature/10);
-		Serial.print("Hum:   "); Serial.println((float)nexusData.humidity);
-		Serial.println("-----------------------");
-		portEXIT_CRITICAL(&nexusMutex);
 	}
 
 	delay(5000);

@@ -53,6 +53,9 @@
 /** TFT module led pin */
 #define TFT_BACKLIGHT 19
 
+/** Sensor data display interval (in seconds) */
+#define SENSOR_DISPLAY_INTERVAL 5
+
 /** Humidity level: Low (dry) */
 #define HUMIDITY_L0_LOW    0
 /** Humidity level: Comfortable */

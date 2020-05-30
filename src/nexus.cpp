@@ -60,7 +60,7 @@ portMUX_TYPE nexusMutex = portMUX_INITIALIZER_UNLOCKED;
 /**
  * \brief Retrieve an interval of bits from a frame
  * \param [in] frm Data frame
- * \param [in] first Position of the first bit in the interval
+ * \param [in] first Position of the first bit (LSB) in the interval
  * \param [in] size Number of bits
  * \return uint64_t Selected bits
  */
@@ -82,7 +82,8 @@ static void IRAM_ATTR parseFrames()
 	nexus_t info;
 
 	/* All frames in the buffer should be equal, indicating that probably we
-	 * have received valid frames */
+	 * have received valid frames
+	 */
 	frm = frames[0];
 	for (i = 1, check = 1; i < FBUFF_SIZE; i++) {
 		if (frm != frames[i]) {
@@ -101,17 +102,17 @@ static void IRAM_ATTR parseFrames()
 
 	/* Frame is valid, parse */
 	info.id          = (uint8_t)getBits(frm, 28, 8);
-	info.flags       = (uint8_t)getBits(frm, 24, 4);
+	info.flags.raw   = (uint8_t)getBits(frm, 24, 4);
 	info.temperature = (int16_t)((uint16_t)getBits(frm, 12, 12) << 4);
 	info.temperature = info.temperature >> 4;
 	info.humidity    = (uint8_t)getBits(frm,  0, 8);
 
 	portENTER_CRITICAL_ISR(&nexusMutex);
 	nexusData.id          = info.id;
-	nexusData.flags       = info.flags;
+	nexusData.flags.raw   = info.flags.raw;
 	nexusData.temperature = info.temperature;
 	nexusData.humidity    = info.humidity;
-	nexusDataAvailable = true;
+	nexusDataAvailable    = true;
 	portEXIT_CRITICAL_ISR(&nexusMutex);
 }
 
