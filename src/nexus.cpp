@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file: nexus.c
+ * \file nexus.c
  * \brief Provide functions to handle NC-7345 sensor data
  */
 

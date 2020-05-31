@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file: OpenWeather.cpp
+ * \file OpenWeather.cpp
  * \class OpenWeather
  * \brief Provide weather information through OpenWeather API
  */

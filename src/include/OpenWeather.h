@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file: OpenWeather.h
- * \see: OpenWeather.cpp
+ * \file OpenWeather.h
+ * \see OpenWeather.cpp
  */
 #ifndef __OPENWEATHER_H__
 #define __OPENWEATHER_H__

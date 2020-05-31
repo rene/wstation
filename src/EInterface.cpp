@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file: EInterface.cpp
+ * \file EInterface.cpp
  * \class EInterface
  * \brief Provide all the methods to control and draw the embedded LCD screen
  */
@@ -40,12 +40,6 @@
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeMono9pt7b.h>
 
-/** Invalid temperature */
-#define INV_TEMP     -1E6
-/** Invalid humidity */
-#define INV_HUMIDITY -1
-/** Invalid channel */
-#define INV_CHANNEL  -1
 /** Default weather */
 #define DEF_WEATHER  UNKNOWN_WEATHER
 /** Default temperature scale */
@@ -66,13 +60,13 @@ EInterface::EInterface(int8_t cs, int8_t dc,
 	state(false), tftCS(cs), tftDC(dc), tftLED(led),
 	backlight(backlight),theme(theme), pfs(pfs),
 	tft(NULL), hours(-1), minutes(-1), seconds(-1),
-	temp1(INV_TEMP), temp2(INV_TEMP), tempScale(DEF_SCALE),
+	temp1(GUI_INV_TEMP), temp2(GUI_INV_TEMP), tempScale(DEF_SCALE),
 	city(""), date(""), weather(DEF_WEATHER), period(0),
 	radio(false), wifi(false), battery1(false), battery2(false),
-	ip(""), humidity1(INV_HUMIDITY), humidity2(INV_HUMIDITY),
-	channel(INV_CHANNEL), forecastLabels({"---", "---", "---"}),
-	forecastTemp1({INV_TEMP, INV_TEMP, INV_TEMP}),
-	forecastTemp2({INV_TEMP, INV_TEMP, INV_TEMP}),
+	ip(""), humidity1(GUI_INV_HUMIDITY), humidity2(GUI_INV_HUMIDITY),
+	channel(GUI_INV_CHANNEL), forecastLabels({"---", "---", "---"}),
+	forecastTemp1({GUI_INV_TEMP, GUI_INV_TEMP, GUI_INV_TEMP}),
+	forecastTemp2({GUI_INV_TEMP, GUI_INV_TEMP, GUI_INV_TEMP}),
 	forecastWeather({DEF_WEATHER, DEF_WEATHER, DEF_WEATHER})
 {
 	this->tft = new Adafruit_ILI9341(tftCS, tftDC);
@@ -384,17 +378,19 @@ void EInterface::showChannel(int channel)
 	uint16_t w, h;
 	char str[4];
 
-	if (channel != INV_CHANNEL) {
+	tft->setFont(&FreeSans9pt7b);
+	tft->setTextColor(theme.getTempLabel());
+	tft->setCursor(80, 185);
+
+	tft->getTextBounds("000", 80, 185, &x1, &y1, &w, &h);
+	tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
+
+	if (channel != GUI_INV_CHANNEL) {
 		this->channel = channel;
-
-		tft->setFont(&FreeSans9pt7b);
-		tft->setTextColor(theme.getTempLabel());
-		tft->setCursor(80, 185);
-
 		snprintf(str, sizeof(str), "%3d", channel);
-		tft->getTextBounds("000", 80, 185, &x1, &y1, &w, &h);
-		tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
 		tft->print(str);
+	} else {
+		tft->print("   ");
 	}
 }
 
@@ -741,7 +737,7 @@ void EInterface::drawTemp(float temp, int x, int y)
 		sc = 'F';
 	}
 	
-	if (temp == INV_TEMP) {
+	if (temp == GUI_INV_TEMP) {
 		sprintf(tempVal, "--.-  %c", sc);
 	} else {
 		sprintf(tempVal, "%.1f  %c", temp, sc);
@@ -785,7 +781,7 @@ void EInterface::drawForecastTemp(float temp, int x, int y, int16_t color)
 		sc = 'F';
 	}
 
-	if (temp == INV_TEMP) {
+	if (temp == GUI_INV_TEMP) {
 		sprintf(tempVal, "--.-  %c", sc);
 	} else {
 		sprintf(tempVal, "%.1f  %c", temp, sc);
@@ -824,7 +820,7 @@ void EInterface::drawHumidity(int humidity, int x, int y)
 	tft->setFont(&FreeSansBold18pt7b);
 	tft->setCursor(x, y);
 
-	if (humidity == INV_HUMIDITY) {
+	if (humidity == GUI_INV_HUMIDITY) {
 		snprintf(humVal, sizeof(humVal), "--%%");
 	} else {
 		snprintf(humVal, sizeof(humVal), "%d%%", humidity);

@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file: EInterface.h
- * \see: EInterface.cpp
+ * \file EInterface.h
+ * \see EInterface.cpp
  */
 #ifndef __EINTERFACE_H__
 #define __EINTERFACE_H__
@@ -46,6 +46,13 @@
 #define BACKLIGHT_DEFAULT  0xc8
 /** Backlight: maximum level */
 #define BACKLIGHT_MAX      0xff
+
+/** Invalid temperature */
+#define GUI_INV_TEMP     -1E6
+/** Invalid humidity */
+#define GUI_INV_HUMIDITY -1
+/** Invalid channel */
+#define GUI_INV_CHANNEL  -1
 
 class EInterface {
 	private:

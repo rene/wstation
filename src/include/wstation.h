@@ -56,6 +56,9 @@
 /** Sensor data display interval (in seconds) */
 #define SENSOR_DISPLAY_INTERVAL 5
 
+/** Sensor data expiration period (in seconds) */
+#define SENSOR_DATA_EXPIRATION 600
+
 /** Humidity level: Low (dry) */
 #define HUMIDITY_L0_LOW    0
 /** Humidity level: Comfortable */

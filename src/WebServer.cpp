@@ -29,57 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file nexus.h
- * \see nexus.c
+ * \file WebServer.cpp
+ * \class WebServer
+ * \brief Provide the web services for configuration web interface control
  */
-#ifndef __NEXUS_H__
-#define __NEXUS_H__
+#include <WebServer.h>
 
-/** Channel 1 */
-#define NEXUS_CHANNEL_1 0x0
-/** Channel 2 */
-#define NEXUS_CHANNEL_2 0x1
-/** Channel 3 */
-#define NEXUS_CHANNEL_3 0x2
-/** Invalid channel */
-#define NEXUS_INVALID_CHANNEL 0x03
+/**
+ * \brief Setup and activate web server
+ */
+void WebServer::setupWebServer(void)
+{
+}
 
-/** Sensor's flags */
-typedef union {
-	struct _fields {
-		uint8_t channel : 2;
-		uint8_t reserved: 1;
-		uint8_t battery : 1;
-		uint8_t padding : 4;
-	} fields;
-	uint8_t raw;
-} nexus_flags_t;
-
-/** Sensor data structure */
-typedef struct _nexus_t {
-	/** ID */
-	uint8_t id;
-	/** Flags: B 0 CH CH - Battery status (0=LOW, 1=OK), CH CH = Channel */
-	nexus_flags_t flags;
-	/** Temperature (x10), 12 bits */
-	int16_t temperature;
-	/** Constant: should be 0xff */
-	uint8_t  _const;
-	/** Humidity */
-	uint8_t humidity;
-} nexus_t;
-
-/* Data received */
-extern volatile nexus_t nexusData;
-/* Data received indicator */
-extern volatile bool nexusDataAvailable;
-/* Mutex to access data */
-extern portMUX_TYPE nexusMutex;
-
-/* Setup interrupt handler */
-void setupNexus(int pin);
-
-/* Interrupt handler */
-void nexusHandlePulse();
-
-#endif /* __NEXUS_H__ */
