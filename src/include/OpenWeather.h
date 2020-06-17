@@ -95,6 +95,12 @@ class OpenWeather {
 		/* Set API key */
 		void setAPIKey(const String& city);
 
+		/* Return city name */
+		const String getCity();
+
+		/* Return API key */
+		const String getAPIKey();
+
 		/* Retrieve daily forecast from the server */
 		int updateDailyForecast();
 

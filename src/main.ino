@@ -38,6 +38,7 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include <DS1307RTC.h>
+#include <TimeLib.h>
 #include <DHTesp.h>
 #include "wstation.h"
 #include "nexus.h"
@@ -55,12 +56,43 @@ OpenWeather weatherWS;
 WiFiMulti wifiMulti;
 /** DHT sensor */
 DHTesp dhtSensor;
+/** Wall clock */
+tmElements_t wallClock;
 
 /** Mutex for update screen */
 volatile SemaphoreHandle_t t_mutex;
 
 unsigned long lastUpdate;
 
+/**
+ * \brief Format city string
+ * \param [in] city City
+ * \return String
+ */
+String formatCity(const String& city)
+{
+	int cpos = city.indexOf(",");
+	if (cpos > 0) {
+		return city.substring(0, cpos);
+	} else {
+		return city;
+	}
+}
+
+/**
+ * \brief Format date into string
+ * \param [in] tm Time
+ * \return String
+ */
+String formatDate(tmElements_t tm)
+{
+	String dateStr;
+	dateStr = String(dayStr(tm.Wday)).substring(0,3) + ", "
+				+ String(monthStr(tm.Month)).substring(0,3) + " "
+				+ String(tm.Day) + ", "
+				+ String(tmYearToCalendar(tm.Year));
+	return dateStr;
+}
 
 /**
  * \brief Update graphical elements on the screen
@@ -68,28 +100,36 @@ unsigned long lastUpdate;
  */
 void taskUpdateScreen(void *parameter)
 {
-	tmElements_t tm;
-
+	bool updateStrDate = true;
 	while(1) {
 		// Update clock
-		if (!RTC.read(tm)) {
+		if (!RTC.read(wallClock)) {
 			Serial.println("DS1307 read error!");
 			if (RTC.chipPresent()) {
-				tm.Day    = 1;
-				tm.Month  = 1;
-				tm.Year   = CalendarYrToTm(2020);
-				tm.Hour   = 0;
-				tm.Minute = 0;
-				tm.Second = 0;
-				RTC.write(tm);
+				wallClock.Day    = 1;
+				wallClock.Month  = 1;
+				wallClock.Year   = CalendarYrToTm(2020);
+				wallClock.Hour   = 0;
+				wallClock.Minute = 0;
+				wallClock.Second = 0;
+				RTC.write(wallClock);
 				Serial.println("DS1307 was stopped. Time was reset.");
+				updateStrDate = true;
 			}
 		} else {
+			if (wallClock.Hour == 0 && wallClock.Minute == 0) {
+				updateStrDate = true;
+			}
+
 			xSemaphoreTake(t_mutex, portMAX_DELAY);
 			if (gui) {
-				gui->setHours(tm.Hour);
-				gui->setMinutes(tm.Minute);
-				gui->setSeconds(tm.Second);
+				gui->setHours(wallClock.Hour);
+				gui->setMinutes(wallClock.Minute);
+				gui->setSeconds(wallClock.Second);
+				if (updateStrDate) {
+					gui->setDate(formatDate(wallClock));
+					updateStrDate = false;
+				}
 			}
 			xSemaphoreGive(t_mutex);
 		}
@@ -189,6 +229,7 @@ void taskReceiveSensorData(void *parameter)
 		// Check if we have received data
 		if (nexusDataAvailable) {
 			portENTER_CRITICAL(&nexusMutex);
+
 			nexusDataAvailable = false;
 
 			// Read channel
@@ -209,6 +250,13 @@ void taskReceiveSensorData(void *parameter)
 			lastData[i]            = now();
 
 			portEXIT_CRITICAL(&nexusMutex);
+
+			// Indicate on screen that data has been received
+			xSemaphoreTake(t_mutex, portMAX_DELAY);
+			gui->showRadio(true);
+			delay(300);
+			gui->showRadio(false);
+			xSemaphoreGive(t_mutex);
 		}
 
 		// Show data on the screen
@@ -275,6 +323,7 @@ void setup() {
 
 	gui->initialize();
 	gui->showLogo();
+	gui->showVersion(50, 200);
 	delay(700);
 
 	// Initialize DHT sensor
@@ -283,6 +332,8 @@ void setup() {
 	// Initialize 433MHz module receiver
 	setupNexus(RF_PIN);
 
+	// Read user configuration
+	// TODO
 
 	// DEMO
 	lastUpdate = now() - 70;
@@ -302,8 +353,7 @@ void setup() {
 	gui->clearAll();
 	gui->showAll();
 
-	gui->setCity("Berlin");
-	gui->setDate("April 13, 2020");
+	gui->setCity(formatCity(weatherWS.getCity()));
 
 	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      10240, NULL, 2, NULL);
 	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 10240, NULL, 0, NULL);

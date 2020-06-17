@@ -609,6 +609,29 @@ void EInterface::showLogo(int x, int y)
 }
 
 /**
+ * \brief Show firmware version
+ * \param [in] x X position (-1 for center position)
+ * \param [in] y Y position (-1 for center position)
+ */
+void EInterface::showVersion(int x, int y)
+{
+	int16_t x1, y1;
+	uint16_t w, h;
+
+	tft->setFont(&FreeMono9pt7b);
+	tft->setCursor(x, y);
+	tft->setTextColor(theme.getTempLabel());
+
+	// Clear text area (maximum size)
+	tft->getTextBounds(WSTATION_VERSION, x, y, &x1, &y1, &w, &h);
+	tft->fillRect(x1, y1, w, h + 1, theme.getBackground());
+
+	// Print version
+	tft->setCursor(x, y);
+	tft->print(WSTATION_VERSION);
+}
+
+/**
  * \brief Draw all graphical elements in the screen
  */
 void EInterface::showAll()

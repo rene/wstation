@@ -88,6 +88,24 @@ void OpenWeather::setAPIKey(const String& key)
 }
 
 /**
+ * \brief Return city name
+ * \return String
+ */
+const String OpenWeather::getCity()
+{
+	return this->city;
+}
+
+/**
+ * \brief Return API key
+ * \return String
+ */
+const String OpenWeather::getAPIKey()
+{
+	return this->key;
+}
+
+/**
  * \brief Retrieve daily forecast from the server
  * \return 0 on success, error number otherwise
  */

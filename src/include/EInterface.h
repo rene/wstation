@@ -245,6 +245,9 @@ class EInterface {
 		/* Show WStation logo at the center */
 		void showLogo();
 
+		/* Show version */
+		void showVersion(int x, int y);
+
 		/* Draw all graphical elements in the screen */
 		void showAll();
 
