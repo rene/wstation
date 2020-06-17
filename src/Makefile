@@ -24,7 +24,8 @@ LIBS=$(ESP_LIBS)/Wire \
 	 libs/Adafruit_GFX_Library-1.7.5 \
 	 libs/Adafruit_ILI9341-1.5.4 \
 	 libs/Time \
-	 libs/DS1307RTC
+	 libs/DS1307RTC \
+	 libs/DHTesp
 
 PNGDIR=../resources/icons/png
 

@@ -46,6 +46,9 @@
 /** 433MHz module receiver Data pin */
 #define RF_PIN  4
 
+/** DHT sensor data pin */
+#define DHT_DATA_PIN 32
+
 /** TFT module DC pin */
 #define TFT_DC 16
 /** TFT module CS pin */

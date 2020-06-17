@@ -38,6 +38,7 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include <DS1307RTC.h>
+#include <DHTesp.h>
 #include "wstation.h"
 #include "nexus.h"
 #include "ETheme.h"
@@ -52,6 +53,8 @@ ETheme colorTheme;
 OpenWeather weatherWS;
 /** WiFi */
 WiFiMulti wifiMulti;
+/** DHT sensor */
+DHTesp dhtSensor;
 
 /** Mutex for update screen */
 volatile SemaphoreHandle_t t_mutex;
@@ -61,6 +64,7 @@ unsigned long lastUpdate;
 
 /**
  * \brief Update graphical elements on the screen
+ * \param parameter Task parameters (not used)
  */
 void taskUpdateScreen(void *parameter)
 {
@@ -89,13 +93,13 @@ void taskUpdateScreen(void *parameter)
 			}
 			xSemaphoreGive(t_mutex);
 		}
-
 		delay(1000);
 	}
 }
 
 /**
  * \brief Update forecast information on the screen
+ * \param parameter Task parameters (not used)
  */
 void taskUpdateWeatherInfo(void *parameter)
 {
@@ -136,7 +140,35 @@ void taskUpdateWeatherInfo(void *parameter)
 }
 
 /**
+ * \brief Read DHT sensor data
+ * \param parameter Task parameters (not used)
+ */
+void taskReadDHTSensor(void *parameter)
+{
+	TempAndHumidity sensorData;
+	while (1) {
+		sensorData = dhtSensor.getTempAndHumidity();
+
+		if (dhtSensor.getStatus() != 0) {
+			Serial.println("DHT11 error status: " + String(dhtSensor.getStatusString()));
+		} else {
+			// Display data
+			xSemaphoreTake(t_mutex, portMAX_DELAY);
+			gui->showTemp1(sensorData.temperature);
+			gui->showHumidity1(sensorData.humidity);
+			xSemaphoreGive(t_mutex);
+
+  			Serial.println(" T:" + String(sensorData.temperature)
+				+ " H:" + String(sensorData.humidity));
+		}
+
+		delay(10000);
+	}
+}
+
+/**
  * \brief Receive nexus sensor data
+ * \param parameter Task parameters (not used)
  */
 void taskReceiveSensorData(void *parameter)
 {
@@ -245,6 +277,9 @@ void setup() {
 	gui->showLogo();
 	delay(700);
 
+	// Initialize DHT sensor
+	dhtSensor.setup(DHT_DATA_PIN, DHTesp::AUTO_DETECT);
+
 	// Initialize 433MHz module receiver
 	setupNexus(RF_PIN);
 
@@ -256,27 +291,6 @@ void setup() {
 
 	weatherWS.setAPIKey("0300414e2812dcf9b846060f08ae4882");
 	weatherWS.setCity("Berlin,DE");
-#if 0
-	OpenWeather weatherWS("0300414e2812dcf9b846060f08ae4882");
-	weatherWS.setCity("Berlin,DE");
-
-	wifiMulti.addAP("VIZSLANET", "teodoro+2015");
-
-	gui->print(10, 60, "Connecting...");
-	while (wifiMulti.run() != WL_CONNECTED) {
-		delay(500);
-	}
-	
-	gui->print(10, 60, "Connected!");
-	
-	char ip[40]; IPAddress ipAddr = WiFi.localIP();
-	snprintf(ip, 40, "%d.%d.%d.%d", ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3]);
-	gui->print(0, 210, ip);
-
-	if (weatherWS.updateDailyForecast() < 0) {
-		gui->print("ERROR!\n");
-	}
-#endif
 #if 0
 	gui->print(30, 25, "Welcome to WStation!");
 	gui->print(10, 60, "Device needs configuration!");
@@ -294,6 +308,7 @@ void setup() {
 	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      10240, NULL, 2, NULL);
 	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 10240, NULL, 0, NULL);
 	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 32768, NULL, 0, NULL);
+	xTaskCreate(taskReadDHTSensor,     "ReadDHTSensor",      4096, NULL, 0, NULL);
 #endif
 }
 
