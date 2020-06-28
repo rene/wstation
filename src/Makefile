@@ -10,7 +10,10 @@ FS_DIR = $(PWD)/fsroot
 
 ESP_LIBS=$(shell echo $HOME)/.arduino15/packages/esp32/hardware/esp32/1.0.4/libraries
 
-BUILD_EXTRA_FLAGS += -I./include
+# RTC_DS1307 = true # Enable RTC support
+RTC_DS1307 =
+
+BUILD_EXTRA_FLAGS += -I./include -Wall
 
 LIBS=$(ESP_LIBS)/Wire \
 	 $(ESP_LIBS)/SPI \
@@ -20,12 +23,17 @@ LIBS=$(ESP_LIBS)/Wire \
 	 $(ESP_LIBS)/HTTPClient \
 	 $(ESP_LIBS)/FS \
 	 $(ESP_LIBS)/SPIFFS \
+	 $(ESP_LIBS)/EEPROM \
 	 libs/ArduinoJson-6.15.1/ \
 	 libs/Adafruit_GFX_Library-1.7.5 \
 	 libs/Adafruit_ILI9341-1.5.4 \
 	 libs/Time \
-	 libs/DS1307RTC \
 	 libs/DHTesp
+
+ifeq ($(RTC_DS1307),true)
+LIBS += libs/DS1307RTC
+BUILD_EXTRA_FLAGS += -DRTC_DS1307
+endif
 
 PNGDIR=../resources/icons/png
 

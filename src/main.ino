@@ -37,15 +37,18 @@
 #include <SPI.h>
 #include <FS.h>
 #include <SPIFFS.h>
-#include <DS1307RTC.h>
 #include <TimeLib.h>
 #include <DHTesp.h>
 #include "wstation.h"
+#include "clock.h"
 #include "nexus.h"
 #include "ETheme.h"
 #include "EInterface.h"
 #include "OpenWeather.h"
+#include "UserConf.h"
 
+/** User configuration data */
+UserConf confData;
 /** Embedded GUI */
 EInterface *gui = NULL;
 /** Color theme */
@@ -101,21 +104,19 @@ String formatDate(tmElements_t tm)
 void taskUpdateScreen(void *parameter)
 {
 	bool updateStrDate = true;
+	int ntpcnt = 0;
 	while(1) {
 		// Update clock
-		if (!RTC.read(wallClock)) {
-			Serial.println("DS1307 read error!");
-			if (RTC.chipPresent()) {
-				wallClock.Day    = 1;
-				wallClock.Month  = 1;
-				wallClock.Year   = CalendarYrToTm(2020);
-				wallClock.Hour   = 0;
-				wallClock.Minute = 0;
-				wallClock.Second = 0;
-				RTC.write(wallClock);
-				Serial.println("DS1307 was stopped. Time was reset.");
-				updateStrDate = true;
-			}
+		if (readClock(&wallClock) < 0) {
+			Serial.println("Read clock error!");
+			wallClock.Day    = 1;
+			wallClock.Month  = 1;
+			wallClock.Year   = CalendarYrToTm(2020);
+			wallClock.Hour   = 0;
+			wallClock.Minute = 0;
+			wallClock.Second = 0;
+			writeClock(&wallClock);
+			updateStrDate = true;
 		} else {
 			if (wallClock.Hour == 0 && wallClock.Minute == 0) {
 				updateStrDate = true;
@@ -134,6 +135,13 @@ void taskUpdateScreen(void *parameter)
 			xSemaphoreGive(t_mutex);
 		}
 		delay(1000);
+		// TODO update
+		ntpcnt++;
+		if (ntpcnt >= 60) {
+			ntpcnt = 0;
+			configTime(3600, 3600, "pool.ntp.org");
+			updateStrDate = true;
+		}
 	}
 }
 
@@ -197,9 +205,6 @@ void taskReadDHTSensor(void *parameter)
 			gui->showTemp1(sensorData.temperature);
 			gui->showHumidity1(sensorData.humidity);
 			xSemaphoreGive(t_mutex);
-
-  			Serial.println(" T:" + String(sensorData.temperature)
-				+ " H:" + String(sensorData.humidity));
 		}
 
 		delay(10000);
@@ -333,15 +338,12 @@ void setup() {
 	setupNexus(RF_PIN);
 
 	// Read user configuration
-	// TODO
+	confData.ReadConf();
 
-	// DEMO
-	lastUpdate = now() - 70;
-
-	wifiMulti.addAP("VIZSLANET", "teodoro+2015");
-
-	weatherWS.setAPIKey("0300414e2812dcf9b846060f08ae4882");
-	weatherWS.setCity("Berlin,DE");
+	// Check for valid configuration
+	if (!confData.isConfigured()) {
+		// Reset conf
+		confData.ResetConf();
 #if 0
 	gui->print(30, 25, "Welcome to WStation!");
 	gui->print(10, 60, "Device needs configuration!");
@@ -349,6 +351,16 @@ void setup() {
 	gui->print("  ESSID:    WStation\n");
 	gui->print("  Password: wstation1234\n");
 #endif
+	}
+
+	// DEMO
+	lastUpdate = now() - 40;
+
+	wifiMulti.addAP("VIZSLANET", "teodoro+2015");
+
+	weatherWS.setAPIKey("0300414e2812dcf9b846060f08ae4882");
+	weatherWS.setCity("Berlin,DE");
+
 #if 1
 	gui->clearAll();
 	gui->showAll();

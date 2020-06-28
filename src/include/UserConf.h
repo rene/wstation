@@ -36,9 +36,42 @@
 #define USERCONF_H
 
 #include <Arduino.h>
+#include "EInterface.h"
+
+/** Default value for: WiFi SSID */
+#define DEFCONF_WIFI_SSID  "WSTATION"
+/** Default value for: WiFi password */
+#define DEFCONF_WIFI_PASS  "wstation1234"
+/** Default value for: Openweather API key */
+#define DEFCONF_OW_KEY     ""
+/** Default value for: Openweather city */
+#define DEFCONF_OW_CITY    "Berlin,DE"
+/** Default value for: NTP server */
+#define DEFCONF_NTPSERVER  "pool.ntp.org"
+/** Default value for: hours */
+#define DEFCONF_HOURS      0
+/** Default value for: minutes */
+#define DEFCONF_MINUTES    0
+/** Default value for: seconds */
+#define DEFCONF_SECONDS    0
+/** Default timezone */
+#define DEFCONF_TIMEZONE   3600
+/** Default value for: day */
+#define DEFCONF_DAY        10
+/** Default value for: month */
+#define DEFCONF_MONTH      3
+/** Default value for: year */
+#define DEFCONF_YEAR       2020
+/** Default value for: week day */
+#define DEFCONF_WDAY       3
+/** Default value for: day */
+#define DEFCONF_BRIGHTNESS BACKLIGHT_DEFAULT
+
 
 class UserConf {
 	private:
+		/** Configuration status */
+		char confStatus;
 		/** Wireless network SSID */
 		String wifiSSID;
 		/** Wireless network password */
@@ -47,47 +80,83 @@ class UserConf {
 		String owKey;
 		/** Openweather city */
 		String owCity;
+		/** NTP server */
+		String ntpServer;
 		/** Hours */
 		int hours;
 		/** Minutes */
 		int minutes;
 		/** Seconds */
 		int seconds;
+		/** Timezone offset */
+		int timezone;
+		/** Day */
+		int day;
+		/** Month */
+		int month;
+		/** Year */
+		int year;
+		/** Week day */
+		int wday;
 		/** LCD brightness */
 		int brightness;
 
 	public:
+		/* Constructor */
+		UserConf();
 		/* Wireless network: SSID */
 		void setWiFiSSID(const String& ssid);
 		/* Wireless network: Password */
-		void setWiFiPassword(const String& ssid);
+		void setWiFiPassword(const String& password);
 		/* Return wireless network SSID */
 		const String& getWiFiSSID();
 		/* Return wireless network password */
 		const String& getWiFiPassword();
 		/* Openweather: API key */
 		void setAPIKey(const String& key);
+		/* Get API key */
+		const String& getAPIKey();
 		/* Openweather: City name */
 		void setCity(const String& city);
+		/* Get city name */
+		const String& getCity();
+		/* Set NTP server */
+		void setNTPServer(const String& ntpServer);
+		/* Get NTP server */
+		const String& getNTPServer();
 		/* Set hours */
 		void setHours(int hours);
 		/* Set minutes */
 		void setMinutes(int minutes);
 		/* Set seconds */
 		void setSeconds(int seconds);
+		/* Timezone offset */
+		void setTimezone(int offset);
 		/* Get hours */
 		int getHours();
 		/* Get minutes */
 		int getMinutes();
 		/* Get seconds */
 		int getSeconds();
+		/* Get timezone offset */
+		int getTimezone();
+		/* Set date */
+		void setDate(int day, int month, int year, int wday);
+		/* Get date */
+		void getDate(int *day, int *month, int *year, int *wday);
 		/* Set LCD brightness */
 		void setLCDBrightness(int brightness);
 		/* Get LCD brightness */
 		int getLCDBrightness();
+		/* Return true if user has configured the system */
+		bool isConfigured();
 		/* Save all configuration data to EEPROM */
 		void SaveConf();
+		/* Save all configuration data to EEPROM */
+		void SaveConf(char confStatus);
 		/* Read all configuration data from EEPROM */
 		void ReadConf();
+		/* Reset configuration to default settings */
+		void ResetConf();
 };
 #endif /* USERCONF_H */
