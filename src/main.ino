@@ -39,6 +39,8 @@
 #include <SPIFFS.h>
 #include <TimeLib.h>
 #include <DHTesp.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include "wstation.h"
 #include "clock.h"
 #include "nexus.h"
@@ -61,6 +63,8 @@ WiFiMulti wifiMulti;
 DHTesp dhtSensor;
 /** Wall clock */
 tmElements_t wallClock;
+/** Web server */
+AsyncWebServer webServer(WEBSERVER_PORT);
 
 /** Mutex for update screen */
 volatile SemaphoreHandle_t t_mutex;
@@ -337,6 +341,11 @@ void setup() {
 	// Initialize 433MHz module receiver
 	setupNexus(RF_PIN);
 
+	// Route file to web server: logo.png
+	webServer.on("/logo.png", HTTP_GET, [](AsyncWebServerRequest *request){
+		request->send(SPIFFS, "/logo.png", "image/png", false);
+	});
+
 	// Read user configuration
 	confData.ReadConf();
 
@@ -352,6 +361,8 @@ void setup() {
 	gui->print("  Password: wstation1234\n");
 #endif
 	}
+
+	webServer.begin();
 
 	// DEMO
 	lastUpdate = now() - 40;

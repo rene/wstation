@@ -40,6 +40,9 @@
 #define WSTATION_VERSION "0.1beta"
 #endif
 
+/** Web server port */
+#define WEBSERVER_PORT 80
+
 /** LED pin */
 #define LED_PIN 2
 
