@@ -342,9 +342,11 @@ void setup() {
 	setupNexus(RF_PIN);
 
 	// Route file to web server: logo.png
-	webServer.on("/logo.png", HTTP_GET, [](AsyncWebServerRequest *request){
-		request->send(SPIFFS, "/logo.png", "image/png", false);
+	// Initialize web server
+	webServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+		request->send(200, "text/html", "<html><center><img src='/logo.png'/></center><p>Ola mundo!</p></html>");
 	});
+	webServer.serveStatic("/logo.png", SPIFFS, "/logo.png");
 
 	// Read user configuration
 	confData.ReadConf();
@@ -361,8 +363,6 @@ void setup() {
 	gui->print("  Password: wstation1234\n");
 #endif
 	}
-
-	webServer.begin();
 
 	// DEMO
 	lastUpdate = now() - 40;
@@ -390,6 +390,7 @@ void setup() {
  */
 void loop()
 {
+	static int wsinit = 0;
 	if (wifiMulti.run() == WL_CONNECTED) {
 		xSemaphoreTake(t_mutex, portMAX_DELAY);
 		gui->showWiFi(true);
@@ -397,6 +398,11 @@ void loop()
 		snprintf(ip, 40, "%d.%d.%d.%d", ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3]);
 		gui->setIP(ip);
 		xSemaphoreGive(t_mutex);
+
+		if (!wsinit) {
+			wsinit = 1;
+			webServer.begin();
+		}
 	} else {
 		xSemaphoreTake(t_mutex, portMAX_DELAY);
 		gui->showWiFi(false);
