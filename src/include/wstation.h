@@ -65,6 +65,12 @@
 /** Sensor data expiration period (in seconds) */
 #define SENSOR_DATA_EXPIRATION 600
 
+/** Weather information update interval (in seconds) */
+#define WEATHER_UPDATE_INTERVAL 60
+
+/** NTP date/time update interval (in seconds) */
+#define NTP_UPDATE_INTERVAL 1800
+
 /** Humidity level: Low (dry) */
 #define HUMIDITY_L0_LOW    0
 /** Humidity level: Comfortable */

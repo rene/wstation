@@ -52,6 +52,7 @@ struct _user_conf {
 	int minutes;
 	int seconds;
 	int timezone;
+	int daylight;
 	int day;
 	int month;
 	int year;
@@ -70,8 +71,8 @@ UserConf::UserConf() :
 	wifiPassword(DEFCONF_WIFI_PASS), owKey(DEFCONF_OW_KEY),
 	owCity(DEFCONF_OW_CITY), ntpServer(DEFCONF_NTPSERVER),
 	hours(DEFCONF_HOURS), minutes(DEFCONF_MINUTES),
-	timezone(DEFCONF_TIMEZONE), seconds(DEFCONF_SECONDS),
-	day(DEFCONF_DAY), month(DEFCONF_MONTH),
+	timezone(DEFCONF_TIMEZONE), daylight(DEFCONF_DAYLIGHT),
+	seconds(DEFCONF_SECONDS), day(DEFCONF_DAY), month(DEFCONF_MONTH),
 	year(DEFCONF_YEAR), brightness(DEFCONF_BRIGHTNESS)
 {
 }
@@ -209,6 +210,15 @@ void UserConf::setTimezone(int offset)
 }
 
 /**
+ * \brief Daylight offset
+ * \param [in] offset
+ */
+void UserConf::setDaylight(int offset)
+{
+	daylight = offset;
+}
+
+/**
  * \brief Get hours
  * \return int
  */
@@ -242,6 +252,15 @@ int UserConf::getSeconds()
 int UserConf::getTimezone()
 {
 	return timezone;
+}
+
+/**
+ * \brief Get daylight offset
+ * \return int Daylight offset (seconds)
+ */
+int UserConf::getDaylight()
+{
+	return daylight;
 }
 
 /**
@@ -338,6 +357,7 @@ void UserConf::SaveConf(char confStatus)
 	uconf.minutes    = minutes;
 	uconf.seconds    = seconds;
 	uconf.timezone   = timezone;
+	uconf.daylight   = daylight;
 	uconf.day        = day;
 	uconf.month      = month;
 	uconf.year       = year;
@@ -375,6 +395,7 @@ void UserConf::ReadConf()
 	minutes      = uconf.minutes;
 	seconds      = uconf.seconds;
 	timezone     = uconf.timezone;
+	daylight     = uconf.daylight;
 	day          = uconf.day;
 	month        = uconf.month;
 	year         = uconf.year;
@@ -398,6 +419,7 @@ void UserConf::ResetConf()
 	minutes      = DEFCONF_MINUTES;
 	seconds      = DEFCONF_SECONDS;
 	timezone     = DEFCONF_TIMEZONE;
+	daylight     = DEFCONF_DAYLIGHT;
 	day          = DEFCONF_DAY;
 	month        = DEFCONF_MONTH;
 	year         = DEFCONF_YEAR;

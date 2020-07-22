@@ -56,6 +56,8 @@
 #define DEFCONF_SECONDS    0
 /** Default timezone */
 #define DEFCONF_TIMEZONE   3600
+/** Default daylight offset */
+#define DEFCONF_DAYLIGHT   3600
 /** Default value for: day */
 #define DEFCONF_DAY        10
 /** Default value for: month */
@@ -90,6 +92,8 @@ class UserConf {
 		int seconds;
 		/** Timezone offset */
 		int timezone;
+		/** Daylight offset */
+		int daylight;
 		/** Day */
 		int day;
 		/** Month */
@@ -132,6 +136,8 @@ class UserConf {
 		void setSeconds(int seconds);
 		/* Timezone offset */
 		void setTimezone(int offset);
+		/* Daylight offset */
+		void setDaylight(int offset);
 		/* Get hours */
 		int getHours();
 		/* Get minutes */
@@ -140,6 +146,8 @@ class UserConf {
 		int getSeconds();
 		/* Get timezone offset */
 		int getTimezone();
+		/* Get daylight offset */
+		int getDaylight();
 		/* Set date */
 		void setDate(int day, int month, int year, int wday);
 		/* Get date */

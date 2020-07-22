@@ -69,7 +69,11 @@ AsyncWebServer webServer(WEBSERVER_PORT);
 /** Mutex for update screen */
 volatile SemaphoreHandle_t t_mutex;
 
+/** Last weather information update */
 unsigned long lastUpdate;
+
+/** Last NTP date/time update */
+unsigned long lastNTPUpdate;
 
 /**
  * \brief Format city string
@@ -102,13 +106,24 @@ String formatDate(tmElements_t tm)
 }
 
 /**
+ * \brief Format IP address into string
+ * \param [in] ipAddr IP Address
+ * \return String
+ */
+String formatIP(IPAddress ipAddr)
+{
+	char ip[40];
+	snprintf(ip, 40, "%d.%d.%d.%d", ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3]);
+	return String(ip);
+}
+
+/**
  * \brief Update graphical elements on the screen
  * \param parameter Task parameters (not used)
  */
 void taskUpdateScreen(void *parameter)
 {
 	bool updateStrDate = true;
-	int ntpcnt = 0;
 	while(1) {
 		// Update clock
 		if (readClock(&wallClock) < 0) {
@@ -139,13 +154,6 @@ void taskUpdateScreen(void *parameter)
 			xSemaphoreGive(t_mutex);
 		}
 		delay(1000);
-		// TODO update
-		ntpcnt++;
-		if (ntpcnt >= 60) {
-			ntpcnt = 0;
-			configTime(3600, 3600, "pool.ntp.org");
-			updateStrDate = true;
-		}
 	}
 }
 
@@ -161,7 +169,7 @@ void taskUpdateWeatherInfo(void *parameter)
 
 	while (1) {
 		if (wifiMulti.run() == WL_CONNECTED) {
-			if ((now() - lastUpdate) >= 60) {
+			if ((now() - lastUpdate) >= WEATHER_UPDATE_INTERVAL) {
 				lastUpdate = now();
 
 				if (weatherWS.updateForecast() < 0) {
@@ -185,6 +193,36 @@ void taskUpdateWeatherInfo(void *parameter)
 					}
 					xSemaphoreGive(t_mutex);
 				}
+			}
+		}
+		delay(1000);
+	}
+}
+
+/**
+ * \brief Update NTP date/time information
+ * \param parameter Task parameters (not used)
+ */
+void taskUpdateNTP(void *parameter)
+{
+	int i;
+	float t1, tf1, tf2;
+	weather_info_t wfc;
+
+	while (1) {
+		if (wifiMulti.run() == WL_CONNECTED) {
+			if ((now() - lastNTPUpdate) >= NTP_UPDATE_INTERVAL) {
+				lastNTPUpdate = now();
+
+				// NTP update
+				configTime(confData.getTimezone(), confData.getDaylight(),
+					confData.getNTPServer().c_str());
+
+				// Update date on screen (time will be updated on the next
+				// second)
+				xSemaphoreTake(t_mutex, portMAX_DELAY);
+				gui->setDate(formatDate(wallClock));
+				xSemaphoreGive(t_mutex);
 			}
 		}
 		delay(1000);
@@ -341,8 +379,7 @@ void setup() {
 	// Initialize 433MHz module receiver
 	setupNexus(RF_PIN);
 
-	// Route file to web server: logo.png
-	// Initialize web server
+	// Configure web server
 	webServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
 		request->send(200, "text/html", "<html><center><img src='/logo.png'/></center><p>Ola mundo!</p></html>");
 	});
@@ -365,7 +402,8 @@ void setup() {
 	}
 
 	// DEMO
-	lastUpdate = now() - 40;
+	lastUpdate    = now() - WEATHER_UPDATE_INTERVAL;
+	lastNTPUpdate = now() - NTP_UPDATE_INTERVAL + 5;
 
 	wifiMulti.addAP("VIZSLANET", "teodoro+2015");
 
@@ -381,6 +419,7 @@ void setup() {
 	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      10240, NULL, 2, NULL);
 	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 10240, NULL, 0, NULL);
 	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 32768, NULL, 0, NULL);
+	xTaskCreate(taskUpdateNTP,         "UpdateNTP",          4096, NULL, 0, NULL);
 	xTaskCreate(taskReadDHTSensor,     "ReadDHTSensor",      4096, NULL, 0, NULL);
 #endif
 }
@@ -394,9 +433,7 @@ void loop()
 	if (wifiMulti.run() == WL_CONNECTED) {
 		xSemaphoreTake(t_mutex, portMAX_DELAY);
 		gui->showWiFi(true);
-		char ip[40]; IPAddress ipAddr = WiFi.localIP();
-		snprintf(ip, 40, "%d.%d.%d.%d", ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3]);
-		gui->setIP(ip);
+		gui->setIP(formatIP(WiFi.localIP()));
 		xSemaphoreGive(t_mutex);
 
 		if (!wsinit) {
