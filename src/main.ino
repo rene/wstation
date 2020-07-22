@@ -217,6 +217,7 @@ void taskUpdateNTP(void *parameter)
 				// NTP update
 				configTime(confData.getTimezone(), confData.getDaylight(),
 					confData.getNTPServer().c_str());
+				// TODO update wallclock
 
 				// Update date on screen (time will be updated on the next
 				// second)
@@ -429,24 +430,60 @@ void setup() {
  */
 void loop()
 {
-	static int wsinit = 0;
-	if (wifiMulti.run() == WL_CONNECTED) {
-		xSemaphoreTake(t_mutex, portMAX_DELAY);
-		gui->showWiFi(true);
-		gui->setIP(formatIP(WiFi.localIP()));
-		xSemaphoreGive(t_mutex);
+	int status  = WL_IDLE_STATUS;
+	bool wsinit = false;
+	bool icon   = false;
 
-		if (!wsinit) {
-			wsinit = 1;
-			webServer.begin();
+	while (1) {
+		// WiFi status
+		status = wifiMulti.run();
+
+		switch(status) {
+			case WL_IDLE_STATUS:
+			case WL_NO_SSID_AVAIL:
+				do {
+					status = wifiMulti.run();
+
+					if (icon == false)
+						icon = true;
+					else
+						icon = false;
+
+					xSemaphoreTake(t_mutex, portMAX_DELAY);
+					gui->showWiFi(icon);
+					gui->setIP("");
+					xSemaphoreGive(t_mutex);
+					delay(1000);
+				} while (status == WL_IDLE_STATUS ||
+						 status == WL_NO_SSID_AVAIL);
+				break;
+
+			case WL_CONNECTED:
+				xSemaphoreTake(t_mutex, portMAX_DELAY);
+				gui->showWiFi(true);
+				gui->setIP(formatIP(WiFi.localIP()));
+				xSemaphoreGive(t_mutex);
+
+				if (!wsinit) {
+					wsinit = true;
+					webServer.begin();
+				}
+				break;
+
+			case WL_SCAN_COMPLETED:
+			case WL_NO_SHIELD:
+			case WL_CONNECT_FAILED:
+			case WL_CONNECTION_LOST:
+			case WL_DISCONNECTED:
+			default:
+				xSemaphoreTake(t_mutex, portMAX_DELAY);
+				gui->showWiFi(false);
+				gui->setIP("");
+				xSemaphoreGive(t_mutex);
+				break;
 		}
-	} else {
-		xSemaphoreTake(t_mutex, portMAX_DELAY);
-		gui->showWiFi(false);
-		gui->setIP("");
-		xSemaphoreGive(t_mutex);
-	}
 
-	delay(5000);
+		delay(1000);
+	}
 }
 
