@@ -66,8 +66,11 @@ tmElements_t wallClock;
 /** Web server */
 AsyncWebServer webServer(WEBSERVER_PORT);
 
-/** Mutex for update screen */
+/** Mutex for screen update */
 volatile SemaphoreHandle_t t_mutex;
+
+/** Mutex for wall clock update */
+volatile SemaphoreHandle_t clk_mutex;
 
 /** Last weather information update */
 unsigned long lastUpdate;
@@ -134,7 +137,11 @@ void taskUpdateScreen(void *parameter)
 			wallClock.Hour   = 0;
 			wallClock.Minute = 0;
 			wallClock.Second = 0;
+
+			xSemaphoreTake(clk_mutex, portMAX_DELAY);
 			writeClock(&wallClock);
+			xSemaphoreGive(clk_mutex);
+
 			updateStrDate = true;
 		} else {
 			if (wallClock.Hour == 0 && wallClock.Minute == 0) {
@@ -215,9 +222,12 @@ void taskUpdateNTP(void *parameter)
 				lastNTPUpdate = now();
 
 				// NTP update
+				xSemaphoreTake(clk_mutex, portMAX_DELAY);
 				configTime(confData.getTimezone(), confData.getDaylight(),
 					confData.getNTPServer().c_str());
-				// TODO update wallclock
+				// Update wall clock
+				getSysClock(&wallClock);
+				xSemaphoreGive(clk_mutex);
 
 				// Update date on screen (time will be updated on the next
 				// second)
@@ -361,8 +371,9 @@ void setup() {
     }
 	delay(500);
 
-	// Initialize semaphore
+	// Initialize semaphores
 	vSemaphoreCreateBinary(t_mutex);
+	vSemaphoreCreateBinary(clk_mutex);
 
 	// Initialize embedded GUI
 	gui = new EInterface(TFT_CS, TFT_DC,

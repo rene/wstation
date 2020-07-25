@@ -76,23 +76,7 @@ int writeClock(tmElements_t *_tm)
  */
 int readClock(tmElements_t *_tm)
 {
-	struct timeval tv;
-	struct tm *ftime;
-
-	// Get date and time
-	gettimeofday(&tv, NULL);
-
-	// Format data
-	ftime = localtime(&tv.tv_sec);
-
-	_tm->Hour   = ftime->tm_hour;
-	_tm->Minute = ftime->tm_min;
-	_tm->Second = ftime->tm_sec;
-	_tm->Day    = ftime->tm_mday;
-	_tm->Month  = ftime->tm_mon + 1;
-	_tm->Wday   = ftime->tm_wday + 1;
-	_tm->Year   = CalendarYrToTm(ftime->tm_year + 1900);
-
+	getSysClock(_tm);
 	return 0;
 }
 
@@ -125,4 +109,28 @@ int writeClock(tmElements_t *_tm)
 	return settimeofday(&tv, NULL);
 }
 #endif
+
+/**
+ * \brief Get system's clock
+ * \param [out] _tm System clock
+ */
+void getSysClock(tmElements_t *_tm)
+{
+	struct timeval tv;
+	struct tm *ftime;
+
+	// Get date and time
+	gettimeofday(&tv, NULL);
+
+	// Format data
+	ftime = localtime(&tv.tv_sec);
+
+	_tm->Hour   = ftime->tm_hour;
+	_tm->Minute = ftime->tm_min;
+	_tm->Second = ftime->tm_sec;
+	_tm->Day    = ftime->tm_mday;
+	_tm->Month  = ftime->tm_mon + 1;
+	_tm->Wday   = ftime->tm_wday + 1;
+	_tm->Year   = CalendarYrToTm(ftime->tm_year + 1900);
+}
 

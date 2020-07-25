@@ -49,5 +49,7 @@
 int readClock(tmElements_t *_tm);
 /* Save time */
 int writeClock(tmElements_t *_tm);
+/* Get system's clock */
+void getSysClock(tmElements_t *_tm);
 
 #endif /* __WS_CLOCK__ */
