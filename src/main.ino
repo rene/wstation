@@ -127,9 +127,13 @@ String formatIP(IPAddress ipAddr)
 void taskUpdateScreen(void *parameter)
 {
 	bool updateStrDate = true;
+	int ret;
 	while(1) {
 		// Update clock
-		if (readClock(&wallClock) < 0) {
+		xSemaphoreTake(clk_mutex, portMAX_DELAY);
+		ret = readClock(&wallClock);
+		xSemaphoreGive(clk_mutex);
+		if (ret < 0) {
 			Serial.println("Read clock error!");
 			wallClock.Day    = 1;
 			wallClock.Month  = 1;
@@ -397,6 +401,42 @@ void setup() {
 	});
 	webServer.serveStatic("/logo.png", SPIFFS, "/logo.png");
 
+	// Reset function
+	webServer.on("/resetDevice", HTTP_GET, [](AsyncWebServerRequest *request){
+		request->send(200, "application/json", "{\"status\":\"OK\"}");
+		// Let's give some time for response
+		delay(2000);
+		// TODO add mutex
+		esp_restart();
+	});
+
+	// WiFi scan function
+	webServer.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
+		String json = "[";
+		int n = WiFi.scanComplete();
+		if(n == -2){
+			WiFi.scanNetworks(true);
+		} else if(n){
+			for (int i = 0; i < n; ++i){
+				if(i) json += ",";
+				json += "{";
+				json += "\"ssid\":\""   + WiFi.SSID(i) + "\"";
+				json += ",\"rssi\":"    + String(WiFi.RSSI(i));
+				json += ",\"bssid\":\"" + WiFi.BSSIDstr(i) + "\"";
+				json += ",\"channel\":" + String(WiFi.channel(i));
+				json += ",\"secure\":"  + String(WiFi.encryptionType(i));
+				json += "}";
+			}
+			WiFi.scanDelete();
+			if(WiFi.scanComplete() == -2){
+				WiFi.scanNetworks(true);
+			}
+		}
+		json += "]";
+		request->send(200, "application/json", json);
+		json = String();
+	});
+
 	// Read user configuration
 	confData.ReadConf();
 
@@ -423,6 +463,7 @@ void setup() {
 	weatherWS.setCity("Berlin,DE");
 
 #if 1
+	gui->setBacklight(confData.getLCDBrightness());
 	gui->clearAll();
 	gui->showAll();
 
