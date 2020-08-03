@@ -48,6 +48,7 @@
 #include "EInterface.h"
 #include "OpenWeather.h"
 #include "UserConf.h"
+#include "webservices.cpp"
 
 /** User configuration data */
 UserConf confData;
@@ -71,6 +72,9 @@ volatile SemaphoreHandle_t t_mutex;
 
 /** Mutex for wall clock update */
 volatile SemaphoreHandle_t clk_mutex;
+
+/** Mutex for restart device */
+volatile SemaphoreHandle_t reset_mutex;
 
 /** Last weather information update */
 unsigned long lastUpdate;
@@ -378,6 +382,7 @@ void setup() {
 	// Initialize semaphores
 	vSemaphoreCreateBinary(t_mutex);
 	vSemaphoreCreateBinary(clk_mutex);
+	vSemaphoreCreateBinary(reset_mutex);
 
 	// Initialize embedded GUI
 	gui = new EInterface(TFT_CS, TFT_DC,
@@ -396,46 +401,7 @@ void setup() {
 	setupNexus(RF_PIN);
 
 	// Configure web server
-	webServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-		request->send(200, "text/html", "<html><center><img src='/logo.png'/></center><p>Ola mundo!</p></html>");
-	});
-	webServer.serveStatic("/logo.png", SPIFFS, "/logo.png");
-
-	// Reset function
-	webServer.on("/resetDevice", HTTP_GET, [](AsyncWebServerRequest *request){
-		request->send(200, "application/json", "{\"status\":\"OK\"}");
-		// Let's give some time for response
-		delay(2000);
-		// TODO add mutex
-		esp_restart();
-	});
-
-	// WiFi scan function
-	webServer.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
-		String json = "[";
-		int n = WiFi.scanComplete();
-		if(n == -2){
-			WiFi.scanNetworks(true);
-		} else if(n){
-			for (int i = 0; i < n; ++i){
-				if(i) json += ",";
-				json += "{";
-				json += "\"ssid\":\""   + WiFi.SSID(i) + "\"";
-				json += ",\"rssi\":"    + String(WiFi.RSSI(i));
-				json += ",\"bssid\":\"" + WiFi.BSSIDstr(i) + "\"";
-				json += ",\"channel\":" + String(WiFi.channel(i));
-				json += ",\"secure\":"  + String(WiFi.encryptionType(i));
-				json += "}";
-			}
-			WiFi.scanDelete();
-			if(WiFi.scanComplete() == -2){
-				WiFi.scanNetworks(true);
-			}
-		}
-		json += "]";
-		request->send(200, "application/json", json);
-		json = String();
-	});
+	SetupWebServices(&webServer);
 
 	// Read user configuration
 	confData.ReadConf();

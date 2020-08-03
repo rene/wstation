@@ -1,0 +1,40 @@
+.content {
+	max-width: 510px;
+	margin: auto;
+	background: #ffffff;
+	padding: 0px;
+	font-family: Arial;
+	font-size: 14px;
+}
+.logo {
+	margin: auto;
+	background: #ffffff;
+	text-align: center;
+}
+form {
+	width: 500px;
+	border: 1px solid black;
+	display: inline-block;
+	text-align: left;
+	padding: 5px;
+}
+label {
+	padding: 3px;
+	margin: 3px;
+}
+h2 {
+	color: #000000;
+	font-family: Arial;
+	font-size: 16px;
+	text-align: center;
+}
+hr {
+	color: #888888;
+	border-top: 1px solid;
+}
+a {
+	color: #000000;
+}
+a:hover {
+	color: #00547e;
+}
