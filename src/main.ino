@@ -82,6 +82,10 @@ unsigned long lastUpdate;
 /** Last NTP date/time update */
 unsigned long lastNTPUpdate;
 
+/** Update the date on main screen */
+bool updateStrDate;
+
+
 /**
  * \brief Format city string
  * \param [in] city City
@@ -130,8 +134,8 @@ String formatIP(IPAddress ipAddr)
  */
 void taskUpdateScreen(void *parameter)
 {
-	bool updateStrDate = true;
 	int ret;
+	updateStrDate = true;
 	while(1) {
 		// Update clock
 		xSemaphoreTake(clk_mutex, portMAX_DELAY);
@@ -240,7 +244,7 @@ void taskUpdateNTP(void *parameter)
 				// Update date on screen (time will be updated on the next
 				// second)
 				xSemaphoreTake(t_mutex, portMAX_DELAY);
-				gui->setDate(formatDate(wallClock));
+				updateStrDate = true;
 				xSemaphoreGive(t_mutex);
 			}
 		}

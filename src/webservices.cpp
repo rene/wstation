@@ -37,11 +37,29 @@
 #include <SPI.h>
 #include <FS.h>
 #include <SPIFFS.h>
+#include <TimeLib.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "wstation.h"
 #include "webservices.h"
 
+/** Wall clock */
+extern tmElements_t wallClock;
+
+/**
+ * \brief Format integers into Strings with at least two digits
+ * \param [in] int Integer
+ * \return String
+ */
+String format2Dig(int i)
+{
+	String n = String(i, DEC);
+	if (i < 10) {
+		return String("0" + n);
+	} else {
+		return n;
+	}
+}
 
 /**
  * \brief Process variables from web pages
@@ -61,17 +79,17 @@ String processData(const String& var)
 	else if (var == "CITY")
 		return confData.getCity();
 	else if (var == "YEAR")
-		return String("2020"); // TODO
+		return String(tmYearToCalendar(wallClock.Year));
 	else if (var == "MONTH")
-		return String("07"); // TODO
+		return format2Dig(wallClock.Month);
 	else if (var == "DAY")
-		return String("01"); // TODO
+		return format2Dig(wallClock.Day);
 	else if (var == "HOURS")
-		return String("00"); // TODO
+		return format2Dig(wallClock.Hour);
 	else if (var == "MINUTES")
-		return String("00"); // TODO
+		return format2Dig(wallClock.Minute);
 	else if (var == "SECONDS")
-		return String("00"); // TODO
+		return format2Dig(wallClock.Second);
 	else if (var == "NTP_SERVER")
 		return confData.getNTPServer();
 	else if (var == "LCD_BRIGHTNESS")
