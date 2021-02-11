@@ -30,6 +30,24 @@ function populateWifi()
 	xhttp.send();
 }
 
+function loadPage()
+{
+	var tzone  = document.getElementById("tzone");
+	var cbox   = document.getElementById("timezone");
+	var dlight = document.getElementById("dlight");
+	var ckbox  = document.getElementById("daylight");
+
+	cbox.value = tzone.value;
+
+	if (dlight.value != 0) {
+		ckbox.checked = true;
+	} else {
+		ckbox.checked = true;
+	}
+
+	setTimeout(populateWifi, 1500);
+}
+
 function chooseSSID()
 {
 	var sel = document.getElementById("wifilist");
@@ -37,18 +55,56 @@ function chooseSSID()
 	inp.value = sel.value;
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function requestReset(request)
+{
+	var xhttp = new XMLHttpRequest();
+	xhttp.open("GET", request, true);
+	xhttp.send();
+}
+
+async function waitWindow()
+{
+	var contents = document.getElementById("contents");
+	var elem     = document.getElementById("pbar");
+	var msgbox   = document.getElementById("msgbox");
+	var msg      = document.getElementById("pmsg");
+	var width    = 1;
+	var i;
+	
+	contents.style.opacity = 0.2;
+	msgbox.style.display   = "block";
+	msg.innerHTML = "Please, wait...";
+
+	for (i = 0; i < 100; i++) {
+		elem.style.width = width + "%";
+		elem.innerHTML = width + "%";
+		width++;
+		await sleep(140);
+	}
+
+	msg.innerHTML = "";
+	msgbox.style.display   = "none";
+	contents.style.opacity = 1.0;
+	window.alert("Done!");
+	location.reload();
+}
+
 function resetDevice()
 {
 	if (confirm("Are you sure you want to reset the device?")) {
-		// TODO implement
-		window.alert("Device reseted!");
+		requestReset("/resetDevice");
+		waitWindow();
 	}
 }
 
 function resetToFactory()
 {
 	if (confirm("Reset to factory settings? This action cannot be undone!")) {
-		// TODO implement
-		window.alert("Reset to factory!");
+		requestReset("/resetToFactory");
+		waitWindow();
 	}
 }

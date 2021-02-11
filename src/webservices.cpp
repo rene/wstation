@@ -46,6 +46,15 @@
 /** Wall clock */
 extern tmElements_t wallClock;
 
+static String checkGetParam(AsyncWebServerRequest *request, String param)
+{
+	String field("");
+	if (request->hasParam(param, true)) {
+		field = request->getParam(param, true)->value();
+	}
+	return field;
+}
+
 /**
  * \brief Format integers into Strings with at least two digits
  * \param [in] int Integer
@@ -94,6 +103,10 @@ String processData(const String& var)
 		return confData.getNTPServer();
 	else if (var == "LCD_BRIGHTNESS")
 		return String(confData.getLCDBrightness());
+	else if (var == "TIMEZONE")
+		return String(confData.getTimezone());
+	else if (var == "DAYLIGHT")
+		return String(confData.getDaylight());
 
 	return String();
 }
@@ -108,7 +121,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 		return;
 
 	// Main page (configuration)
-	webServer->serveStatic("/conf.html", SPIFFS, "/conf.html").setTemplateProcessor(processData);
+	webServer->serveStatic("/conf", SPIFFS, "/conf.html").setTemplateProcessor(processData);
 	//webServer->serveStatic("/", SPIFFS, "/conf.html");
 
 	// Logo image file
@@ -130,6 +143,43 @@ void SetupWebServices(AsyncWebServer *webServer)
 		esp_restart();
 		// Should never reach here: do not release the mutex for safety reasons
 	});
+
+	// Reset to factory settings
+	webServer->on("/resetToFactory", HTTP_GET, [](AsyncWebServerRequest *request){
+		request->send(200, "application/json", "{\"status\":\"OK\"}");
+		// Let's give some time for response
+		delay(2000);
+		// Acquire mutex to reset device, we should never return from here
+		xSemaphoreTake(reset_mutex, portMAX_DELAY);
+		// Reset settings
+		confData.ResetConf();
+		// Restart system
+		esp_restart();
+		// Should never reach here: do not release the mutex for safety reasons
+	});
+
+	// Save configuration data
+	webServer->on("/save", HTTP_POST, [](AsyncWebServerRequest *request){
+		confData.setWiFiSSID(checkGetParam(request, PARAM_SSID));
+		confData.setWiFiPassword(checkGetParam(request, PARAM_WIFIPASS));
+		confData.setAPIKey(checkGetParam(request, PARAM_KEY));
+		confData.setCity(checkGetParam(request, PARAM_CITY));
+
+
+		confData.setNTPServer(checkGetParam(request, PARAM_NTP));
+		// BRIGHTNESS
+		/*
+#define PARAM_DATE     "date"
+#define PARAM_TIMEZONE "tz"
+#define PARAM_DAYLIGHT "dayl"
+#define PARAM_HOURS    "hours"
+#define PARAM_MINUTES  "minutes"
+#define PARAM_SECONDS  "seconds"
+#define PARAM_LCDBRIG  "brightness"
+*/
+		confData.SaveConf();
+		request->redirect("/conf");
+    });
 
 	// WiFi scan function
 	webServer->on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
