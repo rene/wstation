@@ -22,14 +22,14 @@ LIBS=$(ESP_LIBS)/Wire \
 	 $(ESP_LIBS)/HTTPClient \
 	 $(ESP_LIBS)/FS \
 	 $(ESP_LIBS)/SPIFFS \
-	 $(ESP_LIBS)/EEPROM \
 	 libs/AsyncTCP \
 	 libs/ESPAsyncWebServer \
 	 libs/ArduinoJson-6.15.1/ \
 	 libs/Adafruit_GFX_Library-1.7.5 \
 	 libs/Adafruit_ILI9341-1.5.4 \
 	 libs/Time \
-	 libs/DHTesp
+	 libs/DHTesp \
+	 libs/ArduinoNvs
 
 ifeq ($(RTC_DS1307),true)
 LIBS += libs/DS1307RTC

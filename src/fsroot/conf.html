@@ -4,82 +4,94 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="wstation.css">
 	</head>
-	<body onLoad="populateWifi()">
-		<div class="content">
-			<div class="logo"><img src="logo.png"/></div><br/>
-			<form method="POST">
-				<h2>Wireless Network</h2>
-				<label>Wireless Network list:</label>
-				<select id="wifilist" onchange="chooseSSID()"></select><input type="button" value="Scan" onclick="populateWifi()"/></br>
-				<label>Wireless SSID:</label><input name="ssid" id="frmSSID" size="20" value="%WIFI_SSID%"/> <br/>
-				<label>Password:</label><input type="password" name="wifipass" id="wpass" size="20" value="%WIFI_PASS%"/>
-				<input type="checkbox" name="showPass" onclick="showHidePass()"><label>Show password</label><br/>
-				<hr/>
-				<h2>Openweather API information</h2>
-				<label>API key:</label><input name="key" size="35" value="%API_KEY%"/> <br/>
-				<label>City:</label><input name="city" size="20" value="%CITY%"/><small><a href="https://openweathermap.org/" target="_blank">Search at OpenWeather.org</a></small><br/>
-				<hr/>
-				<h2>Time and Date</h2>
-				<label>Date: </label><input type="date" value="%YEAR%-%MONTH%-%DAY%"/><br/>
-				<label>Time zone: </label>
-				<select id="timezone" name="tz">
-					<option value="-12">GMT-12:00</option>
-					<option value="-11">GMT-11:00</option>
-					<option value="-10">GMT-10:00</option>
-					<option value="-9">GMT-09:00</option>
-					<option value="-8">GMT-08:00</option>
-					<option value="-7">GMT-07:00</option>
-					<option value="-6">GMT-06:00</option>
-					<option value="-5">GMT-05:00</option>
-					<option value="-4.5">GMT-04:30</option>
-					<option value="-4">GMT-04:00</option>
-					<option value="-3">GMT-03:00</option>
-					<option value="-3.5">GMT-03:30</option>
-					<option value="-2">GMT-02:00</option>
-					<option value="-1">GMT-01:00</option>
-					<option value="0">GMT/UTC</option>
-					<option value="1">GMT+01:00</option>
-					<option value="2">GMT+02:00</option>
-					<option value="3">GMT+03:00</option>
-					<option value="3.5">GMT+03:30</option>
-					<option value="4">GMT+04:00</option>
-					<option value="4.5">GMT+04:30</option>
-					<option value="5">GMT+05:00</option>
-					<option value="5.5">GMT+05:30</option>
-					<option value="5.75">GMT+05:45</option>
-					<option value="6">GMT+06:00</option>
-					<option value="6.5">GMT+06:30</option>
-					<option value="7">GMT+07:00</option>
-					<option value="8">GMT+08:00</option>
-					<option value="8.75">GMT+08:45</option>
-					<option value="9">GMT+09:00</option>
-					<option value="9.5">GMT+09:30</option>
-					<option value="10">GMT+10:00</option>
-					<option value="10.5">GMT+10:30</option>
-					<option value="11">GMT+11:00</option>
-					<option value="11.5">GMT+11:30</option>
-					<option value="12">GMT+12:00</option>
-					<option value="12.75">GMT+12:45</option>
-					<option value="13">GMT+13:00</option>
-					<option value="14">GMT+14:00</option>
-				</select><input type="checkbox" name="daylight"/><label>Daylight Saving Time</label><br/>
-				<label>HH:</label><input name="hours" size="2" value="%HOURS%"/>
-				<label>MM:</label><input name="minutes" size="2" value="%MINUTES%"/>
-				<label>SS:</label><input name="seconds" size="2" value="%SECONDS%"/> <br/>
-				<label>NTP Server: </label><input type="text" size="20" value="%NTP_SERVER%"/><br/>
-				<hr/>
-				<h2>Hardware</h2>
-				<label>LCD brightness level:</label><input type="range" name="brightness" min="0" max="100" value="%LCD_BRIGHTNESS%">
-				<hr/>
-				<input type="reset" value="Reset values"/>
-				<input type="submit" value="Save configuration"/>
-			</form>
-		</div>
-		<div class="content">
-			<h2>Firmware information</h2>
-			<p>Version: %FIRMWARE_VERSION%</p>
-			<input type="button" value="Reset device" onclick="resetDevice()">
-			<input type="button" value="Reset to factory settings" onclick="resetToFactory()">
+	<body onLoad="loadPage()">
+		<div id="page"/>
+			<div id="contents">
+				<div class="content">
+					<div class="logo"><img src="logo.png"/></div><br/>
+					<form method="POST" action="/save">
+						<h2>Wireless Network</h2>
+						<label>Wireless Network list:</label>
+						<select id="wifilist" onchange="chooseSSID()"></select><input type="button" value="Scan" onclick="populateWifi()"/></br>
+						<label>Wireless SSID:</label><input name="ssid" id="frmSSID" size="20" value="%WIFI_SSID%"/> <br/>
+						<label>Password:</label><input type="password" name="wifipass" id="wpass" size="20" value="%WIFI_PASS%"/>
+						<input type="checkbox" name="showPass" onclick="showHidePass()"><label>Show password</label><br/>
+						<hr/>
+						<h2>Openweather API information</h2>
+						<label>API key:</label><input name="key" size="35" value="%API_KEY%"/> <br/>
+						<label>City:</label><input name="city" size="20" value="%CITY%"/><small><a href="https://openweathermap.org/" target="_blank">Search at OpenWeather.org</a></small><br/>
+						<hr/>
+						<h2>Time and Date</h2>
+						<label>Date: </label><input type="date" name="date" value="%YEAR%-%MONTH%-%DAY%"/><br/>
+						<label>Time zone: </label>
+						<select id="timezone" name="tz">
+							<option value="-43200">GMT-12:00</option>
+							<option value="-41400">GMT-11:00</option>
+							<option value="-36000">GMT-10:00</option>
+							<option value="-32400">GMT-09:00</option>
+							<option value="-28800">GMT-08:00</option>
+							<option value="-25200">GMT-07:00</option>
+							<option value="-21600">GMT-06:00</option>
+							<option value="-18000">GMT-05:00</option>
+							<option value="-16200">GMT-04:30</option>
+							<option value="-14400">GMT-04:00</option>
+							<option value="-10800">GMT-03:00</option>
+							<option value="-12600">GMT-03:30</option>
+							<option value="-7200">GMT-02:00</option>
+							<option value="-3600">GMT-01:00</option>
+							<option value="0">GMT/UTC</option>
+							<option value="3600">GMT+01:00</option>
+							<option value="7200">GMT+02:00</option>
+							<option value="10800">GMT+03:00</option>
+							<option value="12600">GMT+03:30</option>
+							<option value="14400">GMT+04:00</option>
+							<option value="16200">GMT+04:30</option>
+							<option value="18000">GMT+05:00</option>
+							<option value="19800">GMT+05:30</option>
+							<option value="20700">GMT+05:45</option>
+							<option value="21600">GMT+06:00</option>
+							<option value="23400">GMT+06:30</option>
+							<option value="25200">GMT+07:00</option>
+							<option value="28800">GMT+08:00</option>
+							<option value="31500">GMT+08:45</option>
+							<option value="32400">GMT+09:00</option>
+							<option value="34200">GMT+09:30</option>
+							<option value="36000">GMT+10:00</option>
+							<option value="37800">GMT+10:30</option>
+							<option value="39600">GMT+11:00</option>
+							<option value="41400">GMT+11:30</option>
+							<option value="43200">GMT+12:00</option>
+							<option value="45900">GMT+12:45</option>
+							<option value="46800">GMT+13:00</option>
+							<option value="50400">GMT+14:00</option>
+						</select><input type="checkbox" id="daylight" name="dayl"/><label>Daylight Saving Time</label><br/>
+						<input type="hidden" id="tzone" name="tzone" value="%TIMEZONE%"/>
+						<input type="hidden" id="dlight" name="dlight" value="%DAYLIGHT%"/>
+						<label>HH:</label><input name="hours" size="2" value="%HOURS%"/>
+						<label>MM:</label><input name="minutes" size="2" value="%MINUTES%"/>
+						<label>SS:</label><input name="seconds" size="2" value="%SECONDS%"/> <br/>
+						<label>NTP Server: </label><input type="text" name="ntp" size="20" value="%NTP_SERVER%"/><br/>
+						<hr/>
+						<h2>Hardware</h2>
+						<label>LCD brightness level:</label><input type="range" name="brightness" min="0" max="255" value="%LCD_BRIGHTNESS%">
+						<hr/>
+						<input type="reset" value="Reset values"/>
+						<input type="submit" value="Save configuration"/>
+					</form>
+				</div>
+				<div class="content">
+					<h2>Firmware information</h2>
+					<p>Version: %FIRMWARE_VERSION%</p>
+					<input type="button" value="Reset device" onclick="resetDevice()">
+					<input type="button" value="Reset to factory settings" onclick="resetToFactory()">
+				</div>
+			</div>
+			<div id="msgbox">
+				<div id="pmsg"></div>
+				<div id="pgbar">
+					<div id="pbar"></div>
+				</div>
+			</div>
 		</div>
 	</body>
 	<script type="text/javascript" src="conf.js"></script>

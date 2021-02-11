@@ -41,6 +41,7 @@
 #include <DHTesp.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoNvs.h>
 #include "wstation.h"
 #include "clock.h"
 #include "nexus.h"
@@ -381,6 +382,10 @@ void setup() {
 		Serial.println("Abort.");
         return;
     }
+
+	// Initialize NVS
+	NVS.begin();
+
 	delay(500);
 
 	// Initialize semaphores

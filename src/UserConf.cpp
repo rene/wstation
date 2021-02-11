@@ -34,7 +34,7 @@
  * \brief Handle user configuration data
  */
 #include <UserConf.h>
-#include <EEPROM.h>
+#include <ArduinoNvs.h>
 #include <string.h>
 
 /** Maximum string length for configuration attributes */
@@ -342,7 +342,6 @@ void UserConf::SaveConf(char confStatus)
 {
 	int addr;
 	user_conf_t uconf;
-	char *ptr = (char *)&uconf;
 
 	// Change status
 	this->confStatus = confStatus;
@@ -366,9 +365,7 @@ void UserConf::SaveConf(char confStatus)
 	uconf.confStatus = this->confStatus;
 
 	// Write struct to EEPROM
-	for (addr = 0; addr < sizeof(uconf); addr++) {
-		EEPROM.write(addr, ptr[addr]);
-	}
+	NVS.setBlob("uconf", (uint8_t*)&uconf, sizeof(uconf));
 }
 
 /**
@@ -377,12 +374,14 @@ void UserConf::SaveConf(char confStatus)
 void UserConf::ReadConf()
 {
 	int addr;
+	bool res;
 	user_conf_t uconf;
-	char *ptr = (char *)&uconf;
 
 	// Read from EEPROM
-	for (addr = 0; addr < sizeof(uconf); addr++) {
-		ptr[addr] = EEPROM.read(addr);
+	res = NVS.getBlob("uconf", (uint8_t*)&uconf, sizeof(uconf));
+	if (!res) {
+		ResetConf();
+		return;
 	}
 
 	// Fill attributes

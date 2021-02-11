@@ -38,6 +38,20 @@
 #include <ESPAsyncWebServer.h>
 #include "UserConf.h"
 
+/* HTML form fields */
+#define PARAM_SSID     "ssid"
+#define PARAM_WIFIPASS "wifipass"
+#define PARAM_KEY      "key"
+#define PARAM_CITY     "city"
+#define PARAM_DATE     "date"
+#define PARAM_TIMEZONE "tz"
+#define PARAM_DAYLIGHT "dayl"
+#define PARAM_HOURS    "hours"
+#define PARAM_MINUTES  "minutes"
+#define PARAM_SECONDS  "seconds"
+#define PARAM_NTP      "ntp"
+#define PARAM_LCDBRIG  "brightness"
+
 /* Reset mutex */
 extern volatile SemaphoreHandle_t reset_mutex;
 /* User configuration */

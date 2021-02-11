@@ -42,9 +42,22 @@
 #include <ESPAsyncWebServer.h>
 #include "wstation.h"
 #include "webservices.h"
+#include "EInterface.h"
 
 /** Wall clock */
 extern tmElements_t wallClock;
+
+/** Graphical interface */
+extern EInterface *gui;
+
+static String checkGetParam(AsyncWebServerRequest *request, String param)
+{
+	String field("");
+	if (request->hasParam(param, true)) {
+		field = request->getParam(param, true)->value();
+	}
+	return field;
+}
 
 /**
  * \brief Format integers into Strings with at least two digits
@@ -94,6 +107,10 @@ String processData(const String& var)
 		return confData.getNTPServer();
 	else if (var == "LCD_BRIGHTNESS")
 		return String(confData.getLCDBrightness());
+	else if (var == "TIMEZONE")
+		return String(confData.getTimezone());
+	else if (var == "DAYLIGHT")
+		return String(confData.getDaylight());
 
 	return String();
 }
@@ -108,7 +125,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 		return;
 
 	// Main page (configuration)
-	webServer->serveStatic("/conf.html", SPIFFS, "/conf.html").setTemplateProcessor(processData);
+	webServer->serveStatic("/conf", SPIFFS, "/conf.html").setTemplateProcessor(processData);
 	//webServer->serveStatic("/", SPIFFS, "/conf.html");
 
 	// Logo image file
@@ -130,6 +147,56 @@ void SetupWebServices(AsyncWebServer *webServer)
 		esp_restart();
 		// Should never reach here: do not release the mutex for safety reasons
 	});
+
+	// Reset to factory settings
+	webServer->on("/resetToFactory", HTTP_GET, [](AsyncWebServerRequest *request){
+		request->send(200, "application/json", "{\"status\":\"OK\"}");
+		// Let's give some time for response
+		delay(2000);
+		// Acquire mutex to reset device, we should never return from here
+		xSemaphoreTake(reset_mutex, portMAX_DELAY);
+		// Reset settings
+		confData.ResetConf();
+		// Restart system
+		esp_restart();
+		// Should never reach here: do not release the mutex for safety reasons
+	});
+
+	// Save configuration data
+	webServer->on("/save", HTTP_POST, [](AsyncWebServerRequest *request){
+		confData.setWiFiSSID(checkGetParam(request, PARAM_SSID));
+		confData.setWiFiPassword(checkGetParam(request, PARAM_WIFIPASS));
+		confData.setAPIKey(checkGetParam(request, PARAM_KEY));
+		confData.setCity(checkGetParam(request, PARAM_CITY));
+
+		confData.setNTPServer(checkGetParam(request, PARAM_NTP));
+
+		int tz = checkGetParam(request, PARAM_TIMEZONE).toInt();
+		confData.setTimezone(tz);
+
+		if (checkGetParam(request, PARAM_DAYLIGHT) == "on") {
+			confData.setDaylight(3600);
+		} else {
+			confData.setDaylight(0);
+		}
+
+		Serial.println(checkGetParam(request, PARAM_DATE));
+		// TODO: Set date
+
+		int h = checkGetParam(request, PARAM_HOURS).toInt();
+		int m = checkGetParam(request, PARAM_MINUTES).toInt();
+		int s = checkGetParam(request, PARAM_SECONDS).toInt();
+		// TODO: Update wall clock
+
+		int lcdbrig = checkGetParam(request, PARAM_LCDBRIG).toInt();
+		if (lcdbrig > 0 && lcdbrig <= 255) {
+			confData.setLCDBrightness(lcdbrig);
+			gui->setBacklight(confData.getLCDBrightness());
+		}
+
+		confData.SaveConf();
+		request->redirect("/conf");
+    });
 
 	// WiFi scan function
 	webServer->on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
