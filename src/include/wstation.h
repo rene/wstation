@@ -209,6 +209,6 @@ extern tmElements_t wallClock;
 
 /* Prototypes */
 
-void updateGUI(void);
+void updateFromConf(void);
 
 #endif /* __WSTATION_H__ */

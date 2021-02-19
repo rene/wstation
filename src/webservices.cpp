@@ -213,7 +213,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 		}
 
 		confData.SaveConf();
-		updateGUI();
+		updateFromConf();
 
 		request->redirect("/conf");
     });

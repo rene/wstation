@@ -132,10 +132,30 @@ String formatIP(IPAddress ipAddr)
 /**
  * Update screen elements from user configuration
  */
-void updateGUI(void)
+void updateFromConf(void)
 {
-	// TODO update wall clock and date
+	int d, m, y, w;
+
+	// Update calendar, daylight and timezone values are used only for NTP
+	// server (in order to perform the right time shift)
+	xSemaphoreTake(clk_mutex, portMAX_DELAY);
+	confData.getDate(&d, &m, &y, &w);
+
+	wallClock.Day    = d;
+	wallClock.Month  = m;
+	wallClock.Year   = CalendarYrToTm(y);
+
+	wallClock.Hour   = confData.getHours();
+	wallClock.Minute = confData.getMinutes();
+	wallClock.Second = confData.getSeconds();
+	writeClock(&wallClock);
+	xSemaphoreGive(clk_mutex);
+
+	// LCD backlight
 	gui->setBacklight(confData.getLCDBrightness());
+
+	// Set to update date string
+	updateStrDate = true;
 }
 
 /**
@@ -153,14 +173,13 @@ void taskUpdateScreen(void *parameter)
 		xSemaphoreGive(clk_mutex);
 		if (ret < 0) {
 			Serial.println("Read clock error!");
+			xSemaphoreTake(clk_mutex, portMAX_DELAY);
 			wallClock.Day    = 1;
 			wallClock.Month  = 1;
 			wallClock.Year   = CalendarYrToTm(2020);
 			wallClock.Hour   = 0;
 			wallClock.Minute = 0;
 			wallClock.Second = 0;
-
-			xSemaphoreTake(clk_mutex, portMAX_DELAY);
 			writeClock(&wallClock);
 			xSemaphoreGive(clk_mutex);
 
