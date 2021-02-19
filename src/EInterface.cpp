@@ -29,9 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file EInterface.cpp
- * \class EInterface
- * \brief Provide all the methods to control and draw the embedded LCD screen
+ * @file EInterface.cpp
+ * @class EInterface
+ * Provide all the methods to control and draw the embedded LCD screen
  */
 #include <EInterface.h>
 #include <SPI.h>
@@ -46,13 +46,13 @@
 #define DEF_SCALE    CELSIUS
 
 /**
- * \brief Constructor
- * \param [in] cs TFT module CS pin
- * \param [in] dc TFT module DC pin
- * \param [in] led TFT module LED pin
- * \param [in] backlight Backlight level
- * \param [in] pfs File system to load pixmap files
- * \param [in] theme Color theme
+ * Constructor
+ * @param [in] cs TFT module CS pin
+ * @param [in] dc TFT module DC pin
+ * @param [in] led TFT module LED pin
+ * @param [in] backlight Backlight level
+ * @param [in] pfs File system to load pixmap files
+ * @param [in] theme Color theme
  */
 EInterface::EInterface(int8_t cs, int8_t dc,
 		int8_t led, int backlight, ETheme theme,
@@ -73,7 +73,7 @@ EInterface::EInterface(int8_t cs, int8_t dc,
 }
 
 /**
- * \brief Destructor
+ * Destructor
  */
 EInterface::~EInterface()
 {
@@ -82,7 +82,7 @@ EInterface::~EInterface()
 }
 
 /**
- * \brief Initialize interface
+ * Initialize interface
  */
 void EInterface::initialize()
 {
@@ -101,8 +101,8 @@ void EInterface::initialize()
 }
 
 /**
- * \brief Set backlight level
- * \param [in] level Level
+ * Set backlight level
+ * @param [in] level Level
  */
 void EInterface::setBacklight(int level)
 {
@@ -111,8 +111,8 @@ void EInterface::setBacklight(int level)
 }
 
 /**
- * \brief Set temperature scale
- * \param [in] scale Scale
+ * Set temperature scale
+ * @param [in] scale Scale
  * \note This parameter only changes the degree symbol. No conversion is made.
  */
 void EInterface::setTempScale(temp_scale_t scale)
@@ -123,8 +123,8 @@ void EInterface::setTempScale(temp_scale_t scale)
 }
 
 /**
- * \brief Set city name
- * \param [in] city City name
+ * Set city name
+ * @param [in] city City name
  */
 void EInterface::setCity(const String& city)
 {
@@ -133,8 +133,8 @@ void EInterface::setCity(const String& city)
 }
 
 /**
- * \brief Set date
- * \param [in] date Date string representation
+ * Set date
+ * @param [in] date Date string representation
  */
 void EInterface::setDate(const String& date)
 {
@@ -144,7 +144,7 @@ void EInterface::setDate(const String& date)
 
 /**
  * Set clock: hours
- * \param [in] hours Hours
+ * @param [in] hours Hours
  */
 void EInterface::setHours(int hours)
 {
@@ -155,8 +155,8 @@ void EInterface::setHours(int hours)
 }
 
 /**
- * \brief Set clock: minutes
- * \param [in] minutes Minutes
+ * Set clock: minutes
+ * @param [in] minutes Minutes
  */
 void EInterface::setMinutes(int minutes)
 {
@@ -167,8 +167,8 @@ void EInterface::setMinutes(int minutes)
 }
 
 /**
- * \brief Set clock: seconds
- * \param [in] seconds Seconds
+ * Set clock: seconds
+ * @param [in] seconds Seconds
  */
 void EInterface::setSeconds(int seconds)
 {
@@ -179,8 +179,8 @@ void EInterface::setSeconds(int seconds)
 }
 
 /**
- * \brief Show clock
- * \param [in] elements Clock elements to show
+ * Show clock
+ * @param [in] elements Clock elements to show
  */
 void EInterface::showClock(clock_el_t elements)
 {
@@ -232,8 +232,8 @@ void EInterface::showClock(clock_el_t elements)
 }
 
 /**
- * \brief Set IP address
- * \param [in] ip IP address
+ * Set IP address
+ * @param [in] ip IP address
  */
 void EInterface::setIP(const String& ip)
 {
@@ -242,9 +242,9 @@ void EInterface::setIP(const String& ip)
 }
 
 /**
- * \brief Show weather icon
- * \param [in] weather Weather
- * \param [in] Period: 0 = Day, 1 = Night
+ * Show weather icon
+ * @param [in] weather Weather
+ * @param [in] Period: 0 = Day, 1 = Night
  */
 void EInterface::showWeather(weather_t weather, char period)
 {
@@ -258,7 +258,7 @@ void EInterface::showWeather(weather_t weather, char period)
 }
 
 /**
- * \brief Show city name
+ * Show city name
  */
 void EInterface::showCity()
 {
@@ -276,7 +276,7 @@ void EInterface::showCity()
 }
 
 /**
- * \brief Show IP address
+ * Show IP address
  */
 void EInterface::showIP()
 {
@@ -298,7 +298,7 @@ void EInterface::showIP()
 }
 
 /**
- * \brief Show date
+ * Show date
  */
 void EInterface::showDate()
 {
@@ -315,7 +315,7 @@ void EInterface::showDate()
 }
 
 /**
- * \brief Draw Indoor/Outdoor labels
+ * Draw Indoor/Outdoor labels
  */
 void EInterface::showTempLabels()
 {
@@ -329,8 +329,8 @@ void EInterface::showTempLabels()
 }
 
 /**
- * \brief Show temperature 1
- * \param [in] temp Temperature
+ * Show temperature 1
+ * @param [in] temp Temperature
  */
 void EInterface::showTemp1(float temp)
 {
@@ -339,8 +339,8 @@ void EInterface::showTemp1(float temp)
 }
 
 /**
- * \brief Show temperature 2
- * \param [in] temp Temperature
+ * Show temperature 2
+ * @param [in] temp Temperature
  */
 void EInterface::showTemp2(float temp)
 {
@@ -349,8 +349,8 @@ void EInterface::showTemp2(float temp)
 }
 
 /**
- * \brief Show humidity 1
- * \param [in] humidity Humidity
+ * Show humidity 1
+ * @param [in] humidity Humidity
  */
 void EInterface::showHumidity1(int humidity)
 {
@@ -359,8 +359,8 @@ void EInterface::showHumidity1(int humidity)
 }
 
 /**
- * \brief Show humidity 2
- * \param [in] humidity Humidity
+ * Show humidity 2
+ * @param [in] humidity Humidity
  */
 void EInterface::showHumidity2(int humidity)
 {
@@ -369,8 +369,8 @@ void EInterface::showHumidity2(int humidity)
 }
 
 /**
- * \brief Show sensor's channel
- * \param [in] channel Channel number
+ * Show sensor's channel
+ * @param [in] channel Channel number
  */
 void EInterface::showChannel(int channel)
 {
@@ -395,9 +395,9 @@ void EInterface::showChannel(int channel)
 }
 
 /**
- * \brief Show forecast weather icon
- * \param [in] i Forecast number
- * \param [in] weather Weather
+ * Show forecast weather icon
+ * @param [in] i Forecast number
+ * @param [in] weather Weather
  */
 void EInterface::showForecastWeather(int i, weather_t weather)
 {
@@ -430,9 +430,9 @@ void EInterface::showForecastWeather(int i, weather_t weather)
 }
 
 /**
- * \brief Show forecast label
- * \param [in] i Forecast number
- * \param [in] label Label
+ * Show forecast label
+ * @param [in] i Forecast number
+ * @param [in] label Label
  */
 void EInterface::showForecastLabel(int i, const String& label)
 {
@@ -469,9 +469,9 @@ void EInterface::showForecastLabel(int i, const String& label)
 }
 
 /**
- * \brief Show forecast temperature 1
- * \param [in] i Forecast number
- * \param [in] temp Temperature
+ * Show forecast temperature 1
+ * @param [in] i Forecast number
+ * @param [in] temp Temperature
  */
 void EInterface::showForecastTemp1(int i, float temp)
 {
@@ -527,8 +527,8 @@ void EInterface::showForecastTemp2(int i, float temp)
 }
 
 /**
- * \brief Show/hide antenna icon
- * \param [in] show Show or hide the icon
+ * Show/hide antenna icon
+ * @param [in] show Show or hide the icon
  */
 void EInterface::showRadio(bool show)
 {
@@ -541,8 +541,8 @@ void EInterface::showRadio(bool show)
 }
 
 /**
- * \brief Show/hide WiFi icon
- * \param [in] show Show or hide the icon
+ * Show/hide WiFi icon
+ * @param [in] show Show or hide the icon
  */
 void EInterface::showWiFi(bool show)
 {
@@ -555,8 +555,8 @@ void EInterface::showWiFi(bool show)
 }
 
 /**
- * \brief Show/hide battery 1 icon
- * \param [in] show Show or hide the icon
+ * Show/hide battery 1 icon
+ * @param [in] show Show or hide the icon
  */
 void EInterface::showBattery1(bool show)
 {
@@ -569,8 +569,8 @@ void EInterface::showBattery1(bool show)
 }
 
 /**
- * \brief Show/hide battery 2 icon
- * \param [in] show Show or hide the icon
+ * Show/hide battery 2 icon
+ * @param [in] show Show or hide the icon
  */
 void EInterface::showBattery2(bool show)
 {
@@ -583,7 +583,7 @@ void EInterface::showBattery2(bool show)
 }
 
 /**
- * \brief Show WStation logo at the center
+ * Show WStation logo at the center
  */
 void EInterface::showLogo()
 {
@@ -591,9 +591,9 @@ void EInterface::showLogo()
 }
 
 /**
- * \brief Show WStation logo
- * \param [in] x X position (-1 for center position)
- * \param [in] y Y position (-1 for center position)
+ * Show WStation logo
+ * @param [in] x X position (-1 for center position)
+ * @param [in] y Y position (-1 for center position)
  */
 void EInterface::showLogo(int x, int y)
 {
@@ -609,9 +609,9 @@ void EInterface::showLogo(int x, int y)
 }
 
 /**
- * \brief Show firmware version
- * \param [in] x X position (-1 for center position)
- * \param [in] y Y position (-1 for center position)
+ * Show firmware version
+ * @param [in] x X position (-1 for center position)
+ * @param [in] y Y position (-1 for center position)
  */
 void EInterface::showVersion(int x, int y)
 {
@@ -632,7 +632,7 @@ void EInterface::showVersion(int x, int y)
 }
 
 /**
- * \brief Draw all graphical elements in the screen
+ * Draw all graphical elements in the screen
  */
 void EInterface::showAll()
 {
@@ -665,7 +665,7 @@ void EInterface::showAll()
 }
 
 /**
- * \brief Clear the whole screen
+ * Clear the whole screen
  */
 void EInterface::clearAll()
 {
@@ -673,8 +673,8 @@ void EInterface::clearAll()
 }
 
 /**
- * \brief Print text (at current cursor position, default color)
- * \param [in] text Text
+ * Print text (at current cursor position, default color)
+ * @param [in] text Text
  */
 void EInterface::print(const String& text)
 {
@@ -682,10 +682,10 @@ void EInterface::print(const String& text)
 }
 
 /**
- * \brief Print text
- * \param [in] x X position
- * \param [in] y Y position
- * \param [in] text Text
+ * Print text
+ * @param [in] x X position
+ * @param [in] y Y position
+ * @param [in] text Text
  */
 void EInterface::print(int x, int y, const String& text)
 {
@@ -693,10 +693,10 @@ void EInterface::print(int x, int y, const String& text)
 }
 
 /**
- * \brief Print text at current cursor position
- * \param [in] color Text color
- * \param [in] bgcolor Text background color (-1 for transparency)
- * \param [in] text Text
+ * Print text at current cursor position
+ * @param [in] color Text color
+ * @param [in] bgcolor Text background color (-1 for transparency)
+ * @param [in] text Text
  */
 void EInterface::print(int16_t color, int16_t bgcolor, const String& text)
 {
@@ -704,12 +704,12 @@ void EInterface::print(int16_t color, int16_t bgcolor, const String& text)
 }
 
 /**
- * \brief Print text
- * \param [in] x X position
- * \param [in] y Y position
- * \param [in] color Text color
- * \param [in] bgcolor Text background color (-1 for transparency)
- * \param [in] text Text
+ * Print text
+ * @param [in] x X position
+ * @param [in] y Y position
+ * @param [in] color Text color
+ * @param [in] bgcolor Text background color (-1 for transparency)
+ * @param [in] text Text
  */
 void EInterface::print(int x, int y, int16_t color, int16_t bgcolor, const String& text)
 {
@@ -742,10 +742,10 @@ void EInterface::print(int x, int y, int16_t color, int16_t bgcolor, const Strin
 /* ======================= PRIVATE ======================= */
 
 /**
- * \brief Print a temperature value with degree symbol
- * \param [in] temp Temperature
- * \param [in] x X position
- * \param [in] y Y position
+ * Print a temperature value with degree symbol
+ * @param [in] temp Temperature
+ * @param [in] x X position
+ * @param [in] y Y position
  */
 void EInterface::drawTemp(float temp, int x, int y)
 {
@@ -785,11 +785,11 @@ void EInterface::drawTemp(float temp, int x, int y)
 }
 
 /**
- * \brief Print a forecast temperature
- * \param [in] temp Temperature
- * \param [in] x X position
- * \param [in] y Y position
- * \param [in] color Color
+ * Print a forecast temperature
+ * @param [in] temp Temperature
+ * @param [in] x X position
+ * @param [in] y Y position
+ * @param [in] color Color
  */
 void EInterface::drawForecastTemp(float temp, int x, int y, int16_t color)
 {
@@ -829,10 +829,10 @@ void EInterface::drawForecastTemp(float temp, int x, int y, int16_t color)
 }
 
 /**
- * \brief Print humidity value
- * \param [in] humidity Humidity value (0 to 100)
- * \param [in] x X position
- * \param [in] y Y position
+ * Print humidity value
+ * @param [in] humidity Humidity value (0 to 100)
+ * @param [in] x X position
+ * @param [in] y Y position
  */
 void EInterface::drawHumidity(int humidity, int x, int y)
 {
@@ -866,9 +866,9 @@ void EInterface::drawHumidity(int humidity, int x, int y)
 }
 
 /**
- * \brief Read 16 bits number from file
- * \param [in] f File
- * \return uint16_t
+ * Read 16 bits number from file
+ * @param [in] f File
+ * @return uint16_t
  */
 uint16_t EInterface::readInt(File f)
 {
@@ -879,10 +879,10 @@ uint16_t EInterface::readInt(File f)
 }
 
 /**
- * \brief Draw a pixel map file on the screen
- * \param [in] x Initial position (X axis)
- * \param [in] y Initial position (Y axis)
- * \param file File name
+ * Draw a pixel map file on the screen
+ * @param [in] x Initial position (X axis)
+ * @param [in] y Initial position (Y axis)
+ * @param file File name
  */
 void EInterface::drawPixmap(int x, int y, String file)
 {
@@ -916,10 +916,10 @@ void EInterface::drawPixmap(int x, int y, String file)
 }
 
 /**
- * \brief Draw a pixel map file at half size on the screen
- * \param [in] x Initial position (X axis)
- * \param [in] y Initial position (Y axis)
- * \param file File name
+ * Draw a pixel map file at half size on the screen
+ * @param [in] x Initial position (X axis)
+ * @param [in] y Initial position (Y axis)
+ * @param file File name
  */
 void EInterface::drawPixmapHalf(int x, int y, String file)
 {
@@ -959,10 +959,10 @@ void EInterface::drawPixmapHalf(int x, int y, String file)
 }
 
 /**
- * \brief Convert weather type into the corresponding icon
- * \param [in] weather Weather ID
- * \param [in] Period: 0 = Day, 1 = Night
- * \return pixmap_t Corresponding icon type
+ * Convert weather type into the corresponding icon
+ * @param [in] weather Weather ID
+ * @param [in] Period: 0 = Day, 1 = Night
+ * @return pixmap_t Corresponding icon type
  */
 ETheme::pixmap_t EInterface::getWeatherIcon(weather_t weather, char period)
 {

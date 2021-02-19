@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file EInterface.h
+ * @file EInterface.h
  * \see EInterface.cpp
  */
 #ifndef __EINTERFACE_H__

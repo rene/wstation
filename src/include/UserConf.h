@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file UserConf.h
+ * @file UserConf.h
  * \see UserConf.cpp
  */
 #ifndef USERCONF_H

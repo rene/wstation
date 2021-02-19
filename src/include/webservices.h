@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file webservices.h
+ * @file webservices.h
  * \see webservices.cpp 
  */
 #ifndef __WEB_SERVICES_H__

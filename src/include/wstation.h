@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file wstation.h
- * \brief Custom types, defines and general configuration
+ * @file wstation.h
+ * Custom types, defines and general configuration
  */
 #ifndef __WSTATION_H__
 #define __WSTATION_H__

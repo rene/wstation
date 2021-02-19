@@ -29,9 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file OpenWeather.cpp
- * \class OpenWeather
- * \brief Provide weather information through OpenWeather API
+ * @file OpenWeather.cpp
+ * @class OpenWeather
+ * Provide weather information through OpenWeather API
  */
 
 #include <HTTPClient.h>
@@ -41,7 +41,7 @@
 #define MAX_URL_SIZE  512
 
 /**
- * \brief Constructor
+ * Constructor
  */
 OpenWeather::OpenWeather() :
 	key(""), city("")
@@ -60,8 +60,8 @@ OpenWeather::OpenWeather() :
 }
 
 /**
- * \brief Constructor
- * \param [in] key API key
+ * Constructor
+ * @param [in] key API key
  */
 OpenWeather::OpenWeather(const String& key)
 {
@@ -70,8 +70,8 @@ OpenWeather::OpenWeather(const String& key)
 }
 
 /**
- * \brief Set city name
- * \param [in] city City name
+ * Set city name
+ * @param [in] city City name
  */
 void OpenWeather::setCity(const String& city)
 {
@@ -79,8 +79,8 @@ void OpenWeather::setCity(const String& city)
 }
 
 /**
- * \brief Set API key
- * \param [in] key API key
+ * Set API key
+ * @param [in] key API key
  */
 void OpenWeather::setAPIKey(const String& key)
 {
@@ -88,8 +88,8 @@ void OpenWeather::setAPIKey(const String& key)
 }
 
 /**
- * \brief Return city name
- * \return String
+ * Return city name
+ * @return String
  */
 const String OpenWeather::getCity()
 {
@@ -97,8 +97,8 @@ const String OpenWeather::getCity()
 }
 
 /**
- * \brief Return API key
- * \return String
+ * Return API key
+ * @return String
  */
 const String OpenWeather::getAPIKey()
 {
@@ -106,8 +106,8 @@ const String OpenWeather::getAPIKey()
 }
 
 /**
- * \brief Retrieve daily forecast from the server
- * \return 0 on success, error number otherwise
+ * Retrieve daily forecast from the server
+ * @return 0 on success, error number otherwise
  */
 int OpenWeather::updateDailyForecast()
 {
@@ -137,8 +137,8 @@ int OpenWeather::updateDailyForecast()
 }
 
 /**
- * \brief Retrieve weekly forecast from the server
- * \return 0 on success, error number otherwise
+ * Retrieve weekly forecast from the server
+ * @return 0 on success, error number otherwise
  */
 int OpenWeather::updateWeeklyForecast()
 {
@@ -168,8 +168,8 @@ int OpenWeather::updateWeeklyForecast()
 }
 
 /**
- * \brief Retrieve forecast from the server
- * \return 0 on success, error number otherwise
+ * Retrieve forecast from the server
+ * @return 0 on success, error number otherwise
  */
 int OpenWeather::updateForecast()
 {
@@ -179,8 +179,8 @@ int OpenWeather::updateForecast()
 }
 
 /**
- * \brief Get daily forecast
- * \return weather_info_t Weather information
+ * Get daily forecast
+ * @return weather_info_t Weather information
  */
 weather_info_t OpenWeather::getDailyForecast()
 {
@@ -188,9 +188,9 @@ weather_info_t OpenWeather::getDailyForecast()
 }
 
 /**
- * \brief Get weekly forecast
- * \param [in] i Day index (from 0 to MAX_FORECAST_DAYS)
- * \return weather_info_t Weather information
+ * Get weekly forecast
+ * @param [in] i Day index (from 0 to MAX_FORECAST_DAYS)
+ * @return weather_info_t Weather information
  */
 weather_info_t OpenWeather::getWeeklyForecast(int i)
 {
@@ -202,10 +202,10 @@ weather_info_t OpenWeather::getWeeklyForecast(int i)
 }
 
 /**
- * \brief Convert Kelvin temperature
- * \param [in] k Temperature (in Kelvin)
- * \param [in] scale Scale (CELSIUS or FAHRENHEIT)
- * \return float
+ * Convert Kelvin temperature
+ * @param [in] k Temperature (in Kelvin)
+ * @param [in] scale Scale (CELSIUS or FAHRENHEIT)
+ * @return float
  */
 float OpenWeather::convKelvinTemp(float k, temp_scale_t scale)
 {
@@ -217,9 +217,9 @@ float OpenWeather::convKelvinTemp(float k, temp_scale_t scale)
 }
 
 /**
- * \brief Return weather_t type from ID
- * \param [in] id ID
- * \return weather_t
+ * Return weather_t type from ID
+ * @param [in] id ID
+ * @return weather_t
  */
 weather_t OpenWeather::getWeatherFromID(int id)
 {
@@ -230,9 +230,9 @@ weather_t OpenWeather::getWeatherFromID(int id)
 /* ======================= PRIVATE ======================= */
 
 /**
- * \brief Parse daily forecast information
- * \param [in] json JSON string
- * \return int 0 on success, negative number otherwise
+ * Parse daily forecast information
+ * @param [in] json JSON string
+ * @return int 0 on success, negative number otherwise
  */
 int OpenWeather::parseDaily(const String& json)
 {
@@ -262,9 +262,9 @@ int OpenWeather::parseDaily(const String& json)
 }
 
 /**
- * \brief Parse weekly forecast information
- * \param [in] json JSON string
- * \return int 0 on success, negative number otherwise
+ * Parse weekly forecast information
+ * @param [in] json JSON string
+ * @return int 0 on success, negative number otherwise
  */
 int OpenWeather::parseWeekly(const String& json)
 {

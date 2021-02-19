@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file nexus.h
+ * @file nexus.h
  * \see nexus.c
  */
 #ifndef __NEXUS_H__

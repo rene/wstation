@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file webservices.cpp
- * \brief Implement web services
+ * @file webservices.cpp
+ * Implement web services
  */
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -71,9 +71,9 @@ int dayofweek(int y, int m, int d)	/* 1 <= m <= 12,  y > 1752 (in the U.K.) */
 }
 
 /**
- * \brief Format integers into Strings with at least two digits
- * \param [in] int Integer
- * \return String
+ * Format integers into Strings with at least two digits
+ * @param [in] int Integer
+ * @return String
  */
 String format2Dig(int i)
 {
@@ -86,9 +86,9 @@ String format2Dig(int i)
 }
 
 /**
- * \brief Process variables from web pages
- * \param [in] var Variable
- * \return String
+ * Process variables from web pages
+ * @param [in] var Variable
+ * @return String
  */
 String processData(const String& var)
 {
@@ -127,8 +127,8 @@ String processData(const String& var)
 }
 
 /**
- * \brief Setup all web services
- * \param [in] webserver AsyncWebServer object
+ * Setup all web services
+ * @param [in] webserver AsyncWebServer object
  */
 void SetupWebServices(AsyncWebServer *webServer)
 {

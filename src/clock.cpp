@@ -29,16 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file clock.cpp
- * \brief Function to retrieve time from different sources
+ * @file clock.cpp
+ * Function to retrieve time from different sources
  */
 #include "clock.h"
 
 #ifdef RTC_DS1307
 /**
- * \brief Read time from RTC
- * \param [out] _tm Date and Time
- * \return int
+ * Read time from RTC
+ * @param [out] _tm Date and Time
+ * @return int
  */
 int readClock(tmElements_t *_tm)
 {
@@ -59,9 +59,9 @@ int readClock(tmElements_t *_tm)
 }
 
 /**
- * \brief Save time
- * \param [in] _tm Date and Time
- * \return int
+ * Save time
+ * @param [in] _tm Date and Time
+ * @return int
  */
 int writeClock(tmElements_t *_tm)
 {
@@ -70,9 +70,9 @@ int writeClock(tmElements_t *_tm)
 }
 #else
 /**
- * \brief Read time
- * \param [out] _tm Date and Time
- * \return int
+ * Read time
+ * @param [out] _tm Date and Time
+ * @return int
  */
 int readClock(tmElements_t *_tm)
 {
@@ -81,9 +81,9 @@ int readClock(tmElements_t *_tm)
 }
 
 /**
- * \brief Save time
- * \param [in] _tm Date and Time
- * \return int
+ * Save time
+ * @param [in] _tm Date and Time
+ * @return int
  */
 int writeClock(tmElements_t *_tm)
 {
@@ -111,8 +111,8 @@ int writeClock(tmElements_t *_tm)
 #endif
 
 /**
- * \brief Get system's clock
- * \param [out] _tm System clock
+ * Get system's clock
+ * @param [out] _tm System clock
  */
 void getSysClock(tmElements_t *_tm)
 {

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file clock.h
+ * @file clock.h
  * \see clock.cpp 
  */
 #ifndef __WS_CLOCK__

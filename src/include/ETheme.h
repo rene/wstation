@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file ETheme.h
- * \brief Provide color theme for the LCD screen GUI
+ * @file ETheme.h
+ * Provide color theme for the LCD screen GUI
  */
 #ifndef __ETHEME_H__
 #define __ETHEME_H__
@@ -42,8 +42,8 @@
 typedef uint16_t color_t;
 
 /**
- * \class ETheme
- * \brief Provide color theme for the LCD screen GUI
+ * @class ETheme
+ * Provide color theme for the LCD screen GUI
  * In this class we just define all the colors used in the LCD screen
  */
 class ETheme {
@@ -114,7 +114,7 @@ class ETheme {
 		} pixmap_t;
 
 		/**
-		 * \brief Default constructor
+		 * Default constructor
 		 */
 		ETheme() {
 			// Initialize colors with default theme
@@ -162,7 +162,7 @@ class ETheme {
 		}
 
 		/**
-		 * \brief Constructor
+		 * Constructor
 		 */
 		ETheme(color_t ip, color_t city, color_t date) {
 			this->ip   = ip;
@@ -172,95 +172,95 @@ class ETheme {
 		}
 
 		/**
-		 * \brief Return background color
-		 * \return color_t Color
+		 * Return background color
+		 * @return color_t Color
 		 */
 		color_t getBackground() {
 			return this->background;
 		}
 
 		/**
-		 * \brief Return color of IP label
-		 * \return color_t Color
+		 * Return color of IP label
+		 * @return color_t Color
 		 */
 		color_t getIP() {
 			return this->ip;
 		}
 		/**
-		 * \brief Return color of City label
-		 * \return color_t Color
+		 * Return color of City label
+		 * @return color_t Color
 		 */
 		color_t getCity() {
 			return this->city;
 		}
 		/**
-		 * \brief Return color of Date label
-		 * \return color_t Color
+		 * Return color of Date label
+		 * @return color_t Color
 		 */
 		color_t getDate() {
 			return this->date;
 		}
 		/**
-		 * \brief Return color of Clock label
-		 * \return color_t Color
+		 * Return color of Clock label
+		 * @return color_t Color
 		 */
 		color_t getClock() {
 			return this->clock;
 		}
 		/**
-		 * \brief Return color for Temperature labels
-		 * \return color_t Color
+		 * Return color for Temperature labels
+		 * @return color_t Color
 		 */
 		color_t getTempLabel() {
 			return this->tempLabel1;
 		}
 		/**
-		 * \brief Return color for Temperature values
-		 * \return color_t Color
+		 * Return color for Temperature values
+		 * @return color_t Color
 		 */
 		color_t getTemperature() {
 			return this->temp;
 		}
 		/**
-		 * \brief Return color for Humidity values
-		 * \param [in] level Humidity level(0, 1 or 2)
-		 * \return color_t Color
+		 * Return color for Humidity values
+		 * @param [in] level Humidity level(0, 1 or 2)
+		 * @return color_t Color
 		 */
 		color_t getHumidity(int level) {
 			return this->humidity[level];
 		}
 		/**
-		 * \brief Return the label color for Days of the week in forecast
-		 * \return color_t Color
+		 * Return the label color for Days of the week in forecast
+		 * @return color_t Color
 		 */
 		color_t getWeekDay() {
 			return this->weekday;
 		}
 		/**
-		 * \brief Return the label color for Temperature 1 in forecast 
-		 * \return color_t Color
+		 * Return the label color for Temperature 1 in forecast 
+		 * @return color_t Color
 		 */
 		color_t getWeekTemp1() {
 			return this->weektemp1;
 		}
 		/**
-		 * \brief Return the label color for Temperature 2 in forecast
-		 * \return color_t Color
+		 * Return the label color for Temperature 2 in forecast
+		 * @return color_t Color
 		 */
 		color_t getWeekTemp2() {
 			return this->weektemp2;
 		}
 		/**
-		 * \brief Return color for general text
-		 * \return color_t Color
+		 * Return color for general text
+		 * @return color_t Color
 		 */
 		color_t getDefaultText() {
 			return this->defaultText;
 		}
 		/**
-		 * \brief Return the file name for a given icon
-		 * \param [in] pixmap_t Pixmap
-		 * \return char* File name
+		 * Return the file name for a given icon
+		 * @param [in] pixmap_t Pixmap
+		 * @return char* File name
 		 */
 		String getPixmapFile(pixmap_t pixmap) {
 			return this->icons[pixmap];

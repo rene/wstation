@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file nexus.c
- * \brief Provide functions to handle NC-7345 sensor data
+ * @file nexus.c
+ * Provide functions to handle NC-7345 sensor data
  */
 
 #include <Arduino.h>
@@ -58,11 +58,11 @@ static volatile char fpos;
 portMUX_TYPE nexusMutex = portMUX_INITIALIZER_UNLOCKED;
 
 /**
- * \brief Retrieve an interval of bits from a frame
- * \param [in] frm Data frame
- * \param [in] first Position of the first bit (LSB) in the interval
- * \param [in] size Number of bits
- * \return uint64_t Selected bits
+ * Retrieve an interval of bits from a frame
+ * @param [in] frm Data frame
+ * @param [in] first Position of the first bit (LSB) in the interval
+ * @param [in] size Number of bits
+ * @return uint64_t Selected bits
  */
 static uint64_t IRAM_ATTR getBits(uint64_t frm, int first, int size)
 {
@@ -72,7 +72,7 @@ static uint64_t IRAM_ATTR getBits(uint64_t frm, int first, int size)
 }
 
 /**
- * \brief Parse frames in the buffer
+ * Parse frames in the buffer
  */
 static void IRAM_ATTR parseFrames()
 {
@@ -117,7 +117,7 @@ static void IRAM_ATTR parseFrames()
 }
 
 /**
- * \brief Parse sensor signal pulse
+ * Parse sensor signal pulse
  * \note This function should be executed on each interrupt signal
  *
  * NC-7345 sensors use PPM (Pulse-Position Modulation)
@@ -190,8 +190,8 @@ void IRAM_ATTR nexusHandlePulse()
 }
 
 /**
- * \brief Setup interrupt handler
- * \param [in] pin Pin where receiver is attached
+ * Setup interrupt handler
+ * @param [in] pin Pin where receiver is attached
  */
 void setupNexus(int pin)
 {

@@ -29,9 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file UserConf.cpp
- * \class UserConf
- * \brief Handle user configuration data
+ * @file UserConf.cpp
+ * @class UserConf
+ * Handle user configuration data
  */
 #include <UserConf.h>
 #include <ArduinoNvs.h>
@@ -64,7 +64,7 @@ struct _user_conf {
 typedef struct _user_conf user_conf_t;
 
 /**
- * \brief Constructor
+ * Constructor
  */
 UserConf::UserConf() :
 	confStatus(0), wifiSSID(DEFCONF_WIFI_SSID),
@@ -78,8 +78,8 @@ UserConf::UserConf() :
 }
 
 /**
- * \brief Wireless network: SSID
- * \param [in] ssid Network SSID
+ * Wireless network: SSID
+ * @param [in] ssid Network SSID
  */
 void UserConf::setWiFiSSID(const String& ssid)
 {
@@ -87,8 +87,8 @@ void UserConf::setWiFiSSID(const String& ssid)
 }
 
 /**
- * \brief Wireless network: Password
- * \param [in] password Network password
+ * Wireless network: Password
+ * @param [in] password Network password
  */
 void UserConf::setWiFiPassword(const String& password)
 {
@@ -96,8 +96,8 @@ void UserConf::setWiFiPassword(const String& password)
 }
 
 /**
- * \brief Return wireless network SSID
- * \return String
+ * Return wireless network SSID
+ * @return String
  */
 const String& UserConf::getWiFiSSID()
 {
@@ -105,8 +105,8 @@ const String& UserConf::getWiFiSSID()
 }
 
 /**
- * \brief Return wireless network password
- * \return String
+ * Return wireless network password
+ * @return String
  */
 const String& UserConf::getWiFiPassword()
 {
@@ -114,8 +114,8 @@ const String& UserConf::getWiFiPassword()
 }
 
 /**
- * \brief Openweather: API key
- * \param [in] key API key
+ * Openweather: API key
+ * @param [in] key API key
  */
 void UserConf::setAPIKey(const String& key)
 {
@@ -123,8 +123,8 @@ void UserConf::setAPIKey(const String& key)
 }
 
 /**
- * \brief Get API key
- * \return String
+ * Get API key
+ * @return String
  */
 const String& UserConf::getAPIKey()
 {
@@ -132,8 +132,8 @@ const String& UserConf::getAPIKey()
 }
 
 /**
- * \brief Openweather: City name
- * \param [in] city City name in Openweather format. For instance: Berlin,DE
+ * Openweather: City name
+ * @param [in] city City name in Openweather format. For instance: Berlin,DE
  */
 void UserConf::setCity(const String& city)
 {
@@ -141,8 +141,8 @@ void UserConf::setCity(const String& city)
 }
 
 /**
- * \brief Get city name
- * \return String
+ * Get city name
+ * @return String
  */
 const String& UserConf::getCity()
 {
@@ -150,8 +150,8 @@ const String& UserConf::getCity()
 }
 
 /**
- * \brief Set NTP server
- * \param [in] ntpServer NTP Server
+ * Set NTP server
+ * @param [in] ntpServer NTP Server
  */
 void UserConf::setNTPServer(const String& ntpServer)
 {
@@ -159,8 +159,8 @@ void UserConf::setNTPServer(const String& ntpServer)
 }
 
 /**
- * \brief Get NTP server
- * \return String
+ * Get NTP server
+ * @return String
  */
 const String& UserConf::getNTPServer()
 {
@@ -168,8 +168,8 @@ const String& UserConf::getNTPServer()
 }
 
 /**
- * \brief Set hours
- * \param [in] hours Hours
+ * Set hours
+ * @param [in] hours Hours
  */
 void UserConf::setHours(int hours)
 {
@@ -179,8 +179,8 @@ void UserConf::setHours(int hours)
 }
 
 /**
- * \brief Set minutes
- * \param [in] minutes Minutes
+ * Set minutes
+ * @param [in] minutes Minutes
  */
 void UserConf::setMinutes(int minutes)
 {
@@ -190,8 +190,8 @@ void UserConf::setMinutes(int minutes)
 }
 
 /**
- * \brief Set seconds
- * \param [in] seconds Seconds
+ * Set seconds
+ * @param [in] seconds Seconds
  */
 void UserConf::setSeconds(int seconds)
 {
@@ -201,8 +201,8 @@ void UserConf::setSeconds(int seconds)
 }
 
 /**
- * \brief Timezone offset
- * \param [in] offset
+ * Timezone offset
+ * @param [in] offset
  */
 void UserConf::setTimezone(int offset)
 {
@@ -210,8 +210,8 @@ void UserConf::setTimezone(int offset)
 }
 
 /**
- * \brief Daylight offset
- * \param [in] offset
+ * Daylight offset
+ * @param [in] offset
  */
 void UserConf::setDaylight(int offset)
 {
@@ -219,8 +219,8 @@ void UserConf::setDaylight(int offset)
 }
 
 /**
- * \brief Get hours
- * \return int
+ * Get hours
+ * @return int
  */
 int UserConf::getHours()
 {
@@ -228,8 +228,8 @@ int UserConf::getHours()
 }
 
 /**
- * \brief Get minutes
- * \return int
+ * Get minutes
+ * @return int
  */
 int UserConf::getMinutes()
 {
@@ -237,8 +237,8 @@ int UserConf::getMinutes()
 }
 
 /**
- * \brief Get seconds
- * \return int
+ * Get seconds
+ * @return int
  */
 int UserConf::getSeconds()
 {
@@ -246,8 +246,8 @@ int UserConf::getSeconds()
 }
 
 /**
- * \brief Get timezone offset
- * \return int Timezone offset (seconds)
+ * Get timezone offset
+ * @return int Timezone offset (seconds)
  */
 int UserConf::getTimezone()
 {
@@ -255,8 +255,8 @@ int UserConf::getTimezone()
 }
 
 /**
- * \brief Get daylight offset
- * \return int Daylight offset (seconds)
+ * Get daylight offset
+ * @return int Daylight offset (seconds)
  */
 int UserConf::getDaylight()
 {
@@ -264,11 +264,11 @@ int UserConf::getDaylight()
 }
 
 /**
- * \brief Set date
- * \param [in] day Day
- * \param [in] month Month
- * \param [in] year Year
- * \param [in] wday Week day
+ * Set date
+ * @param [in] day Day
+ * @param [in] month Month
+ * @param [in] year Year
+ * @param [in] wday Week day
  */
 void UserConf::setDate(int day, int month, int year, int wday)
 {
@@ -279,11 +279,11 @@ void UserConf::setDate(int day, int month, int year, int wday)
 }
 
 /**
- * \brief Get date
- * \param [out] day Day
- * \param [out] month Month
- * \param [out] year Year
- * \param [out] wday Week day
+ * Get date
+ * @param [out] day Day
+ * @param [out] month Month
+ * @param [out] year Year
+ * @param [out] wday Week day
  */
 void UserConf::getDate(int *day, int *month, int *year, int *wday)
 {
@@ -294,8 +294,8 @@ void UserConf::getDate(int *day, int *month, int *year, int *wday)
 }
 
 /**
- * \brief Set LCD brightness
- * \param [in] brightness Brightness
+ * Set LCD brightness
+ * @param [in] brightness Brightness
  */
 void UserConf::setLCDBrightness(int brightness)
 {
@@ -305,8 +305,8 @@ void UserConf::setLCDBrightness(int brightness)
 }
 
 /**
- * \brief Get LCD brightness
- * \return int
+ * Get LCD brightness
+ * @return int
  */
 int UserConf::getLCDBrightness()
 {
@@ -314,8 +314,8 @@ int UserConf::getLCDBrightness()
 }
 
 /**
- * \brief Return true if user has configured the system
- * \return bool True if user has set up options, false otherwise
+ * Return true if user has configured the system
+ * @return bool True if user has set up options, false otherwise
  */
 bool UserConf::isConfigured()
 {
@@ -327,7 +327,7 @@ bool UserConf::isConfigured()
 }
 
 /**
- * \brief Save all configuration data to EEPROM
+ * Save all configuration data to EEPROM
  */
 void UserConf::SaveConf()
 {
@@ -335,8 +335,8 @@ void UserConf::SaveConf()
 }
 
 /**
- * \brief Save all configuration data to EEPROM
- * \param [in] char Configuration status
+ * Save all configuration data to EEPROM
+ * @param [in] char Configuration status
  */
 void UserConf::SaveConf(char confStatus)
 {
@@ -369,7 +369,7 @@ void UserConf::SaveConf(char confStatus)
 }
 
 /**
- * \brief Read all configuration data from EEPROM
+ * Read all configuration data from EEPROM
  */
 void UserConf::ReadConf()
 {
@@ -404,7 +404,7 @@ void UserConf::ReadConf()
 }
 
 /**
- * \brief Reset configuration to default settings
+ * Reset configuration to default settings
  */
 void UserConf::ResetConf()
 {
