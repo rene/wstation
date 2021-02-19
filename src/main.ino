@@ -130,6 +130,15 @@ String formatIP(IPAddress ipAddr)
 }
 
 /**
+ * Update screen elements from user configuration
+ */
+void updateGUI(void)
+{
+	// TODO update wall clock and date
+	gui->setBacklight(confData.getLCDBrightness());
+}
+
+/**
  * \brief Update graphical elements on the screen
  * \param parameter Task parameters (not used)
  */

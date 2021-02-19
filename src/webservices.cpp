@@ -37,18 +37,11 @@
 #include <SPI.h>
 #include <FS.h>
 #include <SPIFFS.h>
-#include <TimeLib.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "wstation.h"
 #include "webservices.h"
 #include "EInterface.h"
-
-/** Wall clock */
-extern tmElements_t wallClock;
-
-/** Graphical interface */
-extern EInterface *gui;
 
 static String checkGetParam(AsyncWebServerRequest *request, String param)
 {
@@ -57,6 +50,24 @@ static String checkGetParam(AsyncWebServerRequest *request, String param)
 		field = request->getParam(param, true)->value();
 	}
 	return field;
+}
+
+/**
+ * Calculate the day of the week
+ * Algorithm from: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
+ * @param [in] y Year
+ * @param [in] m Month
+ * @param [in] d Day
+ * @return int Day of the week
+ */
+int dayofweek(int y, int m, int d)	/* 1 <= m <= 12,  y > 1752 (in the U.K.) */
+{
+	static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+	if( m < 3 )
+	{
+		y -= 1;
+	}
+	return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
 }
 
 /**
@@ -180,21 +191,30 @@ void SetupWebServices(AsyncWebServer *webServer)
 			confData.setDaylight(0);
 		}
 
-		Serial.println(checkGetParam(request, PARAM_DATE));
-		// TODO: Set date
+		String dt = checkGetParam(request, PARAM_DATE);
+		if (dt.length() >= 10) {
+			int year  = dt.substring(0, 4).toInt();
+			int month = dt.substring(5, 2).toInt();
+			int day   = dt.substring(8, 2).toInt();
+			int wday  = dayofweek(year, month, day);
+			confData.setDate(day, month, year, wday);
+		}
 
 		int h = checkGetParam(request, PARAM_HOURS).toInt();
 		int m = checkGetParam(request, PARAM_MINUTES).toInt();
 		int s = checkGetParam(request, PARAM_SECONDS).toInt();
-		// TODO: Update wall clock
+		confData.setHours(h);
+		confData.setMinutes(m);
+		confData.setSeconds(s);
 
 		int lcdbrig = checkGetParam(request, PARAM_LCDBRIG).toInt();
 		if (lcdbrig > 0 && lcdbrig <= 255) {
 			confData.setLCDBrightness(lcdbrig);
-			gui->setBacklight(confData.getLCDBrightness());
 		}
 
 		confData.SaveConf();
+		updateGUI();
+
 		request->redirect("/conf");
     });
 

@@ -35,6 +35,8 @@
 #ifndef __WSTATION_H__
 #define __WSTATION_H__
 
+#include <TimeLib.h>
+
 /** Firmware version */
 #ifndef WSTATION_VERSION
 #define WSTATION_VERSION "0.1beta"
@@ -201,5 +203,12 @@ typedef enum _temp_scale {
 	/** Fahrenheit */
 	FAHRENHEIT,
 } temp_scale_t;
+
+/** Wall clock */
+extern tmElements_t wallClock;
+
+/* Prototypes */
+
+void updateGUI(void);
 
 #endif /* __WSTATION_H__ */
