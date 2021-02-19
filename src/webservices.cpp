@@ -194,8 +194,8 @@ void SetupWebServices(AsyncWebServer *webServer)
 		String dt = checkGetParam(request, PARAM_DATE);
 		if (dt.length() >= 10) {
 			int year  = dt.substring(0, 4).toInt();
-			int month = dt.substring(5, 2).toInt();
-			int day   = dt.substring(8, 2).toInt();
+			int month = dt.substring(5, 7).toInt();
+			int day   = dt.substring(8, 10).toInt();
 			int wday  = dayofweek(year, month, day);
 			confData.setDate(day, month, year, wday);
 		}

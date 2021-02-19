@@ -466,11 +466,11 @@ void setup() {
 	weatherWS.setCity("Berlin,DE");
 
 #if 1
-	gui->setBacklight(confData.getLCDBrightness());
 	gui->clearAll();
 	gui->showAll();
-
 	gui->setCity(formatCity(weatherWS.getCity()));
+
+	updateFromConf();
 
 	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      10240, NULL, 2, NULL);
 	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 10240, NULL, 0, NULL);
