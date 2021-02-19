@@ -9,7 +9,7 @@
 			<div id="contents">
 				<div class="content">
 					<div class="logo"><img src="logo.png"/></div><br/>
-					<form method="POST" action="/save">
+					<form id="frmconf" method="POST" action="/save">
 						<h2>Wireless Network</h2>
 						<label>Wireless Network list:</label>
 						<select id="wifilist" onchange="chooseSSID()"></select><input type="button" value="Scan" onclick="populateWifi()"/></br>
@@ -75,7 +75,7 @@
 						<h2>Hardware</h2>
 						<label>LCD brightness level:</label><input type="range" name="brightness" min="0" max="255" value="%LCD_BRIGHTNESS%">
 						<hr/>
-						<input type="reset" value="Reset values"/>
+						<input type="button" value="Reset values" onclick="resetForm()"/>
 						<input type="submit" value="Save configuration"/>
 					</form>
 				</div>

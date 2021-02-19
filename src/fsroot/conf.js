@@ -48,6 +48,13 @@ function loadPage()
 	setTimeout(populateWifi, 1500);
 }
 
+function resetForm()
+{
+	var frm = document.getElementById("frmconf");
+	frm.reset();
+	loadPage();
+}
+
 function chooseSSID()
 {
 	var sel = document.getElementById("wifilist");
