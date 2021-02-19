@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \file main.ino
- * \brief Main tasks, setup() and loop() functions
+ * @file main.ino
+ * Main tasks, setup() and loop() functions
  */
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -88,9 +88,9 @@ bool updateStrDate;
 
 
 /**
- * \brief Format city string
- * \param [in] city City
- * \return String
+ * Format city string
+ * @param [in] city City
+ * @return String
  */
 String formatCity(const String& city)
 {
@@ -103,9 +103,9 @@ String formatCity(const String& city)
 }
 
 /**
- * \brief Format date into string
- * \param [in] tm Time
- * \return String
+ * Format date into string
+ * @param [in] tm Time
+ * @return String
  */
 String formatDate(tmElements_t tm)
 {
@@ -118,9 +118,9 @@ String formatDate(tmElements_t tm)
 }
 
 /**
- * \brief Format IP address into string
- * \param [in] ipAddr IP Address
- * \return String
+ * Format IP address into string
+ * @param [in] ipAddr IP Address
+ * @return String
  */
 String formatIP(IPAddress ipAddr)
 {
@@ -159,8 +159,8 @@ void updateFromConf(void)
 }
 
 /**
- * \brief Update graphical elements on the screen
- * \param parameter Task parameters (not used)
+ * Update graphical elements on the screen
+ * @param parameter Task parameters (not used)
  */
 void taskUpdateScreen(void *parameter)
 {
@@ -206,8 +206,8 @@ void taskUpdateScreen(void *parameter)
 }
 
 /**
- * \brief Update forecast information on the screen
- * \param parameter Task parameters (not used)
+ * Update forecast information on the screen
+ * @param parameter Task parameters (not used)
  */
 void taskUpdateWeatherInfo(void *parameter)
 {
@@ -248,8 +248,8 @@ void taskUpdateWeatherInfo(void *parameter)
 }
 
 /**
- * \brief Update NTP date/time information
- * \param parameter Task parameters (not used)
+ * Update NTP date/time information
+ * @param parameter Task parameters (not used)
  */
 void taskUpdateNTP(void *parameter)
 {
@@ -282,8 +282,8 @@ void taskUpdateNTP(void *parameter)
 }
 
 /**
- * \brief Read DHT sensor data
- * \param parameter Task parameters (not used)
+ * Read DHT sensor data
+ * @param parameter Task parameters (not used)
  */
 void taskReadDHTSensor(void *parameter)
 {
@@ -306,8 +306,8 @@ void taskReadDHTSensor(void *parameter)
 }
 
 /**
- * \brief Receive nexus sensor data
- * \param parameter Task parameters (not used)
+ * Receive nexus sensor data
+ * @param parameter Task parameters (not used)
  */
 void taskReceiveSensorData(void *parameter)
 {
@@ -392,7 +392,7 @@ void taskReceiveSensorData(void *parameter)
 }
 
 /**
- * \brief Setup
+ * Setup
  */
 void setup() {
 	// Initialize serial
@@ -481,7 +481,7 @@ void setup() {
 }
 
 /**
- * \brief Main loop
+ * Main loop
  */
 void loop()
 {
