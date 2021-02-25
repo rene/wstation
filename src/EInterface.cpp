@@ -493,6 +493,10 @@ void EInterface::showForecastTemp1(int i, float temp)
 		case 2:
 			x = 168;
 			break;
+
+		default:
+			x = 5;
+			break;
 	}
 
 	forecastTemp1[i] = temp;

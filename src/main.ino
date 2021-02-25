@@ -30,7 +30,7 @@
  */
 /**
  * @file main.ino
- * Main tasks, setup() and loop() functions
+ * Main tasks, setup(), loop() and auxiliary functions
  */
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -152,10 +152,14 @@ void updateFromConf(void)
 	xSemaphoreGive(clk_mutex);
 
 	// LCD backlight
+	xSemaphoreTake(t_mutex, portMAX_DELAY);
 	gui->setBacklight(confData.getLCDBrightness());
+	xSemaphoreGive(t_mutex);
 
 	// Set to update date string
+	xSemaphoreTake(t_mutex, portMAX_DELAY);
 	updateStrDate = true;
+	xSemaphoreGive(t_mutex);
 }
 
 /**
@@ -437,11 +441,11 @@ void setup() {
 	// Initialize 433MHz module receiver
 	setupNexus(RF_PIN);
 
-	// Configure web server
-	SetupWebServices(&webServer);
-
 	// Read user configuration
 	confData.ReadConf();
+
+	// Configure web server
+	SetupWebServices(&webServer);
 
 	// Check for valid configuration
 	if (!confData.isConfigured()) {
@@ -472,10 +476,10 @@ void setup() {
 
 	updateFromConf();
 
-	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      10240, NULL, 2, NULL);
-	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 10240, NULL, 0, NULL);
+	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      16384, NULL, 2, NULL);
+	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 16384, NULL, 0, NULL);
 	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 32768, NULL, 0, NULL);
-	xTaskCreate(taskUpdateNTP,         "UpdateNTP",          4096, NULL, 0, NULL);
+	xTaskCreate(taskUpdateNTP,         "UpdateNTP",          8192, NULL, 0, NULL);
 	xTaskCreate(taskReadDHTSensor,     "ReadDHTSensor",      4096, NULL, 0, NULL);
 #endif
 }
