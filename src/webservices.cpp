@@ -225,8 +225,14 @@ void SetupWebServices(AsyncWebServer *webServer)
 			confData.setTempScale(CELSIUS);
 		}
 
-		confData.SaveConf();
-		updateFromConf();
+		if (!confData.isConfigured()) {
+			// This is the first setup, we need to reset the device
+			confData.SaveConf();
+			userSetupDone();
+		} else {
+			confData.SaveConf();
+			updateFromConf();
+		}
 
 		request->redirect("/conf");
     });

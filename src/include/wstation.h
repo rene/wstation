@@ -45,6 +45,11 @@
 /** Web server port */
 #define WEBSERVER_PORT 80
 
+/** Default WiFi SSID for AP mode */
+#define DEFAULT_AP_SSID "WStation"
+/** Default WiFi password for AP mode */
+#define DEFAULT_AP_PASS "wstation1234"
+
 /** LED pin */
 #define LED_PIN 2
 
@@ -209,6 +214,7 @@ extern tmElements_t wallClock;
 
 /* Prototypes */
 
+void userSetupDone(void);
 void updateFromConf(void);
 
 #endif /* __WSTATION_H__ */

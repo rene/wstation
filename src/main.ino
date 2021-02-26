@@ -33,7 +33,6 @@
  * Main tasks, setup(), loop() and auxiliary functions
  */
 #include <WiFi.h>
-#include <WiFiMulti.h>
 #include <SPI.h>
 #include <FS.h>
 #include <SPIFFS.h>
@@ -59,8 +58,6 @@ EInterface *gui = NULL;
 ETheme colorTheme;
 /** OpenWeather */
 OpenWeather weatherWS;
-/** WiFi */
-WiFiMulti wifiMulti;
 /** DHT sensor */
 DHTesp dhtSensor;
 /** Wall clock */
@@ -76,6 +73,9 @@ volatile SemaphoreHandle_t clk_mutex;
 
 /** Mutex for restart device */
 volatile SemaphoreHandle_t reset_mutex;
+
+/** Wait for user initial setup */
+volatile SemaphoreHandle_t setup_sem;
 
 /** Last weather information update */
 unsigned long lastUpdate;
@@ -127,6 +127,14 @@ String formatIP(IPAddress ipAddr)
 	char ip[40];
 	snprintf(ip, 40, "%d.%d.%d.%d", ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3]);
 	return String(ip);
+}
+
+/**
+ * Indicate that user setup is done
+ */
+void userSetupDone(void)
+{
+	xSemaphoreGive(setup_sem);
 }
 
 /**
@@ -222,7 +230,7 @@ void taskUpdateWeatherInfo(void *parameter)
 	weather_info_t wfc;
 
 	while (1) {
-		if (wifiMulti.run() == WL_CONNECTED) {
+		if (WiFi.status() == WL_CONNECTED) {
 			if ((now() - lastUpdate) >= WEATHER_UPDATE_INTERVAL) {
 				lastUpdate = now();
 
@@ -264,7 +272,7 @@ void taskUpdateNTP(void *parameter)
 	weather_info_t wfc;
 
 	while (1) {
-		if (wifiMulti.run() == WL_CONNECTED) {
+		if (WiFi.status() == WL_CONNECTED) {
 			if ((now() - lastNTPUpdate) >= NTP_UPDATE_INTERVAL) {
 				lastNTPUpdate = now();
 
@@ -426,6 +434,7 @@ void setup() {
 	vSemaphoreCreateBinary(t_mutex);
 	vSemaphoreCreateBinary(clk_mutex);
 	vSemaphoreCreateBinary(reset_mutex);
+	setup_sem = xSemaphoreCreateCounting(1, 0);
 
 	// Initialize embedded GUI
 	gui = new EInterface(TFT_CS, TFT_DC,
@@ -453,26 +462,37 @@ void setup() {
 	if (!confData.isConfigured()) {
 		// Reset conf
 		confData.ResetConf();
-#if 0
+
+		// Create Access Point
+		WiFi.softAP(DEFAULT_AP_SSID, DEFAULT_AP_PASS);
+		String ip("  URL: http://");
+		ip.concat(formatIP(WiFi.softAPIP()));
+
+		// Start web server
+		webServer.begin();
+
+		// Show instructions on screen
 		gui->print(30, 25, "Welcome to WStation!");
 		gui->print(10, 60, "Device needs configuration!");
-		gui->print(0, 210, "Please, connect to:\n\n");
-		gui->print("  ESSID:    WStation\n");
-		gui->print("  Password: wstation1234\n");
-		gui->print("  URL: http://10.1.1.1\n");
-#endif
+		gui->print(0, 224, "Please, connect to:\n");
+		gui->print("  ESSID:    " DEFAULT_AP_SSID "\n");
+		gui->print("  Password: " DEFAULT_AP_PASS "\n");
+		gui->print(ip);
+
+		// Wait until setup is done
+		xSemaphoreTake(setup_sem, portMAX_DELAY);
 	}
 
-	// DEMO
+	// Device is configured, proceed with initialization
 	lastUpdate    = now() - WEATHER_UPDATE_INTERVAL;
 	lastNTPUpdate = now() - NTP_UPDATE_INTERVAL + 5;
 
-	wifiMulti.addAP("VIZSLANET", "teodoro+2015");
+	WiFi.mode(WIFI_STA);
+	WiFi.begin(confData.getWiFiSSID().c_str(),
+				confData.getWiFiPassword().c_str());
+	weatherWS.setAPIKey(confData.getAPIKey());
+	weatherWS.setCity(confData.getCity());
 
-	weatherWS.setAPIKey("0300414e2812dcf9b846060f08ae4882");
-	weatherWS.setCity("Berlin,DE");
-
-#if 1
 	gui->clearAll();
 	gui->showAll();
 	gui->setCity(formatCity(weatherWS.getCity()));
@@ -484,7 +504,6 @@ void setup() {
 	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 32768, NULL, 0, NULL);
 	xTaskCreate(taskUpdateNTP,         "UpdateNTP",          8192, NULL, 0, NULL);
 	xTaskCreate(taskReadDHTSensor,     "ReadDHTSensor",      4096, NULL, 0, NULL);
-#endif
 }
 
 /**
@@ -498,13 +517,13 @@ void loop()
 
 	while (1) {
 		// WiFi status
-		status = wifiMulti.run();
+		status = WiFi.status();
 
 		switch(status) {
 			case WL_IDLE_STATUS:
 			case WL_NO_SSID_AVAIL:
 				do {
-					status = wifiMulti.run();
+					status = WiFi.status();
 
 					if (icon == false)
 						icon = true;
