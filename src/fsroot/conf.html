@@ -72,7 +72,13 @@
 						<label>SS:</label><input name="seconds" size="2" value="%SECONDS%"/> <br/>
 						<label>NTP Server: </label><input type="text" name="ntp" size="20" value="%NTP_SERVER%"/><br/>
 						<hr/>
-						<h2>Hardware</h2>
+						<h2>Interface</h2>
+						<label>Show Temperature in:</label>
+							<input type="hidden" id="tempsc" name="tempsc" value="%TEMPSCALE%">
+							<select id="tempscale" name="tempscale">
+								<option value="C">&deg;C</option>
+								<option value="F">&deg;F</option>
+							</select><br/>
 						<label>LCD brightness level:</label><input type="range" name="brightness" min="0" max="255" value="%LCD_BRIGHTNESS%">
 						<hr/>
 						<input type="button" value="Reset values" onclick="resetForm()"/>

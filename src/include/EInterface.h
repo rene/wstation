@@ -146,6 +146,9 @@ class EInterface {
 		/* Convert weather type into the corresponding icon */
 		ETheme::pixmap_t getWeatherIcon(weather_t weather, char period);
 
+		/* Get Celsius temperature converted (when needed) */
+		float convCelsius(float temp);
+
 	public:
 		/* Constructor */
 		EInterface(int8_t cs, int8_t dc,
@@ -250,6 +253,9 @@ class EInterface {
 
 		/* Draw all graphical elements in the screen */
 		void showAll();
+
+		/* Get temperature scale */
+		temp_scale_t getTempScale();
 
 		/* Clear the whole screen */
 		void clearAll();

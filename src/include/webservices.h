@@ -51,6 +51,7 @@
 #define PARAM_SECONDS  "seconds"
 #define PARAM_NTP      "ntp"
 #define PARAM_LCDBRIG  "brightness"
+#define PARAM_TEMPSCALE "tempscale"
 
 /* Reset mutex */
 extern volatile SemaphoreHandle_t reset_mutex;

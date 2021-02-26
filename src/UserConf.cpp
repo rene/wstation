@@ -58,6 +58,7 @@ struct _user_conf {
 	int year;
 	int wday;
 	int brightness;
+	temp_scale_t tempScale;
 } __attribute__((packed));
 
 /** User configuration data at EEPROM */
@@ -73,7 +74,8 @@ UserConf::UserConf() :
 	hours(DEFCONF_HOURS), minutes(DEFCONF_MINUTES),
 	timezone(DEFCONF_TIMEZONE), daylight(DEFCONF_DAYLIGHT),
 	seconds(DEFCONF_SECONDS), day(DEFCONF_DAY), month(DEFCONF_MONTH),
-	year(DEFCONF_YEAR), brightness(DEFCONF_BRIGHTNESS)
+	year(DEFCONF_YEAR), brightness(DEFCONF_BRIGHTNESS),
+	tempScale(DEFCONF_TEMP_SCALE)
 {
 }
 
@@ -219,6 +221,15 @@ void UserConf::setDaylight(int offset)
 }
 
 /**
+ * Set temperature scale
+ * @param [in] scale CELSIUS or FAHRENHEIT
+ */
+void UserConf::setTempScale(temp_scale_t scale)
+{
+	tempScale = scale;
+}
+
+/**
  * Get hours
  * @return int
  */
@@ -261,6 +272,15 @@ int UserConf::getTimezone()
 int UserConf::getDaylight()
 {
 	return daylight;
+}
+
+/**
+ * Set temperature scale
+ * @return temp_scale_t
+ */
+temp_scale_t UserConf::getTempScale()
+{
+	return tempScale;
 }
 
 /**
@@ -363,6 +383,7 @@ void UserConf::SaveConf(char confStatus)
 	uconf.wday       = wday;
 	uconf.brightness = brightness;
 	uconf.confStatus = this->confStatus;
+	uconf.tempScale  = tempScale;
 
 	// Write struct to EEPROM
 	NVS.setBlob("uconf", (uint8_t*)&uconf, sizeof(uconf));
@@ -401,6 +422,7 @@ void UserConf::ReadConf()
 	wday         = uconf.wday;
 	brightness   = uconf.brightness;
 	confStatus   = uconf.confStatus;
+	tempScale    = uconf.tempScale;
 }
 
 /**
@@ -424,6 +446,7 @@ void UserConf::ResetConf()
 	year         = DEFCONF_YEAR;
 	wday         = DEFCONF_WDAY;
 	brightness   = DEFCONF_BRIGHTNESS;
+	tempScale    = DEFCONF_TEMP_SCALE;
 	confStatus   = 0;
 
 	// Save to EEPROM

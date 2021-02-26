@@ -151,9 +151,11 @@ void updateFromConf(void)
 	writeClock(&wallClock);
 	xSemaphoreGive(clk_mutex);
 
-	// LCD backlight
 	xSemaphoreTake(t_mutex, portMAX_DELAY);
+	// LCD backlight
 	gui->setBacklight(confData.getLCDBrightness());
+	// Temperature scale
+	gui->setTempScale(confData.getTempScale());
 	xSemaphoreGive(t_mutex);
 
 	// Set to update date string
@@ -452,11 +454,12 @@ void setup() {
 		// Reset conf
 		confData.ResetConf();
 #if 0
-	gui->print(30, 25, "Welcome to WStation!");
-	gui->print(10, 60, "Device needs configuration!");
-	gui->print(0, 210, "Please, connect to:\n\n");
-	gui->print("  ESSID:    WStation\n");
-	gui->print("  Password: wstation1234\n");
+		gui->print(30, 25, "Welcome to WStation!");
+		gui->print(10, 60, "Device needs configuration!");
+		gui->print(0, 210, "Please, connect to:\n\n");
+		gui->print("  ESSID:    WStation\n");
+		gui->print("  Password: wstation1234\n");
+		gui->print("  URL: http://10.1.1.1\n");
 #endif
 	}
 

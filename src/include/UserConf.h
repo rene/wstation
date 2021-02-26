@@ -68,6 +68,8 @@
 #define DEFCONF_WDAY       3
 /** Default value for: day */
 #define DEFCONF_BRIGHTNESS BACKLIGHT_DEFAULT
+/** Default value for: temperature scale */
+#define DEFCONF_TEMP_SCALE CELSIUS
 
 
 class UserConf {
@@ -104,6 +106,8 @@ class UserConf {
 		int wday;
 		/** LCD brightness */
 		int brightness;
+		/** Temperature scale */
+		temp_scale_t tempScale;
 
 	public:
 		/* Constructor */
@@ -138,6 +142,8 @@ class UserConf {
 		void setTimezone(int offset);
 		/* Daylight offset */
 		void setDaylight(int offset);
+		/* Set temperature scale */
+		void setTempScale(temp_scale_t scale);
 		/* Get hours */
 		int getHours();
 		/* Get minutes */
@@ -148,6 +154,8 @@ class UserConf {
 		int getTimezone();
 		/* Get daylight offset */
 		int getDaylight();
+		/* Get temperature scale */
+		temp_scale_t getTempScale();
 		/* Set date */
 		void setDate(int day, int month, int year, int wday);
 		/* Get date */

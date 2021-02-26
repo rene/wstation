@@ -117,9 +117,16 @@ void EInterface::setBacklight(int level)
  */
 void EInterface::setTempScale(temp_scale_t scale)
 {
+	int i;
 	tempScale = scale;
 	showTemp1(temp1);
 	showTemp2(temp2);
+	for (i = 0; i < 3; i++) {
+		showForecastWeather(i, forecastWeather[i]);
+		showForecastLabel(i, forecastLabels[i]);
+		showForecastTemp1(i, forecastTemp1[i]);
+		showForecastTemp2(i, forecastTemp2[i]);
+	}
 }
 
 /**
@@ -330,22 +337,22 @@ void EInterface::showTempLabels()
 
 /**
  * Show temperature 1
- * @param [in] temp Temperature
+ * @param [in] temp Temperature (in Celsius)
  */
 void EInterface::showTemp1(float temp)
 {
 	temp1 = temp;
-	drawTemp(temp1, 5, 160);
+	drawTemp(convCelsius(temp1), 5, 160);
 }
 
 /**
  * Show temperature 2
- * @param [in] temp Temperature
+ * @param [in] temp Temperature (in Celsius)
  */
 void EInterface::showTemp2(float temp)
 {
 	temp2 = temp;
-	drawTemp(temp2, 5, 225);
+	drawTemp(convCelsius(temp2), 5, 225);
 }
 
 /**
@@ -471,7 +478,7 @@ void EInterface::showForecastLabel(int i, const String& label)
 /**
  * Show forecast temperature 1
  * @param [in] i Forecast number
- * @param [in] temp Temperature
+ * @param [in] temp Temperature (in Celsius)
  */
 void EInterface::showForecastTemp1(int i, float temp)
 {
@@ -500,10 +507,14 @@ void EInterface::showForecastTemp1(int i, float temp)
 	}
 
 	forecastTemp1[i] = temp;
-	drawForecastTemp(temp, x, y, theme.getWeekTemp1());
+	drawForecastTemp(convCelsius(temp), x, y, theme.getWeekTemp1());
 }
 
-/* Show forecast temperature 2 */
+/**
+ * Show forecast temperature 2
+ * @param [in] i Forecast number
+ * @param [in] temp Temperature (in Celsius)
+ */
 void EInterface::showForecastTemp2(int i, float temp)
 {
 	int x, y;
@@ -527,7 +538,7 @@ void EInterface::showForecastTemp2(int i, float temp)
 	}
 
 	forecastTemp2[i] = temp;
-	drawForecastTemp(temp, x, y, theme.getWeekTemp2());
+	drawForecastTemp(convCelsius(temp), x, y, theme.getWeekTemp2());
 }
 
 /**
@@ -666,6 +677,15 @@ void EInterface::showAll()
 		showForecastTemp1(i, forecastTemp1[i]);
 		showForecastTemp2(i, forecastTemp2[i]);
 	}
+}
+
+/**
+ * Get temperature scale
+ * @return temp_scale_t
+ */
+temp_scale_t EInterface::getTempScale()
+{
+	return tempScale;
 }
 
 /**
@@ -1073,5 +1093,19 @@ ETheme::pixmap_t EInterface::getWeatherIcon(weather_t weather, char period)
 	}
 
 	return res;
+}
+
+/**
+ * Get Celsius temperature converted (when needed)
+ * @param [in] temp Temperature
+ * @return float
+ */
+float EInterface::convCelsius(float temp)
+{
+	if (tempScale == FAHRENHEIT) {
+		return (temp * 1.8) + 32;
+	} else {
+		return temp;
+	}
 }
 

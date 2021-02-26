@@ -122,6 +122,12 @@ String processData(const String& var)
 		return String(confData.getTimezone());
 	else if (var == "DAYLIGHT")
 		return String(confData.getDaylight());
+	else if (var == "TEMPSCALE")
+		if (confData.getTempScale() == FAHRENHEIT) {
+			return String("F");
+		} else {
+			return String("C");
+		}
 
 	return String();
 }
@@ -210,6 +216,13 @@ void SetupWebServices(AsyncWebServer *webServer)
 		int lcdbrig = checkGetParam(request, PARAM_LCDBRIG).toInt();
 		if (lcdbrig > 0 && lcdbrig <= 255) {
 			confData.setLCDBrightness(lcdbrig);
+		}
+
+		String tc = checkGetParam(request, PARAM_TEMPSCALE);
+		if (tc == "F") {
+			confData.setTempScale(FAHRENHEIT);
+		} else {
+			confData.setTempScale(CELSIUS);
 		}
 
 		confData.SaveConf();
