@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* 
+/*
  * Copyright 2020 Renê de Souza Pinto
  *
  * Redistribution and use in source and binary forms, with or without
@@ -186,7 +186,7 @@ void taskUpdateScreen(void *parameter)
 		ret = readClock(&wallClock);
 		xSemaphoreGive(clk_mutex);
 		if (ret < 0) {
-			Serial.println("Read clock error!");
+			log_e("Read clock error!");
 			xSemaphoreTake(clk_mutex, portMAX_DELAY);
 			wallClock.Day    = 1;
 			wallClock.Month  = 1;
@@ -235,7 +235,7 @@ void taskUpdateWeatherInfo(void *parameter)
 				lastUpdate = now();
 
 				if (weatherWS.updateForecast() != 0) {
-					Serial.println("Error to retrieve forecast!");
+					log_e("Error to retrieve forecast!");
 				} else {
 					weather_info_t w = weatherWS.getDailyForecast();
 					t1 = OpenWeather::convKelvinTemp(w.temp, CELSIUS);
@@ -306,7 +306,7 @@ void taskReadDHTSensor(void *parameter)
 		sensorData = dhtSensor.getTempAndHumidity();
 
 		if (dhtSensor.getStatus() != 0) {
-			Serial.println("DHT11 error status: " + String(dhtSensor.getStatusString()));
+			log_e("DHT11 error status: %s", dhtSensor.getStatusString());
 		} else {
 			// Display data
 			xSemaphoreTake(t_mutex, portMAX_DELAY);
@@ -410,7 +410,7 @@ void taskReceiveSensorData(void *parameter)
  */
 void setup() {
 	// Initialize serial
-    Serial.begin(115200);
+	Serial.begin(115200);
 	Serial.print("WSTATION: ");
 	Serial.println(WSTATION_VERSION);
 
@@ -420,9 +420,9 @@ void setup() {
 
 	// Initialize SPIFFS file system
 	if(!SPIFFS.begin(false)){
-		Serial.println("SPIFFS Mount Failed");
-		Serial.println("Abort.");
-        return;
+		log_e("SPIFFS Mount Failed");
+		log_e("Abort.");
+		return;
     }
 
 	// Initialize NVS

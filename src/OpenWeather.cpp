@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* 
+/*
  * Copyright 2020 Renê de Souza Pinto
  *
  * Redistribution and use in source and binary forms, with or without
@@ -129,7 +129,11 @@ int OpenWeather::updateDailyForecast()
 		if(res == HTTP_CODE_OK) {
 			// Parse information
 			res = parseDaily(http.getString());
+		} else {
+			log_e("HTTP/GET response error: %d", res);
 		}
+	} else {
+		log_e("HTTP/GET error: %d", res);
 	}
 
 	http.end();
@@ -160,7 +164,11 @@ int OpenWeather::updateWeeklyForecast()
 		if(res == HTTP_CODE_OK) {
 			// Parse information
 			res = parseWeekly(http.getString());
+		} else {
+			log_e("HTTP/GET response error: %d", res);
 		}
+	} else {
+		log_e("HTTP/GET error: %d", res);
 	}
 
 	http.end();
@@ -176,6 +184,7 @@ int OpenWeather::updateForecast()
 	int res = 0;
 	res |= updateDailyForecast();
 	res |= updateWeeklyForecast();
+	return res;
 }
 
 /**
@@ -241,8 +250,7 @@ int OpenWeather::parseDaily(const String& json)
 	DeserializationError error = deserializeJson(doc, json);
 
 	if (error) {
-		Serial.print("deserializeJson() failed: ");
-		Serial.println(error.c_str());
+		log_e("deserializeJson() failed: %s", error.c_str());
 		return -1;
 	}
 
@@ -274,8 +282,7 @@ int OpenWeather::parseWeekly(const String& json)
 	DeserializationError error = deserializeJson(doc, json);
 
 	if (error) {
-		Serial.print("deserializeJson() failed: ");
-		Serial.println(error.c_str());
+		log_e("deserializeJson() failed: %s", error.c_str());
 		return -1;
 	}
 
