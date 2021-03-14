@@ -234,8 +234,8 @@ void taskUpdateWeatherInfo(void *parameter)
 			if ((now() - lastUpdate) >= WEATHER_UPDATE_INTERVAL) {
 				lastUpdate = now();
 
-				if (weatherWS.updateForecast() < 0) {
-					Serial.print("Error");
+				if (weatherWS.updateForecast() != 0) {
+					Serial.print("Error to retrieve forecast!");
 				} else {
 					weather_info_t w = weatherWS.getDailyForecast();
 					t1 = OpenWeather::convKelvinTemp(w.temp, CELSIUS);

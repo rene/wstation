@@ -774,7 +774,7 @@ void EInterface::print(int x, int y, int16_t color, int16_t bgcolor, const Strin
 void EInterface::drawTemp(float temp, int x, int y)
 {
 	char sc;
-	char tempVal[10];
+	char tempVal[12];
 	int16_t x1, y1, dx, dy;
 	uint16_t w, h;
 
@@ -785,9 +785,9 @@ void EInterface::drawTemp(float temp, int x, int y)
 	}
 	
 	if (temp == GUI_INV_TEMP) {
-		sprintf(tempVal, "--.-  %c", sc);
+		snprintf(tempVal, sizeof(tempVal), "--.-  %c", sc);
 	} else {
-		sprintf(tempVal, "%.1f  %c", temp, sc);
+		snprintf(tempVal, sizeof(tempVal), "%.1f  %c", temp, sc);
 	}
 
 	tft->setFont(&FreeSansBold18pt7b);
@@ -818,7 +818,7 @@ void EInterface::drawTemp(float temp, int x, int y)
 void EInterface::drawForecastTemp(float temp, int x, int y, int16_t color)
 {
 	char sc;
-	char tempVal[10];
+	char tempVal[12];
 	int16_t x1, y1, dx, dy;
 	uint16_t w, h;
 
@@ -829,9 +829,9 @@ void EInterface::drawForecastTemp(float temp, int x, int y, int16_t color)
 	}
 
 	if (temp == GUI_INV_TEMP) {
-		sprintf(tempVal, "--.-  %c", sc);
+		snprintf(tempVal, sizeof(tempVal), "--.-  %c", sc);
 	} else {
-		sprintf(tempVal, "%.1f  %c", temp, sc);
+		snprintf(tempVal, sizeof(tempVal), "%.1f  %c", temp, sc);
 	}
 
 	tft->setFont(&FreeSans9pt7b);
