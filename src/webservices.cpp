@@ -142,8 +142,9 @@ void SetupWebServices(AsyncWebServer *webServer)
 		return;
 
 	// Main page (configuration)
-	webServer->serveStatic("/conf", SPIFFS, "/conf.html").setTemplateProcessor(processData);
-	//webServer->serveStatic("/", SPIFFS, "/conf.html");
+	webServer->on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+		request->send(SPIFFS, "/conf.html", "text/html", false, processData);
+	});
 
 	// Logo image file
 	webServer->serveStatic("/logo.png", SPIFFS, "/logo.png");
@@ -229,7 +230,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 			updateFromConf();
 		}
 
-		request->redirect("/conf");
+		request->redirect("/");
     });
 
 	// WiFi scan function
