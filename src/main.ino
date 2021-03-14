@@ -235,7 +235,7 @@ void taskUpdateWeatherInfo(void *parameter)
 				lastUpdate = now();
 
 				if (weatherWS.updateForecast() != 0) {
-					Serial.print("Error to retrieve forecast!");
+					Serial.println("Error to retrieve forecast!");
 				} else {
 					weather_info_t w = weatherWS.getDailyForecast();
 					t1 = OpenWeather::convKelvinTemp(w.temp, CELSIUS);
@@ -501,7 +501,7 @@ void setup() {
 
 	xTaskCreate(taskUpdateScreen,      "UpdateScreen",      16384, NULL, 2, NULL);
 	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 16384, NULL, 0, NULL);
-	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 32768, NULL, 0, NULL);
+	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 36864, NULL, 0, NULL);
 	xTaskCreate(taskUpdateNTP,         "UpdateNTP",          8192, NULL, 0, NULL);
 	xTaskCreate(taskReadDHTSensor,     "ReadDHTSensor",      4096, NULL, 0, NULL);
 }
@@ -511,9 +511,11 @@ void setup() {
  */
 void loop()
 {
-	int status  = WL_IDLE_STATUS;
-	bool wsinit = false;
-	bool icon   = false;
+	int status     = WL_IDLE_STATUS;
+	bool wsinit    = false;
+	bool icon      = false;
+	int nocontimer = 0;
+	int i;
 
 	while (1) {
 		// WiFi status
@@ -523,6 +525,11 @@ void loop()
 			case WL_IDLE_STATUS:
 			case WL_NO_SSID_AVAIL:
 				do {
+					if (nocontimer < NETWORK_CONN_RETRY)
+						nocontimer++;
+					else
+						break;
+
 					status = WiFi.status();
 
 					if (icon == false)
@@ -549,6 +556,7 @@ void loop()
 					wsinit = true;
 					webServer.begin();
 				}
+				nocontimer = 0;
 				break;
 
 			case WL_SCAN_COMPLETED:
@@ -561,7 +569,32 @@ void loop()
 				gui->showWiFi(false);
 				gui->setIP("");
 				xSemaphoreGive(t_mutex);
+				nocontimer++;
 				break;
+		}
+
+		// Check for connection retry
+		if (nocontimer >= NETWORK_CONN_RETRY) {
+			// Try to reconnect
+			WiFi.disconnect();
+			delay(1000);
+			WiFi.mode(WIFI_STA);
+			WiFi.begin(confData.getWiFiSSID().c_str(),
+						confData.getWiFiPassword().c_str());
+
+			// Quick blink WiFi icon
+			xSemaphoreTake(t_mutex, portMAX_DELAY);
+			for (i = 0; i < 4; i++) {
+				if ((i % 2) == 0)
+					gui->showWiFi(true);
+				else
+					gui->showWiFi(false);
+				delay(400);
+			}
+			xSemaphoreGive(t_mutex);
+
+			// Reset timer counter
+			nocontimer = 0;
 		}
 
 		delay(1000);

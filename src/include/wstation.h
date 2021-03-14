@@ -45,6 +45,9 @@
 /** Web server port */
 #define WEBSERVER_PORT 80
 
+/** Time to retry network connection (in seconds) */
+#define NETWORK_CONN_RETRY 20
+
 /** Default WiFi SSID for AP mode */
 #define DEFAULT_AP_SSID "WStation"
 /** Default WiFi password for AP mode */
