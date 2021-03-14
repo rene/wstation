@@ -56,6 +56,11 @@
 /** LED pin */
 #define LED_PIN 2
 
+/** User reset button (BOOT button) */
+#define USER_RESET_BUTTON 0
+/** Reset button pressing time for factory reset */
+#define USER_RESET_PTIME 6
+
 /** 433MHz module receiver Data pin */
 #define RF_PIN  4
 
@@ -219,5 +224,6 @@ extern tmElements_t wallClock;
 
 void userSetupDone(void);
 void updateFromConf(void);
+void factoryReset(void);
 
 #endif /* __WSTATION_H__ */

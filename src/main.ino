@@ -173,6 +173,20 @@ void updateFromConf(void)
 }
 
 /**
+ * Perform factory reset
+ */
+void factoryReset(void)
+{
+	// Acquire mutex to reset device, we should never return from here
+	xSemaphoreTake(reset_mutex, portMAX_DELAY);
+	// Reset settings
+	confData.ResetConf();
+	// Restart system
+	esp_restart();
+	// Should never reach here: do not release the mutex for safety reasons
+}
+
+/**
  * Update graphical elements on the screen
  * @param parameter Task parameters (not used)
  */
@@ -418,6 +432,9 @@ void setup() {
 	pinMode(LED_PIN, OUTPUT);
 	digitalWrite(LED_PIN, LOW);
 
+	// Initialize BOOT button
+	pinMode(USER_RESET_BUTTON, INPUT);
+
 	// Initialize SPIFFS file system
 	if(!SPIFFS.begin(false)){
 		log_e("SPIFFS Mount Failed");
@@ -515,9 +532,29 @@ void loop()
 	bool wsinit    = false;
 	bool icon      = false;
 	int nocontimer = 0;
+	int resettimer = 0;
 	int i;
 
 	while (1) {
+		// User reset button
+		if (digitalRead(USER_RESET_BUTTON) == LOW) {
+			// Debounce
+			delay(50);
+			if (digitalRead(USER_RESET_BUTTON) == LOW) {
+				// Increment counter
+				resettimer++;
+				log_i("Reset button pressed: %d", resettimer);
+				if (resettimer >= USER_RESET_PTIME) {
+					log_i("Performing factory resetting...");
+					factoryReset();
+				}
+			} else {
+				resettimer = 0;
+			}
+		} else {
+			resettimer = 0;
+		}
+
 		// WiFi status
 		status = WiFi.status();
 

@@ -170,13 +170,8 @@ void SetupWebServices(AsyncWebServer *webServer)
 		request->send(200, "application/json", "{\"status\":\"OK\"}");
 		// Let's give some time for response
 		delay(2000);
-		// Acquire mutex to reset device, we should never return from here
-		xSemaphoreTake(reset_mutex, portMAX_DELAY);
-		// Reset settings
-		confData.ResetConf();
-		// Restart system
-		esp_restart();
-		// Should never reach here: do not release the mutex for safety reasons
+		// Perform factory reset
+		factoryReset();
 	});
 
 	// Save configuration data
