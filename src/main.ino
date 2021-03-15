@@ -33,6 +33,7 @@
  * Main tasks, setup(), loop() and auxiliary functions
  */
 #include <WiFi.h>
+#include <esp_wifi.h>
 #include <SPI.h>
 #include <FS.h>
 #include <SPIFFS.h>
@@ -76,6 +77,9 @@ volatile SemaphoreHandle_t reset_mutex;
 
 /** Wait for user initial setup */
 volatile SemaphoreHandle_t setup_sem;
+
+/** WiFi reset */
+volatile SemaphoreHandle_t wifi_mutex;
 
 /** Last weather information update */
 unsigned long lastUpdate;
@@ -130,11 +134,26 @@ String formatIP(IPAddress ipAddr)
 }
 
 /**
- * Indicate that user setup is done
+ * Indicates that user setup is done
  */
 void userSetupDone(void)
 {
 	xSemaphoreGive(setup_sem);
+}
+
+/**
+ * Perform WiFi reconnection
+ */
+void WiFiReconnect(void)
+{
+	xSemaphoreTake(wifi_mutex, portMAX_DELAY);
+	log_i("Resetting WiFi connection...");
+	WiFi.disconnect();
+	delay(1000);
+	WiFi.mode(WIFI_STA);
+	WiFi.begin(confData.getWiFiSSID().c_str(),
+				confData.getWiFiPassword().c_str());
+	xSemaphoreGive(wifi_mutex);
 }
 
 /**
@@ -143,6 +162,17 @@ void userSetupDone(void)
 void updateFromConf(void)
 {
 	int d, m, y, w;
+	wifi_config_t conf;
+
+	// Get WiFi configuration
+	esp_wifi_get_config(WIFI_IF_STA, &conf);
+	String wifi_ssid = String(reinterpret_cast<const char*>(conf.sta.ssid));
+	String wifi_pass = String(reinterpret_cast<const char*>(conf.sta.password));
+
+	// Check if WiFi network configuration have changed
+	if (wifi_ssid != confData.getWiFiSSID() ||
+		wifi_pass != confData.getWiFiPassword())
+		WiFiReconnect();
 
 	// Update calendar, daylight and timezone values are used only for NTP
 	// server (in order to perform the right time shift)
@@ -451,6 +481,7 @@ void setup() {
 	vSemaphoreCreateBinary(t_mutex);
 	vSemaphoreCreateBinary(clk_mutex);
 	vSemaphoreCreateBinary(reset_mutex);
+	vSemaphoreCreateBinary(wifi_mutex);
 	setup_sem = xSemaphoreCreateCounting(1, 0);
 
 	// Initialize embedded GUI
@@ -613,11 +644,7 @@ void loop()
 		// Check for connection retry
 		if (nocontimer >= NETWORK_CONN_RETRY) {
 			// Try to reconnect
-			WiFi.disconnect();
-			delay(1000);
-			WiFi.mode(WIFI_STA);
-			WiFi.begin(confData.getWiFiSSID().c_str(),
-						confData.getWiFiPassword().c_str());
+			WiFiReconnect();
 
 			// Quick blink WiFi icon
 			xSemaphoreTake(t_mutex, portMAX_DELAY);

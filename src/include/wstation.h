@@ -223,6 +223,7 @@ extern tmElements_t wallClock;
 /* Prototypes */
 
 void userSetupDone(void);
+void WiFiReconnect(void);
 void updateFromConf(void);
 void factoryReset(void);
 
