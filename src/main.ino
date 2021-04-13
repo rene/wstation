@@ -515,6 +515,7 @@ void setup() {
 		WiFi.softAP(DEFAULT_AP_SSID, DEFAULT_AP_PASS);
 		String ip("  URL: http://");
 		ip.concat(formatIP(WiFi.softAPIP()));
+		ip.concat("\n");
 
 		// Start web server
 		webServer.begin();
@@ -522,10 +523,12 @@ void setup() {
 		// Show instructions on screen
 		gui->print(30, 25, "Welcome to WStation!");
 		gui->print(10, 60, "Device needs configuration!");
-		gui->print(0, 224, "Please, connect to:\n");
-		gui->print("  ESSID:    " DEFAULT_AP_SSID "\n");
+		gui->print(45, 95, "Please, connect to:");
+		gui->print(0, 224, "  ESSID:    " DEFAULT_AP_SSID "\n");
 		gui->print("  Password: " DEFAULT_AP_PASS "\n");
 		gui->print(ip);
+		gui->print("  Username: " DEFAULT_USERNAME "\n");
+		gui->print("  User password: " DEFAULT_USER_PASS "\n");
 
 		// Wait until setup is done
 		xSemaphoreTake(setup_sem, portMAX_DELAY);

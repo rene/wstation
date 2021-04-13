@@ -37,11 +37,16 @@
 
 #include <Arduino.h>
 #include "EInterface.h"
+#include "wstation.h"
 
 /** Default value for: WiFi SSID */
-#define DEFCONF_WIFI_SSID  "WSTATION"
+#define DEFCONF_WIFI_SSID  DEFAULT_AP_SSID
 /** Default value for: WiFi password */
-#define DEFCONF_WIFI_PASS  "wstation1234"
+#define DEFCONF_WIFI_PASS  DEFAULT_AP_PASS
+/** Default value for: Username */
+#define DEFCONF_USERNAME   DEFAULT_USERNAME
+/** Default value for: User password */
+#define DEFCONF_USER_PASS  DEFAULT_USER_PASS
 /** Default value for: Openweather API key */
 #define DEFCONF_OW_KEY     ""
 /** Default value for: Openweather city */
@@ -108,6 +113,10 @@ class UserConf {
 		int brightness;
 		/** Temperature scale */
 		temp_scale_t tempScale;
+		/** Username */
+		String username;
+		/** User password */
+		String userpass;
 
 	public:
 		/* Constructor */
@@ -144,6 +153,10 @@ class UserConf {
 		void setDaylight(int offset);
 		/* Set temperature scale */
 		void setTempScale(temp_scale_t scale);
+		/* Set username */
+		void setUsername(const String& username);
+		/* Set user password */
+		void setUserPass(const String& userpass);
 		/* Get hours */
 		int getHours();
 		/* Get minutes */
@@ -156,6 +169,10 @@ class UserConf {
 		int getDaylight();
 		/* Get temperature scale */
 		temp_scale_t getTempScale();
+		/* Get username */
+		const String& getUsername();
+		/* Ger user password */
+		const String& getUserPass();
 		/* Set date */
 		void setDate(int day, int month, int year, int wday);
 		/* Get date */

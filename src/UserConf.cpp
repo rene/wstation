@@ -59,6 +59,8 @@ struct _user_conf {
 	int wday;
 	int brightness;
 	temp_scale_t tempScale;
+	char username[MAX_STR_SIZE];
+	char userpass[MAX_STR_SIZE];
 } __attribute__((packed));
 
 /** User configuration data at EEPROM */
@@ -75,7 +77,8 @@ UserConf::UserConf() :
 	timezone(DEFCONF_TIMEZONE), daylight(DEFCONF_DAYLIGHT),
 	seconds(DEFCONF_SECONDS), day(DEFCONF_DAY), month(DEFCONF_MONTH),
 	year(DEFCONF_YEAR), brightness(DEFCONF_BRIGHTNESS),
-	tempScale(DEFCONF_TEMP_SCALE)
+	tempScale(DEFCONF_TEMP_SCALE),
+	username(DEFCONF_USERNAME), userpass(DEFCONF_USER_PASS)
 {
 }
 
@@ -230,6 +233,24 @@ void UserConf::setTempScale(temp_scale_t scale)
 }
 
 /**
+ * Set username
+ * @param [in] username Username
+ */
+void UserConf::setUsername(const String& username)
+{
+	this->username = username;
+}
+
+/**
+ * Set user password
+ * @param [in] userpass User password
+ */
+void UserConf::setUserPass(const String& userpass)
+{
+	this->userpass = userpass;
+}
+
+/**
  * Get hours
  * @return int
  */
@@ -275,12 +296,30 @@ int UserConf::getDaylight()
 }
 
 /**
- * Set temperature scale
+ * Get temperature scale
  * @return temp_scale_t
  */
 temp_scale_t UserConf::getTempScale()
 {
 	return tempScale;
+}
+
+/**
+ * Get username
+ * @return String
+ */
+const String& UserConf::getUsername()
+{
+	return username;
+}
+
+/**
+ * Get user password
+ * @return String
+ */
+const String& UserConf::getUserPass()
+{
+	return userpass;
 }
 
 /**
@@ -384,6 +423,8 @@ void UserConf::SaveConf(char confStatus)
 	uconf.brightness = brightness;
 	uconf.confStatus = this->confStatus;
 	uconf.tempScale  = tempScale;
+	strncpy(uconf.username, username.c_str(), MAX_STR_SIZE);
+	strncpy(uconf.userpass, userpass.c_str(), MAX_STR_SIZE);
 
 	// Write struct to EEPROM
 	NVS.setBlob("uconf", (uint8_t*)&uconf, sizeof(uconf));
@@ -423,6 +464,8 @@ void UserConf::ReadConf()
 	brightness   = uconf.brightness;
 	confStatus   = uconf.confStatus;
 	tempScale    = uconf.tempScale;
+	username     = String(uconf.username);
+	userpass     = String(uconf.userpass);
 }
 
 /**
@@ -447,6 +490,8 @@ void UserConf::ResetConf()
 	wday         = DEFCONF_WDAY;
 	brightness   = DEFCONF_BRIGHTNESS;
 	tempScale    = DEFCONF_TEMP_SCALE;
+	username     = DEFCONF_USERNAME;
+	userpass     = DEFCONF_USER_PASS;
 	confStatus   = 0;
 
 	// Save to EEPROM

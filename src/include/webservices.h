@@ -52,6 +52,8 @@
 #define PARAM_NTP      "ntp"
 #define PARAM_LCDBRIG  "brightness"
 #define PARAM_TEMPSCALE "tempscale"
+#define PARAM_USERNAME  "username"
+#define PARAM_USER_PASS "userpass"
 
 /* Reset mutex */
 extern volatile SemaphoreHandle_t reset_mutex;

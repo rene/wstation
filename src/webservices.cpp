@@ -43,6 +43,12 @@
 #include "webservices.h"
 #include "EInterface.h"
 
+#define CHECK_HTTP_AUTH(req, conf) do { \
+	if(!req->authenticate(conf.getUsername().c_str(), \
+							conf.getUserPass().c_str())) \
+      return req->requestAuthentication(); \
+	} while(0)
+
 static String checkGetParam(AsyncWebServerRequest *request, String param)
 {
 	String field("");
@@ -60,7 +66,7 @@ static String checkGetParam(AsyncWebServerRequest *request, String param)
  * @param [in] d Day
  * @return int Day of the week
  */
-int dayofweek(int y, int m, int d)	/* 1 <= m <= 12,  y > 1752 (in the U.K.) */
+static int dayofweek(int y, int m, int d)	/* 1 <= m <= 12,  y > 1752 (in the U.K.) */
 {
 	static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
 	if( m < 3 )
@@ -75,7 +81,7 @@ int dayofweek(int y, int m, int d)	/* 1 <= m <= 12,  y > 1752 (in the U.K.) */
  * @param [in] int Integer
  * @return String
  */
-String format2Dig(int i)
+static String format2Dig(int i)
 {
 	String n = String(i, DEC);
 	if (i < 10) {
@@ -122,6 +128,10 @@ String processData(const String& var)
 		return String(confData.getTimezone());
 	else if (var == "DAYLIGHT")
 		return String(confData.getDaylight());
+	else if (var == "USERNAME")
+		return String(confData.getUsername());
+	else if (var == "USERPASS")
+		return String(confData.getUserPass());
 	else if (var == "TEMPSCALE")
 		if (confData.getTempScale() == FAHRENHEIT) {
 			return String("F");
@@ -143,6 +153,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 
 	// Main page (configuration)
 	webServer->on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+		CHECK_HTTP_AUTH(request, confData);
 		request->send(SPIFFS, "/conf.html", "text/html", false, processData);
 	});
 
@@ -155,8 +166,14 @@ void SetupWebServices(AsyncWebServer *webServer)
 	// Java script functions
 	webServer->serveStatic("/conf.js", SPIFFS, "/conf.js");
 
+	// Logout function
+	webServer->on("/logout", HTTP_GET, [](AsyncWebServerRequest *request){
+		request->send(401);
+	});
+
 	// Reset function
 	webServer->on("/resetDevice", HTTP_GET, [](AsyncWebServerRequest *request){
+		CHECK_HTTP_AUTH(request, confData);
 		request->send(200, "application/json", "{\"status\":\"OK\"}");
 		// Let's give some time for response
 		delay(2000);
@@ -168,6 +185,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 
 	// Reset to factory settings
 	webServer->on("/resetToFactory", HTTP_GET, [](AsyncWebServerRequest *request){
+		CHECK_HTTP_AUTH(request, confData);
 		request->send(200, "application/json", "{\"status\":\"OK\"}");
 		// Let's give some time for response
 		delay(2000);
@@ -177,6 +195,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 
 	// Save configuration data
 	webServer->on("/save", HTTP_POST, [](AsyncWebServerRequest *request){
+		CHECK_HTTP_AUTH(request, confData);
 		confData.setWiFiSSID(checkGetParam(request, PARAM_SSID));
 		confData.setWiFiPassword(checkGetParam(request, PARAM_WIFIPASS));
 		confData.setAPIKey(checkGetParam(request, PARAM_KEY));
@@ -221,6 +240,9 @@ void SetupWebServices(AsyncWebServer *webServer)
 			confData.setTempScale(CELSIUS);
 		}
 
+		confData.setUsername(checkGetParam(request, PARAM_USERNAME));
+		confData.setUserPass(checkGetParam(request, PARAM_USER_PASS));
+
 		if (!confData.isConfigured()) {
 			// This is the first setup, we need to reset the device
 			confData.SaveConf();
@@ -235,6 +257,7 @@ void SetupWebServices(AsyncWebServer *webServer)
 
 	// WiFi scan function
 	webServer->on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
+		CHECK_HTTP_AUTH(request, confData);
 		String json = "[";
 		int n = WiFi.scanComplete();
 		if(n == -2){

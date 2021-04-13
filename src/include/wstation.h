@@ -52,6 +52,10 @@
 #define DEFAULT_AP_SSID "WStation"
 /** Default WiFi password for AP mode */
 #define DEFAULT_AP_PASS "wstation1234"
+/** Default username */
+#define DEFAULT_USERNAME "admin"
+/** Default user password */
+#define DEFAULT_USER_PASS "admin"
 
 /** LED pin */
 #define LED_PIN 2

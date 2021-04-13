@@ -1,6 +1,6 @@
-function showHidePass()
+function showHidePass(elem)
 {
-	var x = document.getElementById("wpass");
+	var x = document.getElementById(elem);
 	if (x.type == "password") {
 		x.type = "text";
 	} else {
@@ -54,6 +54,10 @@ function loadPage()
 function resetForm()
 {
 	var frm = document.getElementById("frmconf");
+	var wpass = document.getElementById("wpass");
+	var upass = document.getElementById("userpass");
+	wpass.type = "password";
+	upass.type = "password";
 	frm.reset();
 	loadPage();
 }

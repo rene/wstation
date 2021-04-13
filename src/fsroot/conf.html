@@ -15,7 +15,7 @@
 						<select id="wifilist" onchange="chooseSSID()"></select><input type="button" value="Scan" onclick="populateWifi()"/></br>
 						<label>Wireless SSID:</label><input name="ssid" id="frmSSID" size="20" value="%WIFI_SSID%"/> <br/>
 						<label>Password:</label><input type="password" name="wifipass" id="wpass" size="20" value="%WIFI_PASS%"/>
-						<input type="checkbox" name="showPass" onclick="showHidePass()"><label>Show password</label><br/>
+						<input type="checkbox" name="showPass" onclick="showHidePass('wpass')"><label>Show password</label><br/>
 						<hr/>
 						<h2>Openweather API information</h2>
 						<label>API key:</label><input name="key" size="35" value="%API_KEY%"/> <br/>
@@ -80,6 +80,11 @@
 								<option value="F">&deg;F</option>
 							</select><br/>
 						<label>LCD brightness level:</label><input type="range" name="brightness" min="0" max="255" value="%LCD_BRIGHTNESS%">
+						<hr/>
+						<h2>User information</h2>
+						<label>Username:</label><input type="input" name="username" id="username" size="15" value="%USERNAME%"/><br/>
+						<label>Password:</label><input type="password" name="userpass" id="userpass" size="15" value="%USERPASS%"/>
+						<input type="checkbox" name="showUserPass" onclick="showHidePass('userpass')"><label>Show password</label><br/>
 						<hr/>
 						<input type="button" value="Reset values" onclick="resetForm()"/>
 						<input type="submit" value="Save configuration"/>
