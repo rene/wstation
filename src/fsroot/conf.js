@@ -62,6 +62,21 @@ function resetForm()
 	loadPage();
 }
 
+function logout()
+{
+	if (confirm("Proceed to logout?")) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/logout", true);
+		xhttp.send();
+		xhttp.onload = function() {
+			if (xhttp.status != 401) {
+				alert("Unknown error!");
+			}
+			window.location = "/login";
+		};
+	}
+}
+
 function chooseSSID()
 {
 	var sel = document.getElementById("wifilist");

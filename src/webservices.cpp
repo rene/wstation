@@ -166,6 +166,9 @@ void SetupWebServices(AsyncWebServer *webServer)
 	// Java script functions
 	webServer->serveStatic("/conf.js", SPIFFS, "/conf.js");
 
+	// Login page
+	webServer->serveStatic("/login", SPIFFS, "/login.html");
+
 	// Logout function
 	webServer->on("/logout", HTTP_GET, [](AsyncWebServerRequest *request){
 		request->send(401);
