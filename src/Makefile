@@ -1,6 +1,6 @@
 SKETCH = main.ino
 
-UPLOAD_PORT = /dev/ttyUSB1
+UPLOAD_PORT = /dev/ttyUSB0
 UPLOAD_SPEED = 921600
 BOARD = esp32doit-devkit-v1
 
@@ -13,7 +13,11 @@ ESP_LIBS=$(shell echo $HOME)/.arduino15/packages/esp32/hardware/esp32/1.0.4/libr
 # RTC_DS1307 = true # Enable RTC support
 RTC_DS1307 =
 
-BUILD_EXTRA_FLAGS += -I./include -Wall -DCORE_DEBUG_LEVEL=5
+# Versioning
+GIT_DESC=$(shell git describe --tags --long)
+WSVERSION=$(GIT_DESC)
+
+BUILD_EXTRA_FLAGS += -I./include -Wall -DWSTATION_VERSION=\"${WSVERSION}\" -DCORE_DEBUG_LEVEL=5
 
 LIBS=$(ESP_LIBS)/Wire \
 	 $(ESP_LIBS)/SPI \

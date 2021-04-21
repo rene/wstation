@@ -39,7 +39,7 @@
 
 /** Firmware version */
 #ifndef WSTATION_VERSION
-#define WSTATION_VERSION "0.1beta"
+#define WSTATION_VERSION "0.1-static"
 #endif
 
 /** Web server port */
