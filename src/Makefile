@@ -26,6 +26,7 @@ LIBS=$(ESP_LIBS)/Wire \
 	 $(ESP_LIBS)/HTTPClient \
 	 $(ESP_LIBS)/FS \
 	 $(ESP_LIBS)/SPIFFS \
+	 $(ESP_LIBS)/Update \
 	 libs/AsyncTCP \
 	 libs/ESPAsyncWebServer \
 	 libs/ArduinoJson-6.15.1/ \

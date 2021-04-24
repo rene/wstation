@@ -84,8 +84,83 @@ function chooseSSID()
 	inp.value = sel.value;
 }
 
-function sleep(ms) {
+function sleep(ms)
+{
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function updateFirmware()
+{
+	var contents = document.getElementById("contents");
+	var elem     = document.getElementById("pbar");
+	var msgbox   = document.getElementById("msgbox");
+	var msg      = document.getElementById("pmsg");
+	var frmf     = document.getElementById("frmFirmware");
+	var xhttp    = new XMLHttpRequest();
+	var file     = document.getElementById("firmfile").files[0];
+	var frmData  = new FormData();
+
+	if(!file)
+		return;
+
+	// Form data
+	frmData.append("firmfile", file);
+
+	// Callbacks
+	xhttp.onerror = function(e) {
+		msg.innerHTML = "";
+		msgbox.style.display   = "none";
+		contents.style.opacity = 1.0;
+		window.alert("Firmware uploading error!");
+		location.reload();
+	};
+	xhttp.onreadystatechange = async function(e) {
+		if(xhttp.readyState === XMLHttpRequest.DONE) {
+			var status = xhttp.status;
+			var i;
+
+			if (status == 200) {
+				elem.innerHTML = "";
+				for (i = 10; i >= 0; i--) {
+					msg.innerHTML = "Done. Waiting for device reset... " + i + "s";
+					elem.style.width = ((10-i) * 10) + "%";
+					await sleep(1000);
+				}
+			} else if (status == 408) {
+				window.alert("Firmware update failed!");
+			} else {
+				window.alert("Unknown error!");
+			}
+
+			msg.innerHTML = "";
+			msgbox.style.display   = "none";
+			contents.style.opacity = 1.0;
+			frmf.reset();
+
+			location.reload();
+		}
+	};
+	xhttp.upload.onprogress = function(e) {
+		var p = Math.round(100 / e.total * e.loaded);
+		elem.style.width = p + "%";
+		elem.innerHTML = p + "%";
+	};
+	xhttp.onabort = function(e) {
+		msg.innerHTML = "";
+		msgbox.style.display   = "none";
+		contents.style.opacity = 1.0;
+		window.alert("Firmware uploading aborted!");
+		location.reload();
+	};
+
+	// Progress bar
+	contents.style.opacity = 0.2;
+	msgbox.style.display   = "block";
+	msg.innerHTML = "UPDATING DEVICE FIRMWARE.... DO NOT TURN OFF!<br/>Please, wait...";
+
+	// Submit data
+	xhttp.open("POST", "/updateFirmware");
+	xhttp.send(frmData);
 }
 
 function requestReset(request)

@@ -39,6 +39,7 @@
 #include <SPIFFS.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <Update.h>
 #include "wstation.h"
 #include "webservices.h"
 #include "EInterface.h"
@@ -173,6 +174,47 @@ void SetupWebServices(AsyncWebServer *webServer)
 	webServer->on("/logout", HTTP_GET, [](AsyncWebServerRequest *request){
 		request->send(401);
 	});
+
+	// Firmware uploading and update
+	webServer->on("/updateFirmware", HTTP_POST,
+		[](AsyncWebServerRequest *request) {
+			CHECK_HTTP_AUTH(request, confData);
+			request->send(200);
+		},
+		[](AsyncWebServerRequest *request,
+				const String& filename, size_t index, uint8_t *data,
+				size_t len, bool final) {
+			CHECK_HTTP_AUTH(request, confData);
+			if(index == 0) {
+				// Start firmware update
+				log_i("FIRMWARE UPDATE REQUESTED: %s", filename.c_str());
+				if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {
+					log_e("FIRMWARE UPDATE FAILED: %s", Update.errorString());
+				}
+			}
+
+			if (len > 0) {
+				// Write to flash
+				if (Update.write(data, len) != len) {
+					log_e("FIRMWARE UPDATE: WRITING DATA ERROR!");
+				}
+			}
+
+			if(final) {
+				// Update is done
+				size_t total_size = index + len;
+				log_i("FIRMWARE UPLOAD DONE: %s (%u)", filename.c_str(), total_size);
+				if (Update.end(true)) {
+					request->send(200);
+					log_i("FIRMWARE UPDATE SUCCESS: %u", total_size);
+					delay(1000);
+					esp_restart();
+				} else {
+					log_e("FIRMWARE UPDATE FAILED: %s", Update.errorString());
+					request->send(408, "text/plain", "Firmware Update Error.");
+				}
+			}
+		});
 
 	// Reset function
 	webServer->on("/resetDevice", HTTP_GET, [](AsyncWebServerRequest *request){

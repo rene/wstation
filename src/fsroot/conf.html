@@ -92,8 +92,14 @@
 					</form>
 				</div>
 				<div class="content">
-					<h2>Firmware information</h2>
-					<p>Version: %FIRMWARE_VERSION%</p>
+					<form id="frmFirmware" method="POST" action="" enctype="multipart/form-data">
+						<h2>Firmware information</h2>
+						<p>Version: %FIRMWARE_VERSION%</p>
+						<p>Upload new firmware:
+							<input type="file" id="firmfile" name="firmfile"/>
+						</p>
+						<input type="button" name="update" value="Update firmware" onclick="updateFirmware()"/>
+					</form>
 					<input type="button" value="Reset device" onclick="resetDevice()">
 					<input type="button" value="Reset to factory settings" onclick="resetToFactory()">
 				</div>
