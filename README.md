@@ -3,12 +3,14 @@
 WStation it's a quarantine project. I use to have one of those cheap Chinese thermometers that unfortunately fells down to the floor, ending up with a broken LCD and a useless 433.92MHz sensor (since I didn't have any other device capable of decoding the signals). As readers can imagine, perfect setup for a ESP32 project!
 
 ![Chinese Digoo Thermometer](/resources/misc/digoo.jpg)
-Original Device (Chinese Digoo thermometer)
+
+*Original Device (Chinese Digoo thermometer)*
 
 Since I had a little of free time due to the covid's quarantine, I've decided to start this project completely from scratch and release everything under BSD-3-Clause and CC licenses. Even the original mockup for the GUI can be found here.
 
 ![WStation device](/resources/misc/wsdev.jpg)
-WStation device
+
+*WStation device*
 
 WStation has the following features:
 
@@ -29,7 +31,9 @@ WStation has the following features:
 
 ## Hardware
 
-![WStation Circuit Diagram](/resources/misc/circDiagram.jpg)
+![WStation Circuit Diagram](/resources/misc/circDiagram.png)
+
+*WStation circuit diagram*
 
 | Function | Pin number |
 | ------ | ------ |
@@ -71,6 +75,8 @@ In order to get a API key, please, follow the [Instructions](https://openweather
 
 When you power on your WStation device for the first time, the device will act as an Access Point, creating the WiFi Network WStation. 
 
+| Setting | Default value |
+| ------ | ------ |
 | WiFi SSID | *WStation* |
 | WiFi Password | *wstation1234* |
 | Username | *admin* |
