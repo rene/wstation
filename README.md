@@ -1,6 +1,6 @@
 ![WStation Logo](/resources/logoBW.png)
 
-WStation it's a quarantine project. I use to have one of those cheap Chinese thermometers that unfortunately fells down to the floor, ending up with a broken LCD and a useless 433.92MHz sensor (since I didn't have any other device capable of decoding the signals). As readers can imagine, perfect setup for a ESP32 project!
+WStation it's a quarantine project. I use to have one of those cheap Chinese thermometers that unfortunately it fell down to the floor, ending up with a broken LCD and a useless 433.92MHz sensor (since I didn't have any other device capable of decoding the signals). As readers can imagine, perfect setup for a ESP32 project!
 
 ![Chinese Digoo Thermometer](/resources/misc/digoo.jpg)
 
@@ -42,6 +42,8 @@ WStation has the following features:
 | TFT module LED pin | 19 |
 | DHT Data pin | 32 |
 | Radio sensor | 4 |
+| RTC SDA pin | 21 |
+| RTC SCL pin | 22 |
 
 ## Firmware
 
@@ -55,7 +57,7 @@ WStation has the following features:
 $ make
 $ make flash
 ```
-Once the device is flashed, future updates can be done from Web Interface. Just select and upload the *main.bin* file under *build* folder.
+Once the device is flashed, future updates can be done through the Web Interface. Just select and upload the *main.bin* file under *build* folder.
 
 ### Build and flash file system
 
