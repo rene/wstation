@@ -9,11 +9,13 @@ WStation it's a quarantine project. I use to have one of those cheap Chinese the
 Since I had some free time due to the covid's quarantine, I've decided to start this project completely from scratch and release everything under BSD-3-Clause and CC licenses. Even the original mockup for the GUI can be found here.
 
 ![WStation device](/resources/misc/wsdev.jpg)
+
 *WStation device*
 
-The prototype was made with a ESP32 DEVKIT V1 compatible device using the case of the broken Digoo thermometer (for sure there is room for visual improvements, but in general I liked of the final result). The radio receiver module have fit inside the case. ESP32 and DHT modules were assembled outside on the back.
+The prototype was made with a ESP32 DEVKIT V1 compatible device using the case of the broken Digoo thermometer (for sure there is room for visual improvements, specially on the hot glue the I've used on to fill the wholes on the borders, but in general the final result is not that bad). The radio receiver module have fit inside the case. ESP32 and DHT modules were assembled outside on the back.
 
 ![WStation device - back](/resources/misc/wsdev2.jpg)
+
 *ESP32 and DHT modules assembled on the back of the case*
 
 WStation has the following features:
