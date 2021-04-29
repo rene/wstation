@@ -1,6 +1,6 @@
 ![WStation Logo](/resources/logoBW.png)
 
-WStation it's a quarantine project. I use to have one of those cheap Chinese thermometers that unfortunately it fell down to the floor, ending up with a broken LCD and a useless 433.92MHz sensor (since I didn't have any other device capable of decoding the signals). As readers can imagine, perfect setup for a ESP32 project!
+WStation is a project that was born from my quarantine. I use to have one of those cheap Chinese thermometers. Unfortunately, it fell down to the floor, ending up with a broken LCD and a useless 433.92MHz sensor (since I didn't have any other device capable of decoding the signals). As you can imagine, perfect setup for a ESP32 project!
 
 ![Chinese Digoo Thermometer](/resources/misc/digoo.jpg)
 
@@ -12,7 +12,7 @@ Since I had some free time due to the covid's quarantine, I've decided to start 
 
 *WStation device*
 
-The prototype was made with a ESP32 DEVKIT V1 compatible device using the case of the broken Digoo thermometer (for sure there is room for visual improvements, specially on the hot glue the I've used on to fill the wholes on the borders, but in general the final result is not that bad). The radio receiver module have fit inside the case. ESP32 and DHT modules were assembled outside on the back.
+The prototype was made with a ESP32 DEVKIT V1 compatible device using the case of the broken Digoo thermometer (for sure there is room for visual improvements, specially on the hot glue the I've used to fill the holes on the borders, but in general the final result is not that bad). The radio receiver module have fit inside the case. ESP32 and DHT modules were assembled outside, on the back.
 
 ![WStation device - back](/resources/misc/wsdev2.jpg)
 
@@ -41,11 +41,16 @@ WStation has the following features:
 
 *WStation circuit diagram*
 
+### Pinout connection
+
 | Function | Pin number |
 | ------ | ------ |
 | TFT module DC pin | 16 |
 | TFT module CS pin| 17 |
 | TFT module LED pin | 19 |
+| TFT module SCK pin | 18 |
+| TFT module MOSI pin | 23 |
+| TFT module RST pin | 5 |
 | DHT Data pin | 32 |
 | Radio sensor | 4 |
 | RTC SDA pin | 21 |
