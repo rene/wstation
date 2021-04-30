@@ -1,6 +1,6 @@
 ![WStation Logo](/resources/logoBW.png)
 
-WStation is a project that was born from my quarantine. I use to have one of those cheap Chinese thermometers. Unfortunately, it fell down to the floor, ending up with a broken LCD and a useless 433.92MHz sensor (since I didn't have any other device capable of decoding the signals). As you can imagine, perfect setup for a ESP32 project!
+*WStation* is a project that was born from my quarantine. I use to have one of those cheap Chinese thermometers. Unfortunately, it fell down to the floor, ending up with a broken LCD and a useless 433.92MHz sensor (since I didn't have any other device capable of decoding the signals). As you can imagine, perfect setup for a ESP32 project!
 
 ![Chinese Digoo Thermometer](/resources/misc/digoo.jpg)
 
@@ -39,7 +39,7 @@ WStation has the following features:
 
 ![WStation Circuit Diagram](/resources/misc/circDiagram.png)
 
-*WStation circuit diagram*
+*WStation circuit diagram (RTC is optional)*
 
 ### Pinout connection
 
@@ -60,33 +60,58 @@ WStation has the following features:
 
 ### Setup the environment
 
-[makeEspArduino](https://github.com/plerup/makeEspArduino)
+To build the firmware, first make sure you have the Arduino/ESP32 environment installed as described at: [https://github.com/esp8266/Arduino](https://github.com/esp8266/Arduino) and [https://github.com/espressif/arduino-esp32](https://github.com/espressif/arduino-esp32). The firmware is built using *make* with the nice [makeEspArduino](https://github.com/plerup/makeEspArduino) makefile.
 
-### Build and flash the firmware
+First, clone *WStation* repository:
+
+```sh
+git clone http://github.com/rene/wstation
+cd wstation
+```
+
+Build and flash the file system:
+
+```sh
+$ cd src
+$ make flash_fs
+```
+
+Build and flash the firmware:
 
 ```sh
 $ make
 $ make flash
 ```
-Once the device is flashed, future updates can be done through the Web Interface. Just select and upload the *main.bin* file under *build* folder.
 
-### Build and flash file system
+Some environment variables can be customized according to user's setup:
 
-```sh
-$ make flash_fs
-```
+| Variable | Description |
+| ------ | ------ |
+| UPLOAD_PORT | ESP module serial device, e.g. /dev/ttyUSB0 |
+| UPLOAD_SPEED | Serial baud rate, e.g. 921600 |
+| DEBUG_LEVEL | Verbose level for debug messages |
+| RTC_DS1307 | Set to *true* if a RTC DS1307 module is installed |
+| ESP_LIBS | Path to Arduino/ESP libraries (if non default path is used) |
+| ESP_ROOT | Root folder of Arduino/ESP environment (if non default path is used)  |
+
+
+Once the device is flashed, future updates can be done through Web Interface. Just select and upload the *main.bin* file under *build* folder.
 
 ## Device setup
 
 ### Getting a OpenWeather API Key
 
-In order to get a API key, please, follow the [Instructions](https://openweathermap.org/appid) at [OpenWeather](https://openweathermap.org/) website. After subscribe (for free), you can generate and/or see your keys at users area:
+*WStation* uses the [OpenWeather](https://openweathermap.org/) API to fetch updated weather forecasts. In order to use the API, you should subscribe to OpenWeather (free plan allows 60 requests per minute, which is completely fine for one *WStation* device) and get an API key. To get the key, please, follow the [Instructions](https://openweathermap.org/appid) at [OpenWeather](https://openweathermap.org/) website. After subscribe, you can generate and/or see your keys at the user's area:
 
 ![OpenWeather user interface](/resources/misc/openw.jpg)
 
+You will need to configure your API Key and city name (in OpenWeather's format, e.g. *Berlin,DE*) on *WStation* to start to get weather forecasts.
+
 ### Powering on the device
 
-When you power on your WStation device for the first time, the device will act as an Access Point, creating the WiFi Network WStation. 
+When you power on your *WStation* device for the first time, the device will act as an Access Point, creating the WiFi Network *WStation*. Connect to this network using the parameters shown on the screen:
+
+![WStation first screen](/resources/misc/wsinit.png)
 
 | Setting | Default value |
 | ------ | ------ |
@@ -95,14 +120,11 @@ When you power on your WStation device for the first time, the device will act a
 | Username | *admin* |
 | Password | *admin* |
 
+Access device web interface to configure your API Key, City, WiFi network, etc. When the setup is done, click on the button *Save configuration*. That's it! Your *WStation* device is ready to work!
+
 ![WStation Web Interface](/resources/misc/webgui.jpg)
 
 ## Bug reports
 
 Please, report them to [rene@renesp.com.br](mailto:rene@renesp.com.br)
-
-
-### My Data
-* APIKey: 0300414e2812dcf9b846060f08ae4882
-* City: Berlin,DE
 
