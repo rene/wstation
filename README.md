@@ -39,7 +39,17 @@ WStation has the following features:
 
 ![WStation Circuit Diagram](/resources/misc/circDiagram.png)
 
-*WStation circuit diagram (RTC is optional)*
+*WStation circuit diagram*
+
+The whole circuit can be built using a few modules:
+
+| Module | Description |
+| ------ | ------ |
+| EPS32 module | ESP32 DEVKIT V1 compatible device |
+| 240x320, 2.2" TFT LCD | SPI TFT LCD Serial Port Module Display ILI9341 5v/3.3v compatible screen |
+| DHT module| DHT Sensor to measure Temperature and Humidity |
+| DS1307 RTC module | Real Time Clock module (optional, date/time can be synchronized through NTP client) |
+| 433.92MHz RF Receiver module | 433.92MHz RF Receiver (with ASK/OOK modulation support) |
 
 ### Pinout connection
 
