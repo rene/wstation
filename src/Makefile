@@ -1,14 +1,15 @@
 SKETCH = main.ino
 
-UPLOAD_PORT = /dev/ttyUSB0
-UPLOAD_SPEED = 921600
-BOARD = esp32doit-devkit-v1
+UPLOAD_PORT ?= /dev/ttyUSB0
+UPLOAD_SPEED ?= 921600
+BOARD ?= esp32doit-devkit-v1
 
-BUILD_DIR = $(PWD)/build
+BUILD_DIR ?= $(PWD)/build
+ESP_LIBS ?= $(shell echo $HOME)/.arduino15/packages/esp32/hardware/esp32/1.0.4/libraries
+
+DEBUG_LEVEL ?= 5
 
 FS_DIR = $(PWD)/fsroot
-
-ESP_LIBS=$(shell echo $HOME)/.arduino15/packages/esp32/hardware/esp32/1.0.4/libraries
 
 # RTC_DS1307 = true # Enable RTC support
 RTC_DS1307 =
@@ -17,7 +18,7 @@ RTC_DS1307 =
 GIT_DESC=$(shell git describe --tags --long)
 WSVERSION=$(GIT_DESC)
 
-BUILD_EXTRA_FLAGS += -I./include -Wall -DWSTATION_VERSION=\"${WSVERSION}\" -DCORE_DEBUG_LEVEL=5
+BUILD_EXTRA_FLAGS += -I./include -Wall -DWSTATION_VERSION=\"${WSVERSION}\" -DCORE_DEBUG_LEVEL=$(DEBUG_LEVEL)
 
 LIBS=$(ESP_LIBS)/Wire \
 	 $(ESP_LIBS)/SPI \
