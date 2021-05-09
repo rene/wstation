@@ -76,7 +76,7 @@
 /** TFT module CS pin */
 #define TFT_CS 17
 /** TFT module led pin */
-#define TFT_BACKLIGHT 19
+#define TFT_BACKLIGHT 27
 
 /** Sensor data display interval (in seconds) */
 #define SENSOR_DISPLAY_INTERVAL 5
