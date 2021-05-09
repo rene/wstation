@@ -57,8 +57,9 @@ The whole circuit can be built using a few modules:
 | ------ | ------ |
 | TFT module DC pin | 16 |
 | TFT module CS pin| 17 |
-| TFT module LED pin | 19 |
+| TFT module LED pin | 27 |
 | TFT module SCK pin | 18 |
+| TFT module MISO pin | 19 |
 | TFT module MOSI pin | 23 |
 | TFT module RST pin | 5 |
 | DHT Data pin | 32 |
@@ -121,7 +122,7 @@ You will need to configure your API Key and city name (in OpenWeather's format, 
 
 When you power on your *WStation* device for the first time, the device will act as an Access Point, creating the WiFi Network *WStation*. Connect to this network using the parameters shown on the screen:
 
-![WStation first screen](/resources/misc/wsinit.png)
+![WStation first screen](/resources/misc/ws_s0.png)
 
 | Setting | Default value |
 | ------ | ------ |
@@ -133,6 +134,14 @@ When you power on your *WStation* device for the first time, the device will act
 Access device web interface to configure your API Key, City, WiFi network, etc. When the setup is done, click on the button *Save configuration*. That's it! Your *WStation* device is ready to work!
 
 ![WStation Web Interface](/resources/misc/webgui.jpg)
+
+### Resseting to factory settings
+
+Any *WStation* device can be redefined to factory settings by pressing and holding the *BOOT* button for 6 seconds or through the web interface.
+
+### Screenshots of WStation interface
+
+![WStation screenshot 1](/resources/misc/ws_s1.png)
 
 ## Bug reports
 
