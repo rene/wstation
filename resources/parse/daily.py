@@ -6,7 +6,8 @@ import json
 def kelvin2celcius(k):
     return k - 273.15
 
-url = "http://api.openweathermap.org/data/2.5/weather?q=Berlin,DE&appid=0300414e2812dcf9b846060f08ae4882"
+key = "" # inser API key here
+url = "http://api.openweathermap.org/data/2.5/weather?q=Berlin,DE&appid=" + key
 f = req.urlopen(url)
 
 #f = open("out1.txt", "r")
