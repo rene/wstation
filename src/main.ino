@@ -421,6 +421,10 @@ void taskReceiveSensorData(void *parameter)
 			sensors[i].humidity    = nexusData.humidity;
 			lastData[i]            = now();
 
+			// Check humidity value
+			if (sensors[i].humidity > 100)
+				sensors[i].humidity = 100;
+
 			portEXIT_CRITICAL(&nexusMutex);
 
 			// Indicate on screen that data has been received
