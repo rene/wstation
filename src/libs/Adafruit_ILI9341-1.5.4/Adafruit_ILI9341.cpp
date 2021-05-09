@@ -327,3 +327,32 @@ uint8_t Adafruit_ILI9341::readcommand8(uint8_t commandByte, uint8_t index) {
   sendCommand(0xD9, &data, 1); // Set Index Register
   return Adafruit_SPITFT::readcommand8(commandByte);
 }
+
+uint16_t Adafruit_ILI9341::readPixels16(int16_t x1, int16_t y1, int16_t w, int16_t h, uint16_t *buf)
+{
+  uint16_t x2 = (x1 + w - 1), y2 = (y1 + h - 1);
+  uint16_t len = (x2-x1+1)*(y2-y1+1);
+  uint16_t ret = len;
+  uint16_t d1, d2, d3;
+  uint8_t rgb[3];
+
+  startWrite();
+  writeCommand(ILI9341_CASET); // Column address set
+  SPI_WRITE16(x1);
+  SPI_WRITE16(x2);
+  writeCommand(ILI9341_PASET); // Row address set
+  SPI_WRITE16(y1);
+  SPI_WRITE16(y2);
+  writeCommand(ILI9341_RAMRD); // Read GRAM
+
+  // Dummy read
+  spiRead();
+  while(len--) {
+    rgb[0] = spiRead();
+    rgb[1] = spiRead();
+    rgb[2] = spiRead();
+    *buf++ = color565(rgb[0], rgb[1], rgb[2]);
+  }
+  endWrite();
+  return ret;
+}

@@ -154,6 +154,8 @@ public:
   void setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
 
   uint8_t readcommand8(uint8_t reg, uint8_t index = 0);
+
+  uint16_t readPixels16(int16_t x1, int16_t y1, int16_t w, int16_t h, uint16_t *buf);
 };
 
 #endif // _ADAFRUIT_ILI9341H_
