@@ -216,6 +216,21 @@ void factoryReset(void)
 	// Should never reach here: do not release the mutex for safety reasons
 }
 
+#ifdef DEBUG_SCREENSHOT
+/**
+ * Take a screenshot of the screen (for debug purposes)
+ */
+void takeScreenshot(void)
+{
+	digitalWrite(LED_PIN, HIGH);
+	xSemaphoreTake(t_mutex, portMAX_DELAY);
+	gui->takeScreenshot("/screenshot.px");
+	delay(100);
+	xSemaphoreGive(t_mutex);
+	digitalWrite(LED_PIN, LOW);
+}
+#endif
+
 /**
  * Update graphical elements on the screen
  * @param parameter Task parameters (not used)
@@ -521,6 +536,7 @@ void setup() {
 		webServer.begin();
 
 		// Show instructions on screen
+		xSemaphoreTake(t_mutex, portMAX_DELAY);
 		gui->print(30, 25, "Welcome to WStation!");
 		gui->print(10, 60, "Device needs configuration!");
 		gui->print(45, 95, "Please, connect to:");
@@ -529,6 +545,7 @@ void setup() {
 		gui->print(ip);
 		gui->print("  Username: " DEFAULT_USERNAME "\n");
 		gui->print("  User password: " DEFAULT_USER_PASS "\n");
+		xSemaphoreGive(t_mutex);
 
 		// Wait until setup is done
 		xSemaphoreTake(setup_sem, portMAX_DELAY);

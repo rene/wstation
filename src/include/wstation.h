@@ -230,5 +230,7 @@ void userSetupDone(void);
 void WiFiReconnect(void);
 void updateFromConf(void);
 void factoryReset(void);
-
+#ifdef DEBUG_SCREENSHOT
+void takeScreenshot(void);
+#endif
 #endif /* __WSTATION_H__ */

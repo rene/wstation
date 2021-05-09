@@ -271,5 +271,9 @@ class EInterface {
 
 		/* Print text */
 		void print(int x, int y, int16_t color, int16_t bgcolor, const String& text);
+#ifdef DEBUG_SCREENSHOT
+		/* Take a screenshot */
+		void takeScreenshot(String file);
+#endif
 };
 #endif /* __EINTERFACE_H__ */

@@ -14,11 +14,14 @@ FS_DIR = $(PWD)/fsroot
 # RTC_DS1307 = true # Enable RTC support
 RTC_DS1307 =
 
+# Use -DDEBUG_SCREENSHOT=1 to enable screenshot support
+ENABLE_DEBUG_SCREENSHOT =
+
 # Versioning
 GIT_DESC=$(shell git describe --tags --long)
 WSVERSION=$(GIT_DESC)
 
-BUILD_EXTRA_FLAGS += -I./include -Wall -DWSTATION_VERSION=\"${WSVERSION}\" -DCORE_DEBUG_LEVEL=$(DEBUG_LEVEL)
+BUILD_EXTRA_FLAGS += -I./include -Wall -DWSTATION_VERSION=\"${WSVERSION}\" -DCORE_DEBUG_LEVEL=$(DEBUG_LEVEL) $(ENABLE_DEBUG_SCREENSHOT)
 
 LIBS=$(ESP_LIBS)/Wire \
 	 $(ESP_LIBS)/SPI \

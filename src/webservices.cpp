@@ -158,6 +158,16 @@ void SetupWebServices(AsyncWebServer *webServer)
 		request->send(SPIFFS, "/conf.html", "text/html", false, processData);
 	});
 
+#ifdef DEBUG_SCREENSHOT
+	// Take screenshot
+	webServer->on("/takescreenshot", HTTP_GET, [](AsyncWebServerRequest *request){
+		takeScreenshot();
+		request->send(200, "text/plain", "OK");
+	});
+	// Screenshot image
+	webServer->serveStatic("/screenshot.px", SPIFFS, "/screenshot.px");
+#endif
+
 	// Logo image file
 	webServer->serveStatic("/logo.png", SPIFFS, "/logo.png");
 

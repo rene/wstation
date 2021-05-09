@@ -39,6 +39,9 @@
 #include <Fonts/FreeSansBold18pt7b.h>
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeMono9pt7b.h>
+#ifdef DEBUG_SCREENSHOT
+#include <esp_task_wdt.h>
+#endif
 
 /** Default weather */
 #define DEF_WEATHER  UNKNOWN_WEATHER
@@ -762,6 +765,43 @@ void EInterface::print(int x, int y, int16_t color, int16_t bgcolor, const Strin
 	tft->print(text);
 }
 
+#ifdef DEBUG_SCREENSHOT
+/**
+ * Take a screenshot of the screen
+ * @param file File name
+ */
+void EInterface::takeScreenshot(String file)
+{
+	int16_t x, y, w, h;
+	int pos;
+	int imgsize;
+	uint16_t *tft_buffer;
+	uint16_t buffer[960]; // 240x4 tile
+	File pic = pfs->open(file, "w");
+
+	if (!pic)
+		return;
+
+	w = tft->width(); // 240
+	h = tft->height(); // 320
+
+	log_i("Taking screenshot %d x %d", w, h);
+	pic.write((uint8_t*)&w, sizeof(w));
+	pic.write((uint8_t*)&h, sizeof(h));
+
+	// Take screenshot of the entire screen by 240x4 tiles (due to memory
+	// limitation)
+	for (y = 0; y < h; y+=4) {
+		/* This loop takes longer, we need to refresh the watchdog */
+		esp_task_wdt_reset();
+		tft->readPixels16(0, y, w, 4, buffer);
+		pic.write((uint8_t*)buffer, sizeof(buffer));
+	}
+
+	// Close file
+	pic.close();
+}
+#endif
 
 /* ======================= PRIVATE ======================= */
 
