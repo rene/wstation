@@ -54,6 +54,7 @@
 #define PARAM_TEMPSCALE "tempscale"
 #define PARAM_USERNAME  "username"
 #define PARAM_USER_PASS "userpass"
+#define PARAM_TIME_FMT  "timeformat"
 
 /* Reset mutex */
 extern volatile SemaphoreHandle_t reset_mutex;

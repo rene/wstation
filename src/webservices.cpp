@@ -139,6 +139,12 @@ String processData(const String& var)
 		} else {
 			return String("C");
 		}
+	else if (var == "TIMEFORMAT")
+		if (confData.getTimeFormat() == TIME_FORMAT_24H) {
+			return String("24");
+		} else {
+			return String("12");
+		}
 
 	return String();
 }
@@ -293,6 +299,13 @@ void SetupWebServices(AsyncWebServer *webServer)
 			confData.setTempScale(FAHRENHEIT);
 		} else {
 			confData.setTempScale(CELSIUS);
+		}
+
+		String tf = checkGetParam(request, PARAM_TIME_FMT);
+		if (tf == "12") {
+			confData.setTimeFormat(TIME_FORMAT_12H);
+		} else {
+			confData.setTimeFormat(TIME_FORMAT_24H);
 		}
 
 		confData.setUsername(checkGetParam(request, PARAM_USERNAME));

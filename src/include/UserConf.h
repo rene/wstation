@@ -75,6 +75,8 @@
 #define DEFCONF_BRIGHTNESS BACKLIGHT_DEFAULT
 /** Default value for: temperature scale */
 #define DEFCONF_TEMP_SCALE CELSIUS
+/** Default value for: time format */
+#define DEFCONF_TIME_FORMAT TIME_FORMAT_24H
 
 
 class UserConf {
@@ -117,6 +119,8 @@ class UserConf {
 		String username;
 		/** User password */
 		String userpass;
+		/** Time format */
+		time_format_t timeFormat;
 
 	public:
 		/* Constructor */
@@ -157,6 +161,8 @@ class UserConf {
 		void setUsername(const String& username);
 		/* Set user password */
 		void setUserPass(const String& userpass);
+		/* Set time format */
+		void setTimeFormat(time_format_t timeFormat);
 		/* Get hours */
 		int getHours();
 		/* Get minutes */
@@ -171,8 +177,10 @@ class UserConf {
 		temp_scale_t getTempScale();
 		/* Get username */
 		const String& getUsername();
-		/* Ger user password */
+		/* Get user password */
 		const String& getUserPass();
+		/* Get time format */
+		time_format_t getTimeFormat();
 		/* Set date */
 		void setDate(int day, int month, int year, int wday);
 		/* Get date */

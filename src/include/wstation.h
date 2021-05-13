@@ -221,6 +221,14 @@ typedef enum _temp_scale {
 	FAHRENHEIT,
 } temp_scale_t;
 
+/** Time format */
+typedef enum _time_format {
+	/** 24 Hours */
+	TIME_FORMAT_24H = 0,
+	/** 12 Hours */
+	TIME_FORMAT_12H,
+} time_format_t;
+
 /** Wall clock */
 extern tmElements_t wallClock;
 

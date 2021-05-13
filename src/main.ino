@@ -194,6 +194,8 @@ void updateFromConf(void)
 	gui->setBacklight(confData.getLCDBrightness());
 	// Temperature scale
 	gui->setTempScale(confData.getTempScale());
+	// Time format
+	gui->setTimeFormat(confData.getTimeFormat());
 	xSemaphoreGive(t_mutex);
 
 	// Set to update date string

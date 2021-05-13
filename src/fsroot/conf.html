@@ -79,6 +79,12 @@
 								<option value="C">&deg;C</option>
 								<option value="F">&deg;F</option>
 							</select><br/>
+						<label>Show Time in:</label>
+							<input type="hidden" id="timefmt" name="timefmt" value="%TIMEFORMAT%">
+							<select id="timeformat" name="timeformat">
+								<option value="24">24H</option>
+								<option value="12">12H</option>
+							</select><br/>
 						<label>LCD brightness level:</label><input type="range" name="brightness" min="0" max="255" value="%LCD_BRIGHTNESS%">
 						<hr/>
 						<h2>User information</h2>

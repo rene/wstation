@@ -47,6 +47,8 @@
 #define DEF_WEATHER  UNKNOWN_WEATHER
 /** Default temperature scale */
 #define DEF_SCALE    CELSIUS
+/** Default time format */
+#define DEF_TIME_FORMAT TIME_FORMAT_24H
 
 /**
  * Constructor
@@ -70,7 +72,8 @@ EInterface::EInterface(int8_t cs, int8_t dc,
 	channel(GUI_INV_CHANNEL), forecastLabels({"---", "---", "---"}),
 	forecastTemp1({GUI_INV_TEMP, GUI_INV_TEMP, GUI_INV_TEMP}),
 	forecastTemp2({GUI_INV_TEMP, GUI_INV_TEMP, GUI_INV_TEMP}),
-	forecastWeather({DEF_WEATHER, DEF_WEATHER, DEF_WEATHER})
+	forecastWeather({DEF_WEATHER, DEF_WEATHER, DEF_WEATHER}),
+	timeFormat(DEF_TIME_FORMAT)
 {
 	this->tft = new Adafruit_ILI9341(tftCS, tftDC);
 }
@@ -130,6 +133,16 @@ void EInterface::setTempScale(temp_scale_t scale)
 		showForecastTemp1(i, forecastTemp1[i]);
 		showForecastTemp2(i, forecastTemp2[i]);
 	}
+}
+
+/**
+ * Set time format
+ * @param [in] timeFormat Time format
+ */
+void EInterface::setTimeFormat(time_format_t timeFormat)
+{
+	this->timeFormat = timeFormat;
+	showClock(CLOCK_HOURS);
 }
 
 /**
@@ -196,15 +209,47 @@ void EInterface::showClock(clock_el_t elements)
 {
 	int16_t x1, y1;
 	uint16_t w, h;
+	int hrs;
 	char str[4];
 
 	// Hours
 	if (elements == CLOCK_ALL || elements == CLOCK_HOURS) {
 		if (this->hours >= 0 && this->hours <= 23) {
-			tft->setFont(&FreeSansBold18pt7b);
 			tft->setTextColor(theme.getClock());
+
+			if (this->timeFormat == TIME_FORMAT_12H) {
+				if (this->hours >= 12) {
+					// PM
+					if (this->hours == 12) {
+						hrs = 12;
+					} else {
+						hrs = this->hours - 12;
+					}
+					strcpy(str, "pm");
+				} else {
+					// AM
+					if (this-> hours == 0) {
+						hrs = 12;
+					} else {
+						hrs = this->hours;
+					}
+					strcpy(str, "am");
+				}
+			} else {
+				hrs = this->hours;
+				strcpy(str, "");
+			}
+			// Print am/pm
+			tft->setFont(&FreeSans9pt7b);
+			tft->setCursor(190, 95);
+			tft->getTextBounds("pm", 190, 95, &x1, &y1, &w, &h);
+			tft->fillRect(x1 - 2, y1 - 2, w + 2, h + 2, theme.getBackground());
+			tft->print(str);
+
+			// Print hours
+			tft->setFont(&FreeSansBold18pt7b);
 			tft->setCursor(60, 95);
-			snprintf(str, sizeof(str), "%02d:", this->hours);
+			snprintf(str, sizeof(str), "%02d:", hrs);
 
 			tft->getTextBounds(str, 60, 95, &x1, &y1, &w, &h);
 			tft->fillRect(x1 - 2, y1 - 2, w + 2, h + 2, theme.getBackground());
@@ -689,6 +734,15 @@ void EInterface::showAll()
 temp_scale_t EInterface::getTempScale()
 {
 	return tempScale;
+}
+
+/**
+ * Get time format
+ * @return time_format_t
+ */
+time_format_t EInterface::getTimeFormat()
+{
+	return timeFormat;
 }
 
 /**

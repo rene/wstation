@@ -38,9 +38,12 @@ function loadPage()
 	var ckbox  = document.getElementById("daylight");
 	var tempsc = document.getElementById("tempsc");
 	var tscale = document.getElementById("tempscale");
+	var timefmt = document.getElementById("timefmt");
+	var tformat = document.getElementById("timeformat");
 
 	cbox.value   = tzone.value;
 	tscale.value = tempsc.value;
+	tformat.value = timefmt.value;
 
 	if (dlight.value != 0) {
 		ckbox.checked = true;

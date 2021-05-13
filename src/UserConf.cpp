@@ -61,6 +61,7 @@ struct _user_conf {
 	temp_scale_t tempScale;
 	char username[MAX_STR_SIZE];
 	char userpass[MAX_STR_SIZE];
+	time_format_t timeFormat;
 } __attribute__((packed));
 
 /** User configuration data at EEPROM */
@@ -78,7 +79,8 @@ UserConf::UserConf() :
 	seconds(DEFCONF_SECONDS), day(DEFCONF_DAY), month(DEFCONF_MONTH),
 	year(DEFCONF_YEAR), brightness(DEFCONF_BRIGHTNESS),
 	tempScale(DEFCONF_TEMP_SCALE),
-	username(DEFCONF_USERNAME), userpass(DEFCONF_USER_PASS)
+	username(DEFCONF_USERNAME), userpass(DEFCONF_USER_PASS),
+	timeFormat(DEFCONF_TIME_FORMAT)
 {
 }
 
@@ -251,6 +253,15 @@ void UserConf::setUserPass(const String& userpass)
 }
 
 /**
+ * Set time format
+ * @param [in] timeFormat TIME_FORMAT_24H or TIME_FORMAT_12H
+ */
+void UserConf::setTimeFormat(time_format_t timeFormat)
+{
+	this->timeFormat = timeFormat;
+}
+
+/**
  * Get hours
  * @return int
  */
@@ -320,6 +331,15 @@ const String& UserConf::getUsername()
 const String& UserConf::getUserPass()
 {
 	return userpass;
+}
+
+/**
+ * Get time format
+ * @return time_format_t
+ */
+time_format_t UserConf::getTimeFormat()
+{
+	return timeFormat;
 }
 
 /**
@@ -425,6 +445,7 @@ void UserConf::SaveConf(char confStatus)
 	uconf.tempScale  = tempScale;
 	strncpy(uconf.username, username.c_str(), MAX_STR_SIZE);
 	strncpy(uconf.userpass, userpass.c_str(), MAX_STR_SIZE);
+	uconf.timeFormat = timeFormat;
 
 	// Write struct to EEPROM
 	NVS.setBlob("uconf", (uint8_t*)&uconf, sizeof(uconf));
@@ -466,6 +487,7 @@ void UserConf::ReadConf()
 	tempScale    = uconf.tempScale;
 	username     = String(uconf.username);
 	userpass     = String(uconf.userpass);
+	timeFormat   = uconf.timeFormat;
 }
 
 /**
@@ -492,6 +514,7 @@ void UserConf::ResetConf()
 	tempScale    = DEFCONF_TEMP_SCALE;
 	username     = DEFCONF_USERNAME;
 	userpass     = DEFCONF_USER_PASS;
+	timeFormat   = DEFCONF_TIME_FORMAT;
 	confStatus   = 0;
 
 	// Save to EEPROM

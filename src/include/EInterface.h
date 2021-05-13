@@ -91,6 +91,8 @@ class EInterface {
 		float temp2;
 		/** Temperature scale */
 		temp_scale_t tempScale;
+		/** Time format */
+		time_format_t timeFormat;
 		/** Weather */
 		weather_t weather;
 		/** Period: day or night */
@@ -166,6 +168,9 @@ class EInterface {
 
 		/* Set temperature scale */
 		void setTempScale(temp_scale_t scale);
+
+		/* Set time format */
+		void setTimeFormat(time_format_t timeFormat);
 
 		/* Set city name */
 		void setCity(const String& city);
@@ -256,6 +261,9 @@ class EInterface {
 
 		/* Get temperature scale */
 		temp_scale_t getTempScale();
+
+		/* Get time format */
+		time_format_t getTimeFormat();
 
 		/* Clear the whole screen */
 		void clearAll();
