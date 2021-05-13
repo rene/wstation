@@ -141,9 +141,9 @@ Any *WStation* device can be redefined to factory settings by pressing and holdi
 
 ### Screenshots of WStation interface
 
-![WStation screenshot 1](/resources/misc/ws_s1.png) ![WStation screenshot 2](/resources/misc/ws_s2.png) ![WStation screenshot 3](/resources/misc/ws_s3.png)
+![WStation screenshot 1](/resources/misc/ws_s1.png) ![WStation screenshot 2](/resources/misc/ws_s2.png) ![WStation screenshot 3](/resources/misc/ws_s3.png) ![WStation screenshot 4](/resources/misc/ws_s4.png)
 
 ## Bug reports
 
-Please, report them to [rene@renesp.com.br](mailto:rene@renesp.com.br)
+Please, report them on the project's GitHub page
 
