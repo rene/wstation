@@ -68,7 +68,8 @@ AsyncWebServer webServer(WEBSERVER_PORT);
 /** DHT sensor */
 DHTSensor tempHSensor;
 #elif HTU2X_SENSOR
-#error HTU2X support is not implemented
+#include <HTU2XSensor.h>
+HTU2XSensor tempHSensor;
 #else
 #error You should enable at least one Temperature/Humidity sensor
 #endif

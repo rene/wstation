@@ -28,6 +28,7 @@ WStation has the following features:
 * Shows weekly forecast (next 3 days)
 * Support to [OpenWeather](https://openweathermap.org/) API
 * Support to DHT modules
+* Support to HTU2x sensors
 * Support to DS1307 RTC modules (optional)
 * Support to 433.92MHz NC-7345 compatible sensors (optional)
 * Web interface for device configuration (with user authentication)
@@ -51,6 +52,10 @@ The whole circuit can be built using a few modules:
 | DS1307 RTC module | Real Time Clock module (optional, date/time can be synchronized through NTP client) |
 | 433.92MHz RF Receiver module | 433.92MHz RF Receiver (with ASK/OOK modulation support) |
 
+DHT module can also be replaced by a high precision HTU2x Temperature/Humidity sensor module (connected through I2C):
+
+![WStation Circuit Diagram with HTU2x sensor](/resources/misc/circDiagram2.png)
+
 ### Pinout connection
 
 | Function | Pin number |
@@ -66,6 +71,8 @@ The whole circuit can be built using a few modules:
 | Radio sensor | 4 |
 | RTC SDA pin | 21 |
 | RTC SCL pin | 22 |
+| HTU2x SDA pin | 21 |
+| HTU2x SCL pin | 22 |
 
 ## Firmware
 
@@ -102,6 +109,8 @@ Some environment variables can be customized according to user's setup:
 | UPLOAD_SPEED | Serial baud rate, e.g. 921600 |
 | DEBUG_LEVEL | Verbose level for debug messages |
 | RTC_DS1307 | Set to *true* if a RTC DS1307 module is installed |
+| DHT_SENSOR | Set to *true* if a DHT module is installed |
+| HTU2X_SENSOR | Set to *true* if a HTU2x modle is installed |
 | ESP_LIBS | Path to Arduino/ESP libraries (if non default path is used) |
 | ESP_ROOT | Root folder of Arduino/ESP environment (if non default path is used)  |
 

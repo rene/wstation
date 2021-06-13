@@ -16,10 +16,10 @@ FS_DIR = $(PWD)/fsroot
 RTC_DS1307 ?=
 
 # DHT_SENSOR = true # To use DHT temperature/humidity sensor
-DHT_SENSOR ?= true
+DHT_SENSOR ?=
 
 # HTU2X_SENSOR = true # To use HTU2x temperature/humidity sensor
-HTU2X_SENSOR ?=
+HTU2X_SENSOR ?= true
 
 # Use -DDEBUG_SCREENSHOT=1 to enable screenshot support
 ENABLE_DEBUG_SCREENSHOT ?=
@@ -57,6 +57,7 @@ BUILD_EXTRA_FLAGS += -DDHT_SENSOR
 endif
 
 ifeq ($(HTU2X_SENSOR),true)
+LIBS += libs/HTU21D_LIB
 BUILD_EXTRA_FLAGS += -DHTU2X_SENSOR
 endif
 
