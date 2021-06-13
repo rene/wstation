@@ -38,7 +38,6 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include <TimeLib.h>
-#include <DHTesp.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ArduinoNvs.h>
@@ -59,12 +58,20 @@ EInterface *gui = NULL;
 ETheme colorTheme;
 /** OpenWeather */
 OpenWeather weatherWS;
-/** DHT sensor */
-DHTesp dhtSensor;
 /** Wall clock */
 tmElements_t wallClock;
 /** Web server */
 AsyncWebServer webServer(WEBSERVER_PORT);
+
+#ifdef DHT_SENSOR
+#include <DHSensor.h>
+/** DHT sensor */
+DHTSensor tempHSensor;
+#elif HTU2X_SENSOR
+#error HTU2X support is not implemented
+#else
+#error You should enable at least one Temperature/Humidity sensor
+#endif
 
 /** Mutex for screen update */
 volatile SemaphoreHandle_t t_mutex;
@@ -357,22 +364,22 @@ void taskUpdateNTP(void *parameter)
 }
 
 /**
- * Read DHT sensor data
+ * Read Temperature and Humidity sensor data
  * @param parameter Task parameters (not used)
  */
-void taskReadDHTSensor(void *parameter)
+void taskReadTHSensor(void *parameter)
 {
-	TempAndHumidity sensorData;
 	while (1) {
-		sensorData = dhtSensor.getTempAndHumidity();
+		tempHSensor.readSensor();
 
-		if (dhtSensor.getStatus() != 0) {
-			log_e("DHT11 error status: %s", dhtSensor.getStatusString());
+		if (tempHSensor.getStatus() != 0) {
+			log_e("Temp./Hum. sensor error status: %s",
+					tempHSensor.getStatusString());
 		} else {
 			// Display data
 			xSemaphoreTake(t_mutex, portMAX_DELAY);
-			gui->showTemp1(sensorData.temperature);
-			gui->showHumidity1(sensorData.humidity);
+			gui->showTemp1(tempHSensor.getTemperature());
+			gui->showHumidity1(tempHSensor.getHumidity());
 			xSemaphoreGive(t_mutex);
 		}
 
@@ -515,8 +522,8 @@ void setup() {
 	gui->showVersion(50, 200);
 	delay(700);
 
-	// Initialize DHT sensor
-	dhtSensor.setup(DHT_DATA_PIN, DHTesp::AUTO_DETECT);
+	// Initialize Temperature/Humidity sensor
+	tempHSensor.setup();
 
 	// Initialize 433MHz module receiver
 	setupNexus(RF_PIN);
@@ -577,7 +584,7 @@ void setup() {
 	xTaskCreate(taskReceiveSensorData, "ReceiveSensorData", 16384, NULL, 0, NULL);
 	xTaskCreate(taskUpdateWeatherInfo, "UpdateWeatherInfo", 36864, NULL, 0, NULL);
 	xTaskCreate(taskUpdateNTP,         "UpdateNTP",          8192, NULL, 0, NULL);
-	xTaskCreate(taskReadDHTSensor,     "ReadDHTSensor",      4096, NULL, 0, NULL);
+	xTaskCreate(taskReadTHSensor,      "ReadTHSensor",       4096, NULL, 0, NULL);
 }
 
 /**

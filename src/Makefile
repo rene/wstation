@@ -3,6 +3,7 @@ SKETCH = main.ino
 UPLOAD_PORT ?= /dev/ttyUSB0
 UPLOAD_SPEED ?= 921600
 BOARD ?= esp32doit-devkit-v1
+CHIP ?= esp32
 
 BUILD_DIR ?= $(PWD)/build
 ESP_LIBS ?= $(shell echo $HOME)/.arduino15/packages/esp32/hardware/esp32/1.0.4/libraries
@@ -12,10 +13,16 @@ DEBUG_LEVEL ?= 5
 FS_DIR = $(PWD)/fsroot
 
 # RTC_DS1307 = true # Enable RTC support
-RTC_DS1307 =
+RTC_DS1307 ?=
+
+# DHT_SENSOR = true # To use DHT temperature/humidity sensor
+DHT_SENSOR ?= true
+
+# HTU2X_SENSOR = true # To use HTU2x temperature/humidity sensor
+HTU2X_SENSOR ?=
 
 # Use -DDEBUG_SCREENSHOT=1 to enable screenshot support
-ENABLE_DEBUG_SCREENSHOT =
+ENABLE_DEBUG_SCREENSHOT ?=
 
 # Versioning
 GIT_DESC=$(shell git describe --tags --long)
@@ -37,12 +44,20 @@ LIBS=$(ESP_LIBS)/Wire \
 	 libs/Adafruit_GFX_Library-1.7.5 \
 	 libs/Adafruit_ILI9341-1.5.4 \
 	 libs/Time \
-	 libs/DHTesp \
 	 libs/ArduinoNvs
 
 ifeq ($(RTC_DS1307),true)
 LIBS += libs/DS1307RTC
 BUILD_EXTRA_FLAGS += -DRTC_DS1307
+endif
+
+ifeq ($(DHT_SENSOR),true)
+LIBS += libs/DHTesp
+BUILD_EXTRA_FLAGS += -DDHT_SENSOR
+endif
+
+ifeq ($(HTU2X_SENSOR),true)
+BUILD_EXTRA_FLAGS += -DHTU2X_SENSOR
 endif
 
 PNGDIR=../resources/icons/png
