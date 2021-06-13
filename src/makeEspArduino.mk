@@ -599,7 +599,7 @@ print "LD_COM=$$v{'recipe.c.combine.pattern'}\n";
 print "PART_FILE?=\$$(ESP_ROOT)/tools/partitions/default.csv\n";
 $$v{'recipe.objcopy.eep.pattern'} =~ s/\"([^\"]+\.csv)\"/\$$(PART_FILE)/;
 print "GEN_PART_COM=$$v{'recipe.objcopy.eep.pattern'}\n";
-print "ELF2BIN_COM=", $$v{'recipe.objcopy.hex.pattern'} || $$v{'recipe.objcopy.hex.1.pattern'}, "\n";
+print "ELF2BIN_COM=", $$v{'recipe.objcopy.bin.pattern'} || $$v{'recipe.objcopy.bin.1.pattern'}, "\n";
 print "SIZE_COM=$$v{'recipe.size.pattern'}\n";
 if ($$v{'tools.esptool.cmd'} !~ /\.py$$/) {
   print "ESPTOOL_COM?=\$$(error esptool must be installed for this operation! Run: pip install esptool)\n";
