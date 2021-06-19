@@ -195,7 +195,7 @@ void IRAM_ATTR nexusHandlePulse()
  */
 void setupNexus(int pin)
 {
-	pinMode(pin, INPUT_PULLUP);
+	pinMode(pin, INPUT);
 	attachInterrupt(digitalPinToInterrupt(pin), nexusHandlePulse, FALLING);
 
 	nexusDataAvailable = false;
