@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* 
- * Copyright 2020 Renê de Souza Pinto
+ * Copyright (c) 2020 Renê de Souza Pinto. All rights reserverd.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
