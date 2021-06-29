@@ -92,8 +92,11 @@ static void IRAM_ATTR parseFrames()
 		}
 	}
 
-	if (!check)
+	if (!check) {
+		/* Discard buffer */
+		fpos = 0;
 		return;
+	}
 
 	/* Frames are equal, check const value */
 	info._const = (uint8_t)getBits(frm, 8, 4);
